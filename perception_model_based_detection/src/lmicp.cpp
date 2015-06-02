@@ -199,7 +199,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
         jacTjac.setZero();
         result_Pose.setZero();
         jac_right.setZero();
-        float lambda(0.1);
+        float lambda(0.5);
         //jac37.topLeftCorner(3,3) = E::MatrixXd::Identity(3, 3);
         //jac37.topLeftCorner(3,3) = E::Matrix3f::Identity();
         for (std::size_t ii = 0; ii < dataMatchIdx.size(); ++ii)
@@ -238,8 +238,10 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
         
         ROS_INFO_STREAM(result_Pose);
         //result_Pose = jac_left.inverse()*jac.transpose()*res_tmp;
-        pose_k1.t() = E::Vector3d(result_Pose(0), result_Pose(1), result_Pose(2));
+	//result_Pose = -result_Pose;
+        pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
         pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(4), result_Pose(5), result_Pose(6));
+        pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
         pose_k1.normalize();
         //pose_k1 = lambda
         return;   
@@ -250,9 +252,16 @@ inline const Matrix34f LM_ICP::calculateJacobianKernel(const ctrs::Pose& pose_k
                                                 , const PointT& a)
     {
 
-        const E::Quaternionf q(pose_k.q().w(), pose_k.q().x(), pose_k.q().y(), pose_k.q().z());
+        E::Quaternionf q(pose_k.q().w(), pose_k.q().x(), pose_k.q().y(), pose_k.q().z());
         Matrix34f jacQuat;
         jacQuat.setZero();
+	if ( 0.0 == q.x() && 0.0 == q.y() && 0.0 == q.z())
+                        {
+                            q.x() = 0.05;
+                            q.y() = 0.05;
+                            q.z() = 0.05;
+			    q.normalize();
+                        }
         jacQuat << (2*a.z*q.y() - 2*a.y*q.z()) , (2*a.y*q.y() + 2*a.z*q.z())                ,(2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x()) , (2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w())
                 , (2*a.x*q.z() - 2*a.z*q.x()) , (2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x()) , (2*a.x*q.x() + 2*a.z*q.z())                 ,( 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y())
                 , (2*a.y*q.x() - 2*a.x*q.y()) , (2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x()) , (2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y()) , (2*a.x*q.x() + 2*a.y*q.y());
