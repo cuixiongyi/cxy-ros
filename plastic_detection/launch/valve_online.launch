@@ -1,0 +1,18 @@
+<launch>
+<node pkg="perception_model_based_detection" type="cxy_test" name="cxy_test" output="screen">
+ 	<param name="model_type"  value="Valve" />
+ 	<param name="main_loop_rate" type="double" value="15.0" />
+ 	<param name="movementDelta" type="double" value="0.01" />
+ 	<param name="action_name"  value="mbt_valve" />
+ 	
+
+ 	<param name="acceptDistX" type="double" value="0.05" />
+ 	<param name="acceptDistPalm2Centroid" type="double" value="0.29" />
+ 	<param name="bGrabPichCorrection" type="bool" value="false" />
+
+
+
+
+
+</node>
+</launch>
