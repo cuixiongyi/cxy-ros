@@ -77,18 +77,19 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
 
     }
 
-    ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, const ctrs::Pose guess)
+ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, const ctrs::Pose guess)
     {
         if ( ! isNewModel_)
         {
             return ctrs::Pose();
         }
-        dataCloud_ = data;
+        dataCloud_ = boost::make_shared<PointCloud>(*data);
         ctrs::Pose guessTmp(guess);
-        initGuess(guessTmp);
-        //guessTmp = ctrs::Pose(0);
+        //initGuess(guessTmp);
+        guessTmp = ctrs::Pose(0);
         ctrs::Pose& pose_base(guessTmp);
         PointCloudPtr transDataCloud;
+        PointCloudPtr transDataCloud2;
         //pose_base.composePoint(data, transDataCloud);
 
         // pose_inc
@@ -99,16 +100,26 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
         std::vector<int> dataMatchIdx;
         std::vector<E::Vector3f> residual;
         matchDistancefPtr_ = std::make_shared<std::vector<float> >();
-        dataCloud_ = transDataCloud;
-            char c;
+        //dataCloud_ = transDataCloud;
+        char c;
+        //std::cout<<dataCloud_->size()<<"   dataCloud_";
 
+        //translateToCenter(dataCloud_);
+
+        while(true)
+        {
+            publish(dataCloud_, pub_data_pointcloud_);
+            publish(modelCloud_, pub_model_pointcloud_);
+            ros::spinOnce();
+            std::cin>>c;
+            if ('n' == c)
+                break;
+        }
+        transDataCloud = dataCloud_;
         while (true)
         {
-            
-            //publish(transData, pub_data_pointcloud_);
-            pose_base.composePose(pose_tmp, pose_inc);
-            pose_inc.composePoint(data, transDataCloud);
-            ROS_INFO_STREAM("pose_inc  "<< pose_inc.t());
+           pose_inc.composePoint(dataCloud_, transDataCloud);
+             ROS_INFO_STREAM("pose_inc  new "<< pose_inc.t()<<"  "<< pose_inc.q().w()<<"  "<< pose_inc.q().x()<<"  "<< pose_inc.q().y()<<"  "<< pose_inc.q().z()<<"  ");
             //ROS_INFO_STREAM(transDataCloud->size());
 
             while(true)
@@ -120,17 +131,23 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
                 if ('n' == c)
                     break;
             }
-            
+            //pose_tmp.t()(0) = 0.2;
+            //pose_tmp.t()(2) = 0.4;
+            //pose_tmp.q() = E::AngleAxisd(0.25*M_PI, E::Vector3d::UnitX());
+            //pose_tmp.q().x() = 1.0;
+            //pose_tmp.q().w() = 0.1;
+            //pose_tmp.normalize();
+            //continue;
             const float residualSum =  searchMatchPoints(transDataCloud 
                                                         , dataMatchIdx 
                                                         , modelMatchIdx 
                                                         , *matchDistancefPtr_);
-            ROS_INFO_STREAM("matching ratio  "<< float(dataMatchIdx.size()/transDataCloud->size())<< "   residual "<<residualSum/dataMatchIdx.size());
+            ROS_INFO_STREAM("matching ratio  "<< float(dataMatchIdx.size())/transDataCloud->size()<< "   residual "<<residualSum/dataMatchIdx.size());
             if (dataMatchIdx.size() < 10)
             {
-                return ctrs::Pose();
+                //return ctrs::Pose();
             }
-            ROS_INFO_STREAM("Size   "<<matchDistancefPtr_->size()<<"  "<<dataMatchIdx.size());
+            //ROS_INFO_STREAM("Size   "<<matchDistancefPtr_->size()<<"  "<<dataMatchIdx.size());
 
             calculateResidual( transDataCloud
                             , dataMatchIdx
@@ -143,15 +160,23 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
                                         , pose_inc
                                         , residual
                                         , tmp_inc);
-            pose_inc.composePose(tmp_inc, pose_tmp);
-            pose_inc = pose_tmp;
-            ROS_INFO_STREAM("pose_inc  "<< pose_tmp.t());
+            
+            tmp_inc.t() = pose_inc.t()+tmp_inc.t();
+            tmp_inc.q().w() = pose_inc.q().w()+tmp_inc.q().w();
+            tmp_inc.q().x() = pose_inc.q().x()+tmp_inc.q().x();
+            tmp_inc.q().y() = pose_inc.q().y()+tmp_inc.q().y();
+            tmp_inc.q().z() = pose_inc.q().z()+tmp_inc.q().z();
+            tmp_inc.normalize();
+            
+            pose_inc = tmp_inc;
 
+            //tmp_inc.normalize();
         }
 
 
     }
-    
+
+
     void LM_ICP::calculateLevenbergMarquardt(const PointCloudPtr data
                                     , const std::vector<int>& dataMatchIdx
                                     , const std::vector<int>& modelMatchIdx
@@ -163,10 +188,10 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
         Matrix34f jacQuat;
         MatrixX7f jac(dataMatchIdx.size(), 7);
         //MatrixX7f jacTjac(7, 7);
-        Matrix6f jacTjac;
+        Matrix7f jacTjac;
         //Matrix7f jacTjac(7, 7);
-        Vector6f result_Pose;
-        Vector6f jac_right;
+        Vector7f result_Pose;
+        Vector7f jac_right;
 
         jac37.setZero();
         jacQuat.setZero();
@@ -180,7 +205,7 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
         for (std::size_t ii = 0; ii < dataMatchIdx.size(); ++ii)
         {
             const PointT& d((*data)[dataMatchIdx[ii]]), m((*modelCloud_)[modelMatchIdx[ii]]);
-            E::Matrix<float, 1, 6> rowJ;
+            E::Matrix<float, 1, 7> rowJ;
             //rowJ <<(2*d.x - 2*m.x), (2*d.y - 2*m.y), (2*d.z - 2*m.z), 0, (4*d.y*(d.z - m.z) - 4*d.z*(d.y - m.y)), (4*d.z*(d.x - m.x) - 4*d.x*(d.z - m.z)), (4*d.x*(d.y - m.y) - 4*d.y*(d.x - m.x));
             //rowJ <<(2*d.x - 2*m.x), (2*d.y - 2*m.y), (2*d.z - 2*m.z), (4*d.y*(d.z - m.z) - 4*d.z*(d.y - m.y)), (4*d.z*(d.x - m.x) - 4*d.x*(d.z - m.z)), (4*d.x*(d.y - m.y) - 4*d.y*(d.x - m.x));
             //ROS_INFO_STREAM_ONCE(rowJ);
@@ -189,18 +214,18 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
                                                     , residual[ii]
                                                     , d));
             E::Matrix<float, 1, 4> jq(residual[ii].transpose()*jac34);
-            rowJ<<2*residual[ii](0), 2*residual[ii](1), 2*residual[ii](2),  jq(1), jq(2), jq(3);
+            rowJ<<2*residual[ii](0), 2*residual[ii](1), 2*residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
             jacTjac += rowJ.transpose()*rowJ;
             // JT*e
             jac_right += rowJ.transpose()*(*matchDistancefPtr_)[ii];
         }
         //jacTjac = jac.transpose() * jac;
         //jacTjac
-        Matrix6f jac_left;
-        Matrix6f j_dia;
+        Matrix7f jac_left;
+        Matrix7f j_dia;
         j_dia.setZero();
         jac_left.setZero();
-        for (int ii = 0; ii < 6; ++ii)
+        for (int ii = 0; ii < 7; ++ii)
         {
             j_dia(ii,ii) = jacTjac(ii,ii);
 
@@ -214,7 +239,7 @@ n        else if (model_to_track_ == Model::DOOR_BODY)
         ROS_INFO_STREAM(result_Pose);
         //result_Pose = jac_left.inverse()*jac.transpose()*res_tmp;
         pose_k1.t() = E::Vector3d(result_Pose(0), result_Pose(1), result_Pose(2));
-        pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(3), result_Pose(4), result_Pose(5));
+        pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(4), result_Pose(5), result_Pose(6));
         pose_k1.normalize();
         //pose_k1 = lambda
         return;   
@@ -877,12 +902,12 @@ int main(int argc, char *argv[])
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
     
-    //data = loadPlyFile("/home/cuixiongyi/repo/bun000.ply");
-    //model = loadPlyFile("/home/cuixiongyi/repo/bun045.ply");
-    model->push_back(PointT(0.00, 0.00, 0.0));
-    model->push_back(PointT(0.20, 0.00, 0.0));
-    data->push_back(PointT(0.02, 0.01, 0.0));
-    data->push_back(PointT(0.22, 0.01, 0.0));
+    data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
+    model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+    //model->push_back(PointT(0.00, 0.00, 0.0));
+    //model->push_back(PointT(0.20, 0.00, 0.0));
+    //data->push_back(PointT(0.02, 0.01, 0.0));
+    //data->push_back(PointT(0.22, 0.01, 0.0));
     //ROS_INFO("read pointcloud");
 
     icp.setModelCloud(model);
@@ -896,19 +921,20 @@ pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name)
 
     pcl::PointCloud<PointT>::Ptr pointcloud(new pcl::PointCloud<PointT>);
     std::ifstream fin(name);
-        //ROS_INFO_STREAM(fin.is_open());
+    ROS_INFO_STREAM(fin.is_open());
     std::string line;
     long int count(0);
     while (std::getline(fin, line))
     {
         //std::getline(fin, line, '\n');
         std::size_t pos(line.find("element vertex"));
-        //ROS_INFO_STREAM(line);
+//        ROS_INFO_STREAM(line);
         if ( std::string::npos != pos)
         {
             std::string tmp(line.begin()+pos+14, line.end());
             count = atol(tmp.c_str());
-            ROS_INFO_STREAM("read count  "<< "  "<<tmp);
+            //ROS_INFO_STREAM("read count  "<< "  "<<tmp << ".");
+            ROS_INFO_STREAM(line <<std::endl);
             continue;
         }
         pos = line.find("end_header");
