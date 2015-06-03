@@ -57,6 +57,7 @@ namespace cxy_lmicp
     typedef E::Matrix< float, 6, 6> Matrix6f;
     typedef E::Matrix< float, 6, 1> Vector6f;
 
+    typedef E::Matrix< float, 4, 4> Matrix44f;
 
     enum class Model {DOOR_BODY, DOOR_FRAME, DRILL, ROBOTIQ_HAND, DEBRIS, VALVE};
     enum class RotationAxis {X_AXIS, Y_AXIS, Z_AXIS};

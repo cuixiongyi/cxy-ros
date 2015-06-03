@@ -214,7 +214,8 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
                                                     , residual[ii]
                                                     , d));
             E::Matrix<float, 1, 4> jq(residual[ii].transpose()*jac34);
-            rowJ<<2*residual[ii](0), 2*residual[ii](1), 2*residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
+            rowJ<<residual[ii](0), residual[ii](1), residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
+	    rowJ = rowJ*2;
             jacTjac += rowJ.transpose()*rowJ;
             // JT*e
 	    const double sigma = 0.02;
@@ -244,9 +245,9 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
         //result_Pose = jac_left.inverse()*jac.transpose()*res_tmp;
 	//result_Pose = -result_Pose;
         pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
-        pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(4), result_Pose(5), result_Pose(6));
-        pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
-        pose_k1.normalize();
+        pose_k1.q() = E::Quaterniond(-result_Pose(3), -result_Pose(4), -result_Pose(5), -result_Pose(6));
+        //pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
+        //pose_k1.normalize();
         //pose_k1 = lambda
         return;   
     }
@@ -261,22 +262,29 @@ inline const Matrix34f LM_ICP::calculateJacobianKernel(const ctrs::Pose& pose_k
         jacQuat.setZero();
 	if ( 0.0 == q.x() && 0.0 == q.y() && 0.0 == q.z())
                         {
-                            q.x() = 0.05;
-                            q.y() = 0.05;
-                            q.z() = 0.05;
+                            q.x() = 0.01;
+                            q.y() = 0.01;
+                            q.z() = 0.01;
 			    q.normalize();
                         }
         jacQuat << (2*a.z*q.y() - 2*a.y*q.z()) , (2*a.y*q.y() + 2*a.z*q.z())                ,(2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x()) , (2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w())
                 , (2*a.x*q.z() - 2*a.z*q.x()) , (2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x()) , (2*a.x*q.x() + 2*a.z*q.z())                 ,( 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y())
                 , (2*a.y*q.x() - 2*a.x*q.y()) , (2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x()) , (2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y()) , (2*a.x*q.x() + 2*a.y*q.y());
         
-        
-        /*
+	E:Matrix44f normalJaco44;
+       normalJaco44.setZero();
+       normalJaco44 << q.x()*q.x()+q.y()*q.y()+q.z()*q.z(), -q.w()*q.x(), -q.w()*q.y(), -q.w()*q.z(),
+		    -q.x()*q.w(), q.w()*q.w()+q.y()*q.y()+q.z()*q.z(), -q.x()*q.y(), -q.x()*q.z(),
+		    -q.y()*q.w(), -q.y()*q.x(), q.w()*q.w()+q.x()*q.x()+q.z()*q.z(), -q.y()*q.z(),
+		    -q.z()*q.w(), -q.z()*q.x(), -q.z()*q.y(), q.w()*q.w()+q.y()*q.y()+q.x()*q.x();
+       normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.y()*q.y()+q.x()*q.x()+q.z()*q.z(), 1.5);
+
+       /*
         [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
         [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
         [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
         */
-        return jacQuat;
+        return jacQuat*normalJaco44;
     }
 
     void LM_ICP::calculateJacobian()
@@ -916,11 +924,18 @@ int main(int argc, char *argv[])
     //std::ifstream fin_mod("bun090.ply");
     
     data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
-    //model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
-    for (int i = 0; i < data->points.size(); ++i)
+    if (1)
     {
-	model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
+	model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+    }
+    else
+    {
+	for (int i = 0; i < data->points.size(); ++i)
+    	{
+		model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
 	}
+    }
+    /*	*/
     //model->push_back(PointT(0.00, 0.00, 0.0));
     //model->push_back(PointT(0.20, 0.00, 0.0));
     //data->push_back(PointT(0.02, 0.01, 0.0));
