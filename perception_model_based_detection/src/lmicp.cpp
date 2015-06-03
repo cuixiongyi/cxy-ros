@@ -245,7 +245,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
 	//result_Pose = -result_Pose;
         pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
         pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(4), result_Pose(5), result_Pose(6));
-        //pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
+        pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
         pose_k1.normalize();
         //pose_k1 = lambda
         return;   
@@ -916,7 +916,11 @@ int main(int argc, char *argv[])
     //std::ifstream fin_mod("bun090.ply");
     
     data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
-    model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+    //model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+    for (int i = 0; i < data->points.size(); ++i)
+    {
+	model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
+	}
     //model->push_back(PointT(0.00, 0.00, 0.0));
     //model->push_back(PointT(0.20, 0.00, 0.0));
     //data->push_back(PointT(0.02, 0.01, 0.0));
@@ -931,6 +935,7 @@ int main(int argc, char *argv[])
 
 pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name)
 {
+
 
     pcl::PointCloud<PointT>::Ptr pointcloud(new pcl::PointCloud<PointT>);
     std::ifstream fin(name);
