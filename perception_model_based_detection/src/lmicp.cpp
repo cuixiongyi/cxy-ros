@@ -217,7 +217,11 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
             rowJ<<2*residual[ii](0), 2*residual[ii](1), 2*residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
             jacTjac += rowJ.transpose()*rowJ;
             // JT*e
-            jac_right += rowJ.transpose()*(*matchDistancefPtr_)[ii];
+	    const double sigma = 0.02;
+	    const double &&r = std::sqrt((*matchDistancefPtr_)[ii]);
+	    //ROS_INFO_STREAM(r);
+	    double e = r < sigma ? r*r : 2*sigma*std::abs(r)-sigma*sigma;
+            jac_right += rowJ.transpose()*e;
         }
         //jacTjac = jac.transpose() * jac;
         //jacTjac
@@ -241,7 +245,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
 	//result_Pose = -result_Pose;
         pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
         pose_k1.q() = E::Quaterniond(result_Pose(3), result_Pose(4), result_Pose(5), result_Pose(6));
-        pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
+        //pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
         pose_k1.normalize();
         //pose_k1 = lambda
         return;   
