@@ -1,0 +1,21 @@
+<package>
+  <name>project_lmicp</name>
+  <version>0.0.1</version>
+  <description>
+   project_lmicp 
+  </description>
+  <maintainer email="cuixiongyi2013@gmail.com">Xiongyi Cui</maintainer>
+  <license>BSD</license>
+  <build_depend>roscpp</build_depend>
+  <build_depend>opencv</build_depend>
+  <build_depend>pcl</build_depend>
+  <build_depend>std_msgs</build_depend>
+  
+  <run_depend>roscpp</run_depend>
+  <run_depend>opencv</run_depend>
+  <run_depend>pcl</run_depend>
+  <run_depend>std_msgs</run_depend>
+  
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
