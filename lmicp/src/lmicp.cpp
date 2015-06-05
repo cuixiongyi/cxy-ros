@@ -28,52 +28,7 @@ namespace cxy_lmicp
 
     bool LM_ICP::initialise()
     {
-        /*
-        initTransform_= Eigen::Matrix4d::Identity();
-        if (model_to_track_ == Model::ROBOTIQ_HAND)
-        {
-            model_filenames_.push_back("package://perception_model_based_detection/models/robotiq/s-model/visual/GRIPPER_OPEN_FINGER_1.stl");
-            model_filenames_.push_back("package://perception_model_based_detection/models/robotiq/s-model/visual/GRIPPER_OPEN_FINGER_2.stl");
-            model_filenames_.push_back("package://perception_model_based_detection/models/robotiq/s-model/visual/GRIPPER_OPEN_FINGER_3.stl");
-            model_filenames_.push_back("package://perception_model_based_detection/models/robotiq/s-model/visual/GRIPPER_OPEN_PALM.stl");
-        }
-n        else if (model_to_track_ == Model::DOOR_BODY)
-            model_filenames_.push_back("package://perception_model_based_detection/models/door/door.stl");
-        else if (model_to_track_ == Model::DOOR_FRAME)
-            model_filenames_.push_back("package://perception_model_based_detection/models/door/frame.stl");
-        else if (model_to_track_ == Model::DRILL)
-            model_filenames_.push_back("package://perception_model_based_detection/models/drill/cordless_drill.stl");
-        else if (model_to_track_ == Model::VALVE)
-        {
-            initTransform_(1,1) = 0;
-            initTransform_(1,2) = -1;
-            initTransform_(2,1) = 1;
-            initTransform_(2,2) = 0;
-
-            model_filenames_.push_back("package://perception_model_based_detection/models/vrc_valve_a.dae");
-        }
-        else if (model_to_track_ == Model::DEBRIS)
-        {
-
-        }
-
-        model_sampler_ = new perception_common::SampleCADModels(nh_, pnh_);
-        pnh_.getParam("initZ", initZ_);
-        sampling_params_.number_of_points = 2000;
-        sampling_params_.sample_type = perception_common::SampleType::RANDOM;
-        sampling_params_.step_size = 0.005;
-
-        sampled_prefiltered_model_cloud_ = modelCloud::Ptr(new modelCloud);
-        sampled_prefiltered_model_cloud_normals_ = modelCloud::Ptr(new modelCloud);
-
-        model_sampler_->meshesToPointCloud(model_filenames_, *sampled_prefiltered_model_cloud_,
-                                          *sampled_prefiltered_model_cloud_normals_, sampling_params_);
-
-        pcl::transformPointCloud(*sampled_prefiltered_model_cloud_ , *sampled_prefiltered_model_cloud_ , initTransform_);
-        initTransform_ = Eigen::Matrix4d::Identity();
-        */
-        
-        
+       
 
     }
 
@@ -131,14 +86,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
                 if ('n' == c)
                     break;
             }
-            //pose_tmp.t()(0) = 0.2;
-            //pose_tmp.t()(2) = 0.4;
-            //pose_tmp.q() = E::AngleAxisd(0.25*M_PI, E::Vector3d::UnitX());
-            //pose_tmp.q().x() = 1.0;
-            //pose_tmp.q().w() = 0.1;
-            //pose_tmp.normalize();
-            //continue;
-            const float residualSum =  searchMatchPoints(transDataCloud 
+           const float residualSum =  searchMatchPoints(transDataCloud 
                                                         , dataMatchIdx 
                                                         , modelMatchIdx 
                                                         , *matchDistancefPtr_);
@@ -711,7 +659,24 @@ inline const E::Matrix<float,1,7> LM_ICP::calculateJacobianKernelNumerical(const
         }
         
         return r;
-    } 
+    }
+
+const float LM_ICP::computeResidual(PointCloudPtr data
+                                            , ctrs::Pose &pose
+                                            , std::vector<int>& dataMatchIdx
+                                            , std::vector<int>& modelMatchIdx
+                                            , std::vector<float>& matchDistance)
+{
+  
+  PointCloudPtr transDataCloud;
+  pose.composePoint(data, transDataCloud);
+  float residualSum =  searchMatchPoints(transDataCloud 
+                                        , dataMatchIdx 
+                                        , modelMatchIdx 
+                                        , *matchDistancefPtr_);
+
+} 
+
 inline  const float LM_ICP::searchMatchPoints(const PointT& data
                                             , E::Vector3f& res)
     {

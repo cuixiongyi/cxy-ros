@@ -87,6 +87,12 @@ namespace cxy_lmicp
                                             , std::vector<int>& modelMatchIdx
                                             , std::vector<float>& matchDistance);
             
+            const float computeResidual(PointCloudPtr data
+                                            , ctrs::Pose &pose
+                                            , std::vector<int>& dataMatchIdx
+                                            , std::vector<int>& modelMatchIdx
+                                            , std::vector<float>& matchDistance);
+            
             // return L-2 norm residual and res is residual on xyz axis
             inline  const float searchMatchPoints(const PointT& data
                                                         , E::Vector3f& res);
