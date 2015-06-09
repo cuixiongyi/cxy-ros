@@ -23,7 +23,7 @@
 
 #include "ros/ros.h"
 #include "cxy_transform.h"
-
+#include "cxy_icp_func.h"
 //#include <vnl/vnl_vector.h>
 //#include <vnl/vnl_matrix.h>
 
@@ -52,7 +52,7 @@ namespace cxy
         public:
             cxy_icp();
 
-            virtual float icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr inCloud, cxy_transform::Pose &outPose);
+            virtual float icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose);
 
             bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
@@ -63,10 +63,13 @@ namespace cxy
             ros::NodeHandle nh_, pnh_;
             ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
             pcl::KdTreeFLANN<PointT>::Ptr kdtreeptr_;
+            dataVectorType dataIndx;
 
+            cxy_icp_func* func_;
         protected:
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
+
 
         };
     }

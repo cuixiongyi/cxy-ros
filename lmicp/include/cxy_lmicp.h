@@ -10,6 +10,8 @@ namespace cxy {
         class cxy_lmicp : cxy_icp
         {
 
+            cxy_lmicp();
+
         };
     }
 }

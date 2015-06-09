@@ -22,6 +22,7 @@ namespace cxy {
         pub_data_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("data_pointcloud", 5);
         pub_model_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("model_pointcloud", 5);
         pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
+
     }
 
         bool cxy_icp::setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model)

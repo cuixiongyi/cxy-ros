@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 
+#include "cxy_lmicp.cpp"
 
 using namespace std;
 using namespace dlib;
@@ -85,6 +86,7 @@ parameter_vector residual_derivative (
 }
 
 // ----------------------------------------------------------------------------------------
+pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name);
 
 int main()
 {
@@ -177,7 +179,71 @@ int main()
     {
         cout << e.what() << endl;
     }
+
+    pcl::PointCloud<PointT>::Ptr data(new pcl::PointCloud<PointT>);
+    pcl::PointCloud<PointT>::Ptr model(new pcl::PointCloud<PointT>);
+    data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
+    if (1)
+    {
+        model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+    }
+    else
+    {
+        for (int i = 0; i < data->points.size(); ++i)
+        {
+            model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
+        }
+    }
+
+
+    cxy_lmicp.setModelCloud();
 }
+
+
+pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name)
+{
+
+
+    pcl::PointCloud<PointT>::Ptr pointcloud(new pcl::PointCloud<PointT>);
+    std::ifstream fin(name);
+    ROS_INFO_STREAM(fin.is_open());
+    std::string line;
+    long int count(0);
+    while (std::getline(fin, line))
+    {
+        //std::getline(fin, line, '\n');
+        std::size_t pos(line.find("element vertex"));
+//        ROS_INFO_STREAM(line);
+        if ( std::string::npos != pos)
+        {
+            std::string tmp(line.begin()+pos+14, line.end());
+            count = atol(tmp.c_str());
+            //ROS_INFO_STREAM("read count  "<< "  "<<tmp << ".");
+            ROS_INFO_STREAM(line <<std::endl);
+            continue;
+        }
+        pos = line.find("end_header");
+        if ( std::string::npos != pos)
+        {
+            //ROS_INFO("read end");
+            break;
+        }
+
+    }
+    std::cout<<"PointCloud Num   "<< count<<std::endl;
+    pointcloud->reserve(count);
+    for (int i = 0; i < count; ++i)
+    {
+        /* code */
+        PointT p;
+        fin >> p.x >> p.y >> p.z;
+        pointcloud->push_back(p);
+        //ROS_INFO_STREAM("points  "<< "  "<<p.x);
+
+    }
+    return pointcloud;
+}
+
 
 // Example output:
 /*
