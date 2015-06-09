@@ -1,11 +1,10 @@
-#include "../include/cxy_lmicp.h"
+#include "../include/cxy_icp_rigid_lm.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {
 
-        cxy_lmicp::cxy_lmicp() : cxy_icp()
+        cxy_icp_rigid_lm::cxy_icp_rigid_lm() : cxy_icp_rigid()
         {
-            func_ = new cxy_icp_func_rigid;
 
         }
 
@@ -23,10 +22,7 @@ namespace cxy {
 
     ctrs::Pose pose_inc(0);
     ctrs::Pose pose_tmp(0);
-    std::vector<int> modelMatchIdx;
-    std::vector<float> matchDistance;
-    std::vector<int> dataMatchIdx;
-    std::vector<E::Vector3f> residual;
+
 
 
 

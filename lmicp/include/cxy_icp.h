@@ -23,7 +23,6 @@
 
 #include "ros/ros.h"
 #include "cxy_transform.h"
-#include "cxy_icp_func.h"
 //#include <vnl/vnl_vector.h>
 //#include <vnl/vnl_matrix.h>
 
@@ -56,7 +55,15 @@ namespace cxy
 
             virtual float icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose);
 
+            // should be override in rigid or articulate
             bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
+
+            // match dataCloud_ and modelCloud_, store the result in member variables
+            // should be override in rigid or articulate
+            virtual float matchPointCloud();
+
+            const float matchPointCloud(const pcl::PointXYZ& data
+                    , Eigen::Vector3f& res);
 
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
@@ -65,14 +72,21 @@ namespace cxy
         protected:
             ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
             ros::NodeHandle nh_, pnh_;
+            double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
+
+            bool hasSetModelCloud_;
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
-            bool hasSetModelCloud_;
-            dataVectorType dataIndx;
+            dataVectorType dataIndx_;
             pcl::KdTreeFLANN<PointT>::Ptr kdtreeptr_;
 
-            cxy_icp_func* func_;
+            // store matchPointCloud result
+            std::vector<int> modelMatchIdx_;
+            std::vector<float> matchDistance_;
+            std::vector<int> dataMatchIdx_;
+            std::vector<Eigen::Vector3f> residual_;
+
 
         };
     }
