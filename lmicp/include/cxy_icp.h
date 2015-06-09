@@ -52,6 +52,8 @@ namespace cxy
         public:
             cxy_icp();
 
+            ~cxy_icp();
+
             virtual float icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose);
 
             bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
@@ -59,17 +61,18 @@ namespace cxy
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
         private:
-            bool hasSetModelCloud_;
-            ros::NodeHandle nh_, pnh_;
-            ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
-            pcl::KdTreeFLANN<PointT>::Ptr kdtreeptr_;
-            dataVectorType dataIndx;
 
-            cxy_icp_func* func_;
         protected:
+            ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
+            ros::NodeHandle nh_, pnh_;
+
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
+            bool hasSetModelCloud_;
+            dataVectorType dataIndx;
+            pcl::KdTreeFLANN<PointT>::Ptr kdtreeptr_;
 
+            cxy_icp_func* func_;
 
         };
     }

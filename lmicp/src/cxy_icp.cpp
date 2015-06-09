@@ -24,6 +24,12 @@ namespace cxy {
         pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 
     }
+    ~cxy_icp::cxy_icp()
+    {
+        if (nullptr != func_)
+            delete func_;
+    }
+
 
         bool cxy_icp::setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model)
         {
@@ -32,9 +38,11 @@ namespace cxy {
                 return false;
             }
             hasSetModelCloud_ = true;
-            pcl::PointCloud<pcl::PointXYZ>::Ptr tmp = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(*model);
+            //pcl::PointCloud<pcl::PointXYZ>::Ptr tmp = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(*model);
             //translateToCenter(tmp);
-            modelCloud_ = tmp;
+            //modelCloud_ = tmp;
+            modelCloud_ = model;
+
             kdtreeptr_ = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
             kdtreeptr_->setInputCloud(modelCloud_);
             return true;
