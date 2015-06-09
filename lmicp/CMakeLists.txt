@@ -23,7 +23,11 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         pcl_ros
                                         )
 
+include(/home/xiongyi/Downloads/lib/dlib-18.16/dlib/cmake)
 
+# CMakeList for dlib
+# ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
+# TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
 include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
@@ -34,7 +38,7 @@ add_library(lmicp_lib
                 src/cxy_transform.cpp
              src/cxy_icp.cpp include/cxy_icp.h)
 
-           target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES})
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} dlib)
 
 
 catkin_package(
@@ -45,4 +49,6 @@ catkin_package(
 )
 
 add_executable(lmicp_exe src/lmicp.cpp)
-target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib) 
+add_executable(main_exe src/main.cpp)
+target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
