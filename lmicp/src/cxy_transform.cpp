@@ -35,7 +35,7 @@ namespace cxy_transform
 			
 			return;
 		}
-		static void Pose::composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<float> const& para)
+		void Pose::composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, const std::vector<float> & para)
 		{
 			E::Vector3d in(in_p.x, in_p.y, in_p.z) ,out;
 			Pose p;

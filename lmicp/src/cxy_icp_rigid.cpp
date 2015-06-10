@@ -11,19 +11,19 @@ namespace cxy {
 
             }
         const dataType cxy_icp_rigid::residual(const dataIdxType& dataIdx
-                                               , paraVectorType const& para)
+                                               , dataVectorType const& para)
         {
 
             pcl::PointXYZ transPoint;
-            cxy_transform::Pose::composePoint((*modelCloud_)[dataIdx], transPoint, para);
+            cxy_transform::Pose::composePoint((*dataCloud_)[dataIdx], transPoint, para);
             Vector3f r3;
             return matchPointCloud(transPoint, r3);
         }
-        derVectorType cxy_icp_rigid::residual_derivative(const dataIdxType& dataIdx
-                                                         , const paraVectorType& para)
+        dataVectorType cxy_icp_rigid::residual_derivative(const dataIdxType& dataIdx
+                                                         , const dataVectorType& para)
         {
             pcl::PointXYZ transPoint;
-            cxy_transform::Pose::composePoint((*modelCloud_)[dataIdx], transPoint, para);
+            cxy_transform::Pose::composePoint((*dataCloud_)[dataIdx], transPoint, para);
             Vector3f r3;
             matchPointCloud(transPoint, r3);
 
@@ -33,8 +33,9 @@ namespace cxy {
             //rowJ <<(2*d.x - 2*m.x), (2*d.y - 2*m.y), (2*d.z - 2*m.z), (4*d.y*(d.z - m.z) - 4*d.z*(d.y - m.y)), (4*d.z*(d.x - m.x) - 4*d.x*(d.z - m.z)), (4*d.x*(d.y - m.y) - 4*d.y*(d.x - m.x));
             //ROS_INFO_STREAM_ONCE(rowJ);
 
-            Matrix34f jac34(calculateJacobianKernel(pose_k
-                            , d));
+
+            Matrix34f jac34(calculateJacobianKernel(para
+                            , transPoint));
             Eigen::Matrix<float, 1, 4> jq(r3.transpose()*jac34);
             //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
             derVectorType derivative(7);
@@ -53,11 +54,11 @@ namespace cxy {
             {
                 float r(0.0);
                 dataMatchIdx_.clear();
-                dataMatchIdx_.reserve(data->size());
+                dataMatchIdx_.reserve(dataCloud_->size());
                 modelMatchIdx_.clear();
-                modelMatchIdx_.reserve(data->size());
+                modelMatchIdx_.reserve(dataCloud_->size());
                 matchDistance_.clear();
-                matchDistance_.reserve(data->size());
+                matchDistance_.reserve(dataCloud_->size());
 
                 static const int K(1);
                 std::vector<int> pointIdxNKNSearch(K);
@@ -81,8 +82,8 @@ namespace cxy {
                     /// Use Euclidean distance
                     const PointT& pTmp((*modelCloud_)[pointIdxNKNSearch[0]]), p2Tmp((*dataCloud_)[ii]);
                     //int signTmp = 1;//((pTmp.x - p2Tmp.x)+(pTmp.y - p2Tmp.y)+(pTmp.z - p2Tmp.z)) > 0 ? 1 : -1;
-                    float rtmp(sqrt(pointNKNSquaredDistance[0]));
-                    matchDistance.push_back(pointNKNSquaredDistance[0]);
+                    float rtmp(std::sqrt(pointNKNSquaredDistance[0]));
+                    matchDistance_.push_back(pointNKNSquaredDistance[0]);
                     //ROS_INFO_STREAM(rtmp);
                     r += rtmp;
 
@@ -122,7 +123,7 @@ namespace cxy {
                 return sqrt(pointNKNSquaredDistance[0]);
             }
 
-        const Matrix34f cxy_icp_rigid::calculateJacobianKernel(const std::vector<float> para
+        const Matrix34f cxy_icp_rigid::calculateJacobianKernel(const std::vector<float> &para
                                                                       , const pcl::PointXYZ& a)
         {
 

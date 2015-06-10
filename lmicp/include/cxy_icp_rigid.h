@@ -6,18 +6,27 @@
 namespace cxy {
     namespace cxy_lmicp_lib {
 
-        class cxy_icp_rigid : cxy_icp
+        class cxy_icp_rigid : public cxy_icp
         {
 
+        public:
             cxy_icp_rigid();
 
-            virtual float matchPointCloud();
 
-            virtual const float matchPointCloud(const pcl::PointXYZ& data
-                    , Eigen::Vector3f& res);
-
-            const Matrix34f calculateJacobianKernel(const std::vector<float> para
+            const Matrix34f calculateJacobianKernel(const std::vector<float> &para
                                                                           , const pcl::PointXYZ& a);
+
+        protected:
+
+            virtual dataType matchPointCloud();
+
+            virtual const dataType matchPointCloud(const pcl::PointXYZ& data
+                                                , Eigen::Vector3f& res);
+
+            virtual const dataType residual(dataIdxType const& dataIdx
+                                            , dataVectorType const& para);
+            virtual dataVectorType residual_derivative(dataIdxType const& dataIdx
+                                                      , dataVectorType const &para);
         };
     }
 }

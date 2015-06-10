@@ -26,8 +26,6 @@ namespace cxy {
     }
     cxy_icp::~cxy_icp()
     {
-        if (nullptr != func_)
-            delete func_;
     }
 
 

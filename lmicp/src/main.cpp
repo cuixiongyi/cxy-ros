@@ -14,10 +14,11 @@
 #include <iostream>
 #include <vector>
 
-#include "cxy_lmicp.cpp"
+#include "cxy_icp_rigid_lm.h"
 
 using namespace std;
 using namespace dlib;
+typedef pcl::PointXYZ PointT;
 
 // ----------------------------------------------------------------------------------------
 
@@ -180,8 +181,8 @@ int main()
         cout << e.what() << endl;
     }
 
-    pcl::PointCloud<PointT>::Ptr data(new pcl::PointCloud<PointT>);
-    pcl::PointCloud<PointT>::Ptr model(new pcl::PointCloud<PointT>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<PointT>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr model(new pcl::PointCloud<PointT>);
     data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
     if (1)
     {
@@ -195,8 +196,8 @@ int main()
         }
     }
 
-
-    cxy_lmicp.setModelCloud();
+    cxy::cxy_lmicp_lib::cxy_icp_rigid_lm cxy_lmicp;
+    cxy_lmicp.setModelCloud(model);
 }
 
 

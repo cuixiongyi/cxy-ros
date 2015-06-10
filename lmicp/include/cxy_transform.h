@@ -27,7 +27,7 @@ namespace cxy_transform
 		Pose(int a);
 
 		~Pose();
-		static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<float> const& para);
+		static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, const std::vector<float> & para);
 		void composePoint(const E::Vector3d& in_p, E::Vector3d &out_p);
 		void composePoint(const E::Vector3d& in_p, pcl::PointXYZ &out_p);
 		void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ &out_p);

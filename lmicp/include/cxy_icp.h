@@ -46,9 +46,9 @@ namespace cxy
         typedef Eigen::Matrix< float, 4, 4> Matrix44f;
 
         typedef unsigned int dataIdxType;
+        typedef std::vector<unsigned int> dataIdxVectorType;
         typedef float dataType;
-        typedef std::vector<dataType> derVectorType;
-        typedef std::vector<dataType> paraVectorType;
+        typedef std::vector<dataType> dataVectorType;
 
 
         class cxy_icp {
@@ -59,24 +59,27 @@ namespace cxy
 
             ~cxy_icp();
 
-            virtual float icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose);
 
             // should be override in rigid or articulate
             bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
+        protected:
+
+            virtual dataType icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose) = 0;
+
             // match dataCloud_ and modelCloud_, store the result in member variables
             // should be override in rigid or articulate
-            virtual float translatePointCloud();
+            //virtual dataType translatePointCloud() = 0;
 
-            virtual derType matchPointCloud();
+            virtual dataType matchPointCloud() = 0;
 
-            virtual const float matchPointCloud(const pcl::PointXYZ& data
-                    , Eigen::Vector3f& res);
+            virtual const dataType matchPointCloud(const pcl::PointXYZ& data
+                                                , Eigen::Vector3f& res) = 0;
 
             virtual const dataType residual(dataIdxType const& dataIdx
-                                  , paraVectorType const& para);
-            virtual derVectorType residual_derivative(dataIdxType const& dataIdx
-                                                    , paraVectorType const &para);
+                                  , dataVectorType const& para) = 0;
+            virtual dataVectorType residual_derivative(dataIdxType const& dataIdx
+                                                    , dataVectorType const &para) = 0;
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
         private:
@@ -90,8 +93,8 @@ namespace cxy
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
-            dataVectorType dataIndx_;
-            pcl::KdTreeFLANN<PointT>::Ptr kdtreeptr_;
+            dataIdxVectorType dataIndxVector_;
+            pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
 
             // store matchPointCloud result
             std::vector<int> modelMatchIdx_;
