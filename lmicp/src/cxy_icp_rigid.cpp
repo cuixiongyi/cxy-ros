@@ -122,7 +122,7 @@ namespace cxy {
                 return sqrt(pointNKNSquaredDistance[0]);
             }
 
-        inline const Matrix34f cxy_icp_rigid::calculateJacobianKernel(const std::vector<float> para
+        const Matrix34f cxy_icp_rigid::calculateJacobianKernel(const std::vector<float> para
                                                                       , const pcl::PointXYZ& a)
         {
 

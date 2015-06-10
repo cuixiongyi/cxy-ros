@@ -13,10 +13,11 @@ namespace cxy {
 
             virtual float matchPointCloud();
 
-            virtual bool matchPointCloud();
             virtual const float matchPointCloud(const pcl::PointXYZ& data
                     , Eigen::Vector3f& res);
 
+            const Matrix34f calculateJacobianKernel(const std::vector<float> para
+                                                                          , const pcl::PointXYZ& a);
         };
     }
 }

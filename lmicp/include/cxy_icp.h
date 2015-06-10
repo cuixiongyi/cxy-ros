@@ -45,10 +45,10 @@ namespace cxy
         typedef Eigen::Vector3f             Vector3f;
         typedef Eigen::Matrix< float, 4, 4> Matrix44f;
 
-        typedef unsigned int dataIdxType
-        typedef float dataType
-        typedef std::vector<dataType> derVectorType
-        typedef std::vector<dataType> paraVectorType
+        typedef unsigned int dataIdxType;
+        typedef float dataType;
+        typedef std::vector<dataType> derVectorType;
+        typedef std::vector<dataType> paraVectorType;
 
 
         class cxy_icp {

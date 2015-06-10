@@ -24,7 +24,7 @@ namespace cxy {
         pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 
     }
-    ~cxy_icp::cxy_icp()
+    cxy_icp::~cxy_icp()
     {
         if (nullptr != func_)
             delete func_;
