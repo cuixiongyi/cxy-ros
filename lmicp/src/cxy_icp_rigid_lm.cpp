@@ -18,7 +18,6 @@ namespace cxy {
             dataCloud_ = data;
 
             ctrs::Pose guessTmp(0);
-            PointCloudPtr transDataCloud;
 
             ctrs::Pose pose_inc(0);
             ctrs::Pose pose_tmp(0);
@@ -38,9 +37,14 @@ publish(dataCloud_, pub_data_pointcloud_);
 publish(modelCloud_, pub_model_pointcloud_);
 
 
-dlib::solve_least_squares_lm(dlib::objective_delta_stop_strategy(1e-7).be_verbose()
-                            , residual
-                            , residual_derivative
+dlib::solve_least_squares_lm<dlib::objective_delta_stop_strategy
+                            , float
+                            , dataVectorType
+                            , dataIdxVectorType
+                            , dataVectorType>
+                            (dlib::objective_delta_stop_strategy(1e-7).be_verbose()
+                            , cxy_icp_rigid::residual
+                            , cxy_icp_rigid::residual_derivative
                             , idxVector
                             , para);
 

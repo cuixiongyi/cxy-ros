@@ -76,7 +76,7 @@ namespace cxy
             virtual const dataType matchPointCloud(const pcl::PointXYZ& data
                                                 , Eigen::Vector3f& res) = 0;
 
-            virtual const dataType residual(dataIdxType const& dataIdx
+            virtual  dataType residual(dataIdxType const& dataIdx
                                   , dataVectorType const& para) = 0;
             virtual dataVectorType residual_derivative(dataIdxType const& dataIdx
                                                     , dataVectorType const &para) = 0;

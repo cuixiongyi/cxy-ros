@@ -1,5 +1,6 @@
 #include "cxy_icp_rigid.h"
 #include "../include/cxy_transform.h"
+#include "../include/cxy_icp.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {
@@ -10,7 +11,7 @@ namespace cxy {
 
 
             }
-        const dataType cxy_icp_rigid::residual(const dataIdxType& dataIdx
+        dataType cxy_icp_rigid::residual(const dataIdxType& dataIdx
                                                , dataVectorType const& para)
         {
 
@@ -38,7 +39,7 @@ namespace cxy {
                             , transPoint));
             Eigen::Matrix<float, 1, 4> jq(r3.transpose()*jac34);
             //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
-            derVectorType derivative(7);
+            dataVectorType derivative(7);
             derivative[0] = r3(0);
             derivative[1] = r3(1);
             derivative[2] = r3(2);
