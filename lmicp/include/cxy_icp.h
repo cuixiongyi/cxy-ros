@@ -42,8 +42,14 @@ namespace cxy
         typedef Eigen::Matrix< float, 7, 1> Vector7f;
         typedef Eigen::Matrix< float, 6, 6> Matrix6f;
         typedef Eigen::Matrix< float, 6, 1> Vector6f;
-
+        typedef Eigen::Vector3f             Vector3f;
         typedef Eigen::Matrix< float, 4, 4> Matrix44f;
+
+        typedef unsigned int dataIdxType
+        typedef float dataType
+        typedef std::vector<dataType> derVectorType
+        typedef std::vector<dataType> paraVectorType
+
 
         class cxy_icp {
 
@@ -60,11 +66,17 @@ namespace cxy
 
             // match dataCloud_ and modelCloud_, store the result in member variables
             // should be override in rigid or articulate
-            virtual float matchPointCloud();
+            virtual float translatePointCloud();
 
-            const float matchPointCloud(const pcl::PointXYZ& data
+            virtual derType matchPointCloud();
+
+            virtual const float matchPointCloud(const pcl::PointXYZ& data
                     , Eigen::Vector3f& res);
 
+            virtual const dataType residual(dataIdxType const& dataIdx
+                                  , paraVectorType const& para);
+            virtual derVectorType residual_derivative(dataIdxType const& dataIdx
+                                                    , paraVectorType const &para);
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
         private:

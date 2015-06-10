@@ -9,6 +9,7 @@ namespace cxy {
         }
 
 
+
         float cxy_lmicp::icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose)
         {
             if ( ! hasSetModelCloud_)
