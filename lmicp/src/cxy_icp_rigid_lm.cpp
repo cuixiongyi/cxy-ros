@@ -10,32 +10,47 @@ namespace cxy {
         }
 
         dataType cxy_icp_rigid_lm::icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose)
-        {
-            if ( ! hasSetModelCloud_)
-            {
-                return -1.0;
-            }
-            dataCloud_ = data;
-
-            ctrs::Pose guessTmp(0);
-
-            ctrs::Pose pose_inc(0);
-            ctrs::Pose pose_tmp(0);
-
-    dataVectorType para(7);
-        std::vector<dataIdxType> idxVector;
-    idxVector.reserve(dataCloud_->size());
-        for (unsigned int ii = 0; ii < dataCloud_->size(); ii++)
     {
-    idxVector.push_back(ii);
+        if ( ! hasSetModelCloud_)
+    {
+        return -1.0;
     }
+    dataCloud_ = data;
+
+    ctrs::Pose guessTmp(0);
+
+    ctrs::Pose pose_inc(0);
+    ctrs::Pose pose_tmp(0);
+
+    dataVectorType            para(7);
+    std::vector <dataIdxType> idxVector;
+    idxVector.
+    reserve(dataCloud_
+    ->
+
+    size()
+
+    );
+    for (
+    unsigned int ii = 0;
+    ii<dataCloud_->
+
+    size();
+
+    ii++)
+{
+    idxVector.
+    push_back(ii);
+}
 para[3] = 1.0;
 para[4] = 0.0001;
 para[5] = 0.0001;
 para[6] = 0.0001;
-publish(dataCloud_, pub_data_pointcloud_);
-publish(modelCloud_, pub_model_pointcloud_);
-
+publish(dataCloud_, pub_data_pointcloud_
+);
+publish(modelCloud_, pub_model_pointcloud_
+);
+}
 
 dlib::solve_least_squares_lm<dlib::objective_delta_stop_strategy
                             , float

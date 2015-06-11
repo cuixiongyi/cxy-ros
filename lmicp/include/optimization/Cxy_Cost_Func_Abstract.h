@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Eigen/core.h"
 
 namespace cxy
 {
@@ -7,29 +8,31 @@ namespace cxy
     namespace cxy_optimization
     {
 
-        template<class Return, class Argument, class Parameter, class Derivative>
-        class Cxy_Cost_Func_Abstract
+        //: From Eigen unsupported/test/NonLinearOptimization.cpp
+        // The reason do not use class here is that the function is not attached to class
+        // So the function is not a member function, which can not be registered without knowing the class
+        template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
+        struct Cxy_Cost_Func_Abstract
         {
-        public:
+            typedef _Scalar Scalar;
+            enum {
+                InputsAtCompileTime = NX,
+                ValuesAtCompileTime = NY
+            };
+            typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
+            typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
+            typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
-            //: This cost function is inspired by dlib and vnl library
-            // The idea is to use Inheritance to pass the residual and derivative function
-            // The benefit is that member data could be used in the residual and derivative computation.
-            // Because there are case that addition information is needed, such as find a nearest neighbor
-            // Return is either float or double
-            // Argument is data point, such as pcl::PointXYZ
-            // Parameter is a list for parameters, such as std::vector<Return>
-            // Derivative is a list for derivative returned by function: residual_derivative, such as std::vector<Return>
-            virtual Return residual(Argument const& data, Parameter const& p) = 0;
+            const int m_inputs, m_values;
 
-            virtual Derivative residual_derivative(Argument const& data, Parameter const& p) = 0;
+            Cxy_Cost_Func_Abstract() : m_inputs(InputsAtCompileTime), m_values(ValuesAtCompileTime) {}
+            Cxy_Cost_Func_Abstract(int inputs, int values) : m_inputs(inputs), m_values(values) {}
 
-            virtual ~Cxy_Cost_Func_Abstract() {}
+            int inputs() const { return m_inputs; }
+            int values() const { return m_values; }
 
-        private:
-            virtual Cxy_Cost_Func_Abstract( const Cxy_Cost_Func_Abstract& other ) = delete;
-            virtual Cxy_Cost_Func_Abstract &operator=(const Cxy_Cost_Func_Abstract &) = delete;
-
+            // you should define that in the subclass :
+            //  void operator() (const InputType& x, ValueType* v, JacobianType* _j=0) const;
         };
 
     }
