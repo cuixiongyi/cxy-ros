@@ -31,8 +31,8 @@ namespace cxy
             Cxy_Cost_Func_Abstract() : nPara_(ParaAtCompileTime), nData_(DataAtCompileTime) {}
             Cxy_Cost_Func_Abstract(int inputs, int values) : nPara_(inputs), nData_(values) {}
 
-            constexpr int nPara() const { return nPara_; }
-            constexpr int nData() const { return nData_; }
+            constexpr int inputs() const { return nPara_; }
+            constexpr int values() const { return nData_; }
 
             // you should define that in the subclass :
             virtual int operator()(ParaType const& x, ResidualType& fvec) const = 0;
