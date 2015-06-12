@@ -19,9 +19,12 @@ namespace cxy
                 ValuesAtCompileTime = NY
             };
 
+            //: all of this is what you need in the derived function
+
             typedef Eigen::Matrix<_Scalar,InputsAtCompileTime,1> InputType;
             typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
             typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+
             Cxy_Cost_Func_Example(void): Cxy_Cost_Func_Abstract<_Scalar, NX, NY>(3,15) {}
             int operator()(InputType const& x, ValueType& fvec) const
             {

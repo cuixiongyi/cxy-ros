@@ -2,6 +2,7 @@
 
 #include "cxy_icp.h"
 #include "cxy_transform.h"
+#include "optimization/Cxy_Cost_Func_Abstract.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {

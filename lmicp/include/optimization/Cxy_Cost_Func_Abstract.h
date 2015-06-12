@@ -12,8 +12,7 @@ namespace cxy
         //: From Eigen unsupported/test/NonLinearOptimization.cpp
         // The reason do not use class here is that the function is not attached to class
         // So the function is not a member function, which can not be registered without knowing the class
-        // you should define that in the subclass :
-        //  void operator() (const InputType& x, ValueType* v, JacobianType* _j=0) const;
+        // what need to be done is in the Cxy_Cost_Func_Example.h
         //
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         class Cxy_Cost_Func_Abstract
