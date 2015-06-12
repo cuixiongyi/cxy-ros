@@ -2,7 +2,6 @@
 
 
 #include "Eigen/Core"
-
 namespace cxy
 {
 
@@ -19,23 +18,27 @@ namespace cxy
         {
         public:
             enum {
-                InputsAtCompileTime = NX,
-                ValuesAtCompileTime = NY
+                ParaAtCompileTime = NX,
+                DataAtCompileTime = NY
             };
-            typedef Eigen::Matrix<_Scalar,InputsAtCompileTime,1> InputType;
-            typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
-            typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+            typedef Eigen::Matrix<_Scalar,ParaAtCompileTime,1> ParaType;
+            typedef Eigen::Matrix<_Scalar,DataAtCompileTime,1> ResidualType;
+            typedef Eigen::Matrix<_Scalar,DataAtCompileTime,ParaAtCompileTime> JacobianType;
         public:
 
-             const int m_inputs, m_values;
+             const int nPara_, nData_;
 
-            Cxy_Cost_Func_Abstract() : m_inputs(InputsAtCompileTime), m_values(ValuesAtCompileTime) {}
-            Cxy_Cost_Func_Abstract(int inputs, int values) : m_inputs(inputs), m_values(values) {}
+            Cxy_Cost_Func_Abstract() : nPara_(ParaAtCompileTime), nData_(DataAtCompileTime) {}
+            Cxy_Cost_Func_Abstract(int inputs, int values) : nPara_(inputs), nData_(values) {}
 
-            constexpr int inputs() const { return m_inputs; }
-            constexpr int values() const { return m_values; }
+            constexpr int nPara() const { return nPara_; }
+            constexpr int nData() const { return nData_; }
 
             // you should define that in the subclass :
+            virtual int operator()(ParaType const& x, ResidualType& fvec) const = 0;
+            virtual int df(ParaType const& x, JacobianType& fjac) const = 0;
+
+
             //  void operator() (const InputType& x, ValueType* v, JacobianType* _j=0) const;
         };
 

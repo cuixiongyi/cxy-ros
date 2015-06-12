@@ -23,6 +23,8 @@
 
 #include "ros/ros.h"
 #include "cxy_transform.h"
+#include "optimization/Cxy_Cost_Func_Abstract.h"
+#include "auto_ptr.h"
 //#include <vnl/vnl_vector.h>
 //#include <vnl/vnl_matrix.h>
 
@@ -31,28 +33,29 @@ namespace cxy
     namespace cxy_lmicp_lib
     {
         namespace ctrs = cxy_transform;
-        typedef pcl::PointXYZ PointT;
-        typedef pcl::PointCloud<PointT>    PointCloud;
-        typedef pcl::PointCloud<PointT>::Ptr    PointCloudPtr;
-        typedef pcl::PointCloud<PointT>::ConstPtr    PointCloudConstPtr;
-        typedef Eigen::Matrix< float, 3, 4> Matrix34f;
-        typedef Eigen::Matrix< float, 3, 7> Matrix37f;
-        typedef Eigen::Matrix< float, Eigen::Dynamic, 7> MatrixX7f;
-        typedef Eigen::Matrix< float, 7, 7> Matrix7f;
-        typedef Eigen::Matrix< float, 7, 1> Vector7f;
-        typedef Eigen::Matrix< float, 6, 6> Matrix6f;
-        typedef Eigen::Matrix< float, 6, 1> Vector6f;
-        typedef Eigen::Vector3f             Vector3f;
-        typedef Eigen::Matrix< float, 4, 4> Matrix44f;
-
-        typedef unsigned int dataIdxType;
-        typedef std::vector<unsigned int> dataIdxVectorType;
-        typedef float dataType;
-        typedef std::vector<dataType> dataVectorType;
 
 
+
+        template<typename _Scalar>
         class cxy_icp {
+            typedef pcl::PointXYZ PointT;
+            typedef pcl::PointCloud<PointT>    PointCloud;
+            typedef pcl::PointCloud<PointT>::Ptr    PointCloudPtr;
+            typedef pcl::PointCloud<PointT>::ConstPtr    PointCloudConstPtr;
+            typedef Eigen::Matrix< _Scalar, 3, 4> Matrix34f;
+            typedef Eigen::Matrix< _Scalar, 3, 7> Matrix37f;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 7> MatrixX7f;
+            typedef Eigen::Matrix< _Scalar, 7, 7> Matrix7f;
+            typedef Eigen::Matrix< _Scalar, 7, 1> Vector7f;
+            typedef Eigen::Matrix< _Scalar, 6, 6> Matrix6f;
+            typedef Eigen::Matrix< _Scalar, 6, 1> Vector6f;
+            typedef Eigen::Vector3f             Vector3f;
+            typedef Eigen::Matrix< _Scalar, 4, 4> Matrix44f;
 
+            typedef unsigned int dataIdxType;
+            typedef std::vector<unsigned int> dataIdxVectorType;
+            typedef _Scalar dataType;
+            typedef std::vector<dataType> dataVectorType;
 
         public:
             cxy_icp();
@@ -65,21 +68,27 @@ namespace cxy
 
         protected:
 
-            virtual dataType icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose) = 0;
+            // There are 3 layers of minimization class
+            // The 1st layer is the cxy_icp, is abstract, should not be changed
+            // 2nd layer is cxy_icp_rigid, deal with cost function
+            // 3rd layer is cxy_icp_rigid_lm, deal with minimization interface
 
+            //: This function belong to 1st layer
+            dataType icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose) = 0;
+
+            //: This function belong to 2nd layer, initialize specific cost function
+            virtual int icp_prepare_cost_function();
+
+            //: This function belong to 3rd layer, using optimization interface
+            virtual int icp_minimization();
+
+            std::auto_ptr<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar> > func_;
             // match dataCloud_ and modelCloud_, store the result in member variables
             // should be override in rigid or articulate
             //virtual dataType translatePointCloud() = 0;
 
-            virtual dataType matchPointCloud() = 0;
 
-            virtual const dataType matchPointCloud(const pcl::PointXYZ& data
-                                                , Eigen::Vector3f& res) = 0;
 
-            virtual  dataType residual(dataIdxType const& dataIdx
-                                  , dataVectorType const& para) = 0;
-            virtual dataVectorType residual_derivative(dataIdxType const& dataIdx
-                                                    , dataVectorType const &para) = 0;
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
         private:
@@ -99,7 +108,6 @@ namespace cxy
             // store matchPointCloud result
             std::vector<int> modelMatchIdx_;
             std::vector<float> matchDistance_;
-            std::vector<int> dataMatchIdx_;
             std::vector<Eigen::Vector3f> residual_;
 
 
