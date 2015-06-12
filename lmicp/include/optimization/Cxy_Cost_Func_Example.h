@@ -2,7 +2,7 @@
 
 #include "Cxy_Cost_Func_Abstract.h"
 #include <vector>
-#include "Eigen/core.h"
+#include "Eigen/Core"
 
 namespace cxy
 {
@@ -11,17 +11,25 @@ namespace cxy
     {
         //: From Eigen unsupported/test/NonLinearOptimization.cpp
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
-        struct Cxy_Cost_Func_Example : Cxy_Cost_Func_Abstract< _Scalar, NX, NY>
-
+        class Cxy_Cost_Func_Example : public Cxy_Cost_Func_Abstract< _Scalar, NX, NY>
         {
-            Cxy_Cost_Func_Example(void): Cxy_Cost_Func_Abstract<_Scalar>(3,15) {}
-            int operator()(const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+        public:
+            enum {
+                InputsAtCompileTime = NX,
+                ValuesAtCompileTime = NY
+            };
+
+            typedef Eigen::Matrix<_Scalar,InputsAtCompileTime,1> InputType;
+            typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
+            typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+            Cxy_Cost_Func_Example(void): Cxy_Cost_Func_Abstract<_Scalar, NX, NY>(3,15) {}
+            int operator()(InputType const& x, ValueType& fvec) const
             {
-                double tmp1, tmp2, tmp3;
-                static const double y[15] = {1.4e-1, 1.8e-1, 2.2e-1, 2.5e-1, 2.9e-1, 3.2e-1, 3.5e-1,
+                _Scalar tmp1, tmp2, tmp3;
+                static const _Scalar y[15] = {1.4e-1, 1.8e-1, 2.2e-1, 2.5e-1, 2.9e-1, 3.2e-1, 3.5e-1,
                                              3.9e-1, 3.7e-1, 5.8e-1, 7.3e-1, 9.6e-1, 1.34, 2.1, 4.39};
 
-                for (int i = 0; i < values(); i++)
+                for (int i = 0; i < this->values(); i++)
                 {
                     tmp1 = i+1;
                     tmp2 = 16 - i - 1;
@@ -31,10 +39,10 @@ namespace cxy
                 return 0;
             }
 
-            int df(const Eigen::VectorXd &x, Eigen::MatrixXd &fjac) const
+            int df(InputType const& x, JacobianType& fjac) const
             {
-                double tmp1, tmp2, tmp3, tmp4;
-                for (int i = 0; i < values(); i++)
+                _Scalar tmp1, tmp2, tmp3, tmp4;
+                for (int i = 0; i < this->values(); i++)
                 {
                     tmp1 = i+1;
                     tmp2 = 16 - i - 1;

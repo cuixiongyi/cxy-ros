@@ -2,7 +2,7 @@
 
 namespace cxy {
     namespace cxy_lmicp_lib {
-
+/*
         cxy_icp_rigid_lm::cxy_icp_rigid_lm() : cxy_icp_rigid()
         {
             ;
@@ -94,5 +94,6 @@ void cxy_icp_rigid_lm::publish(const PointCloudConstPtr& data, const ros::Publis
     pub.publish(cloud_msg);
     return;
 }
+ */
     }
 }

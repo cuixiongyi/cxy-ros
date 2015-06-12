@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cxy_icp_rigid.h"
-#include <dlib/optimization.h>
 
 namespace cxy {
     namespace cxy_lmicp_lib {

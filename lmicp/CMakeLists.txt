@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         pcl_ros
                                         )
 
-include(/home/xiongyi/Downloads/lib/dlib-18.16/dlib/cmake)
+#include(/home/xiongyi/Downloads/lib/dlib-18.16/dlib/cmake)
 
 # CMakeList for dlib
 # ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
@@ -40,7 +40,7 @@ add_library(lmicp_lib
              src/cxy_icp_rigid.cpp
               src/cxy_icp_rigid_lm.cpp)
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} dlib)
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)
 
 
 catkin_package(
