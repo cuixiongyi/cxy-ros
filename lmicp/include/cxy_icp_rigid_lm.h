@@ -2,6 +2,7 @@
 
 #include "cxy_icp_rigid.h"
 #include <unsupported/Eigen/NonLinearOptimization>
+#include "optimization/cxy_nonlinear_minimizer_LM.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {

@@ -23,7 +23,7 @@
 
 #include "ros/ros.h"
 #include "cxy_transform.h"
-#include "optimization/Cxy_Cost_Func_Abstract.h"
+#include "optimization/cxy_cost_func_abstract.h"
 #include "auto_ptr.h"
 //#include <vnl/vnl_vector.h>
 //#include <vnl/vnl_matrix.h>

@@ -36,7 +36,9 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #
 add_library(lmicp_lib 
                 src/cxy_transform.cpp
-                include/optimization/Cxy_Cost_Func_Abstract.h
+                include/optimization/cxy_cost_func_abstract.h
+                include/optimization/cxy_nonlinear_minimizer.h
+                include/optimization/cxy_nonlinear_minimizer_LM.h
              src/cxy_icp.cpp include/cxy_icp.h
              src/cxy_icp_rigid.cpp include/cxy_icp_rigid.h
               src/cxy_icp_rigid_lm.cpp include/cxy_icp_rigid_lm.h

@@ -1,4 +1,4 @@
-#include "optimization/Cxy_Cost_Func_Example.h"
+#include "optimization/cxy_cost_func_example.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
     
-    data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
+    data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
     if (1)
     {
-      model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+      model = loadPlyFile("/home/xiongyi/repo/bun045.ply");
     }
     else
     {

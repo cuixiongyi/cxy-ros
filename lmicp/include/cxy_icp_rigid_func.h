@@ -1,5 +1,5 @@
 #pragma once
-#include "optimization/Cxy_Cost_Func_Abstract.h"
+#include "optimization/cxy_cost_func_abstract.h"
 #include "cxy_transform.h"
 
 #include <Eigen/Core>
@@ -50,8 +50,8 @@ namespace cxy
                                                    , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                                                    , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr);
 
-                int operator()(ParaType & x, ResidualType& fvec) const;
-                int df(ParaType & x, JacobianType& fjac) const;
+                _Scalar operator()(ParaType & x, ResidualType& fvec) const;
+                _Scalar df(ParaType & x, JacobianType& fjac) const;
                 const Eigen::Matrix< _Scalar, 3, 4> calculateJacobianKernel(const std::vector<_Scalar> &para
                                                         , const pcl::PointXYZ& a) const;
 
