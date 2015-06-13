@@ -63,6 +63,11 @@ namespace cxy
 
             // should be override in rigid or articulate
             bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
+            inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
+            {
+                hasSetDataCloud_ = true;
+                dataCloud_ = data;
+            }
 
 
             // There are 3 layers of minimization class
@@ -71,13 +76,13 @@ namespace cxy
             // 3rd layer is cxy_icp_rigid_lm, deal with minimization interface
 
             //: This function belong to 1st layer
-            _Scalar icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose) = 0;
+            _Scalar icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x);
 
             //: This function belong to 2nd layer, initialize specific cost function
             virtual int icp_prepare_cost_function() = 0;
 
             //: This function belong to 3rd layer, using optimization interface
-            virtual int icp_minimization() = 0;
+            virtual _Scalar icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x) = 0;
 
             // match dataCloud_ and modelCloud_, store the result in member variables
             // should be override in rigid or articulate
@@ -95,8 +100,8 @@ namespace cxy
             ros::NodeHandle nh_, pnh_;
             double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
 
-            bool hasSetModelCloud_;
-            std::auto_ptr<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar> > func_;
+            bool hasSetModelCloud_, hasSetDataCloud_;
+            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>*  func_;
 
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
@@ -112,4 +117,6 @@ namespace cxy
         };
     }
 }
+template class cxy::cxy_lmicp_lib::cxy_icp<float>;
+template class cxy::cxy_lmicp_lib::cxy_icp<double>;
 #endif //PROJECT_LMICP_CXY_ICP_H

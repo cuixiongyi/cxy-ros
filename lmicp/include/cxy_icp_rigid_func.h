@@ -1,5 +1,6 @@
 #pragma once
 #include "optimization/Cxy_Cost_Func_Abstract.h"
+#include "cxy_transform.h"
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -18,6 +19,7 @@ namespace cxy
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         class cxy_icp_rigid_func : public cxy_optimization::Cxy_Cost_Func_Abstract< _Scalar, NX, NY>
         {
+
             typedef pcl::PointXYZ PointT;
             typedef pcl::PointCloud<PointT>    PointCloud;
             typedef pcl::PointCloud<PointT>::Ptr    PointCloudPtr;
@@ -50,9 +52,11 @@ namespace cxy
 
                 int operator()(ParaType const& x, ResidualType& fvec) const;
                 int df(ParaType const& x, JacobianType& fjac) const;
-                const Matrix34f calculateJacobianKernel(const std::vector<float> &para
-                                                        , const pcl::PointXYZ& a);
+                const Eigen::Matrix< _Scalar, 3, 4> calculateJacobianKernel(const std::vector<_Scalar> &para
+                                                        , const pcl::PointXYZ& a) const;
 
+                const _Scalar matchPointCloud(const PointT& data
+                                                   , Eigen::Matrix< _Scalar, 3, 1>& res) const;
 
             private:
                 pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
@@ -61,5 +65,7 @@ namespace cxy
 
         };
     }
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid_func<float>;
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid_func<double>;
 
 }

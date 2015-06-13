@@ -10,7 +10,9 @@ namespace cxy {
 
         template<typename _Scalar>
         cxy_icp<_Scalar>::cxy_icp() :  hasSetModelCloud_(false)
+                                      , hasSetDataCloud_(false)
                             , pnh_("~")
+                            , func_(nullptr)
         {
             /*
             pnh_.param<int>("max_iterations", max_iterations_, 1000);
@@ -28,6 +30,8 @@ namespace cxy {
         template<typename _Scalar>
         cxy_icp<_Scalar>::~cxy_icp()
         {
+            if (func_ != nullptr)
+                delete func_;
         }
 
         template<typename _Scalar>
@@ -49,17 +53,18 @@ namespace cxy {
 
         }
         template<typename _Scalar>
-        _Scalar cxy_icp<_Scalar>::icp_run(pcl::PointCloud<pcl::PointXYZ>::Ptr data, cxy_transform::Pose &outPose)
+        _Scalar cxy_icp<_Scalar>::icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
-            if ( ! hasSetModelCloud_)
+            if ( ! hasSetModelCloud_ || ! hasSetDataCloud_)
             {
                 return -1.0;
             }
             icp_prepare_cost_function();
-            icp_minimization();
+            _Scalar result = icp_minimization(x);
 
             publish(dataCloud_, pub_data_pointcloud_);
             publish(modelCloud_, pub_model_pointcloud_);
+            return result;
         }
         template<typename _Scalar>
         void cxy_icp<_Scalar>::publish(const PointCloudConstPtr& data, const ros::Publisher& pub)

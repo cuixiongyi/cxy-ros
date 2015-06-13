@@ -10,9 +10,12 @@ namespace cxy {
         }
 
         template<typename _Scalar>
-        int cxy_icp_rigid_lm<_Scalar>::icp_minimization()
+        _Scalar cxy_icp_rigid_lm<_Scalar>::icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
-            ;
+
+            Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
+
+            return lm.lmder1(x);
 
         }
 

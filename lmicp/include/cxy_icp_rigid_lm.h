@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cxy_icp_rigid.h"
+#include <unsupported/Eigen/NonLinearOptimization>
 
 namespace cxy {
     namespace cxy_lmicp_lib {
@@ -14,7 +15,8 @@ namespace cxy {
 
 
         public:
-            virtual int icp_minimization();
+            _Scalar icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x);
+
             cxy_icp_rigid_lm();
 
 
@@ -22,3 +24,5 @@ namespace cxy {
         };
     }
 }
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid_lm<float>;
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid_lm<double>;

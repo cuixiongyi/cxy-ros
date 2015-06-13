@@ -12,8 +12,8 @@ namespace cxy {
         template<typename _Scalar>
         int cxy_icp_rigid<_Scalar>::icp_prepare_cost_function()
         {
-
-            this->func_ = std::make_shared<cxy_icp_rigid_func<_Scalar>>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
+            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_rigid_func<_Scalar>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
+            this->func_ = tmp;
         }
 
     }

@@ -4,7 +4,8 @@ namespace cxy
 {
     namespace cxy_lmicp_lib
     {
-        cxy_icp_rigid_func::cxy_icp_rigid_func(pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud
+        template<typename _Scalar, int NX, int NY>
+        cxy_icp_rigid_func<_Scalar,NX,NY>::cxy_icp_rigid_func(pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud
                                                , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                                                , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr)
                 : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, NX, NY>(7, dataCloud->size())
@@ -14,22 +15,23 @@ namespace cxy
             kdtreeptr_ = kdtreeptr;
         }
 
-        int cxy_icp_rigid_func::operator()(ParaType const &x, ResidualType &fvec) const
+        template<typename _Scalar, int NX, int NY>
+        int cxy_icp_rigid_func<_Scalar,NX,NY>::operator()(ParaType const &x, ResidualType &fvec) const
         {
             std::vector<_Scalar> vPara(7);
-            vPara[0] = fvec(0);
-            vPara[1] = fvec(1);
-            vPara[2] = fvec(2);
-            vPara[3] = fvec(3);
-            vPara[4] = fvec(4);
-            vPara[5] = fvec(5);
-            vPara[6] = fvec(6);
+            vPara[0] = x(0);
+            vPara[1] = x(1);
+            vPara[2] = x(2);
+            vPara[3] = x(3);
+            vPara[4] = x(4);
+            vPara[5] = x(5);
+            vPara[6] = x(6);
 
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
                 pcl::PointXYZ transPoint;
                 cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
-                Vector3 r3;
+                Eigen::Matrix< _Scalar, 3, 1> r3;
                 fvec(ii, 0) = matchPointCloud(transPoint, r3);
 
             }
@@ -37,34 +39,35 @@ namespace cxy
             return 1;
         }
 
-        int cxy_icp_rigid_func::df(ParaType const &x, JacobianType &fjac) const
+        template<typename _Scalar, int NX, int NY>
+        int cxy_icp_rigid_func<_Scalar,NX,NY>::df(ParaType const &x, JacobianType &fjac) const
         {
             std::vector<_Scalar> vPara(7);
-            vPara[0] = fvec(0);
-            vPara[1] = fvec(1);
-            vPara[2] = fvec(2);
-            vPara[3] = fvec(3);
-            vPara[4] = fvec(4);
-            vPara[5] = fvec(5);
-            vPara[6] = fvec(6);
+            vPara[0] = x(0);
+            vPara[1] = x(1);
+            vPara[2] = x(2);
+            vPara[3] = x(3);
+            vPara[4] = x(4);
+            vPara[5] = x(5);
+            vPara[6] = x(6);
 
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
                 pcl::PointXYZ transPoint;
                 cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
-                Vector3 r3;
+                Eigen::Matrix< _Scalar, 3, 1> r3;
                 matchPointCloud(transPoint, r3);
                 Matrix34f jac34(calculateJacobianKernel(vPara
                         , transPoint));
                 Eigen::Matrix<_Scalar, 1, 4> jq(r3.transpose()*jac34);
                 //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
-                JacobianType(ii, 0) = r3(0);
-                JacobianType(ii, 1) = r3(0);
-                JacobianType(ii, 2) = r3(0);
-                JacobianType(ii, 3) = jq(0);
-                JacobianType(ii, 4) = jq(1);
-                JacobianType(ii, 5) = jq(2);
-                JacobianType(ii, 6) = jq(3);
+                fjac(ii, 0) = r3(0, 0);
+                fjac(ii, 1) = r3(1, 0);
+                fjac(ii, 2) = r3(2, 0);
+                fjac(ii, 3) = jq(0, 0);
+                fjac(ii, 4) = jq(0, 1);
+                fjac(ii, 5) = jq(0, 2);
+                fjac(ii, 6) = jq(0, 3);
 
             }
 
@@ -72,12 +75,13 @@ namespace cxy
             return 1;
         }
 
-        const _Scalar cxy_icp_rigid_func::matchPointCloud(const PointT& data
-                                                   , Vector3& res)
+        template<typename _Scalar, int NX, int NY>
+        const _Scalar cxy_icp_rigid_func<_Scalar,NX,NY>::matchPointCloud(const PointT& data
+                                                   , Eigen::Matrix< _Scalar, 3, 1>& res) const
         {
             static const int K(1);
             std::vector<int> pointIdxNKNSearch(K);
-            std::vector<_Scalar> pointNKNSquaredDistance(K);
+            std::vector<float> pointNKNSquaredDistance(K);
             /// kdtreeptr_ is updated by setModelCloud
             if (nullptr == kdtreeptr_)
                 ROS_INFO("nullptr kdtree");
@@ -86,10 +90,11 @@ namespace cxy
             {
                 return std::nanf("");
             }
-            if (pointNKNSquaredDistance[0] > max_correspondence_dist_square_)
+            /*if (pointNKNSquaredDistance[0] > max_correspondence_dist_square_)
             {
                 return std::nanf("");
             }
+            */
             /// Use Euclidean distance
             const pcl::PointXYZ& pTmp((*modelCloud_)[pointIdxNKNSearch[0]]);
             ROS_INFO_STREAM("closet point = "<<pTmp.x<<" "<<pTmp.y<<" "<<pTmp.z);
@@ -104,8 +109,9 @@ namespace cxy
         }
 
 
-        const Matrix34f cxy_icp_rigid_func::calculateJacobianKernel(const std::vector<_Scalar> &para
-                                                               , const pcl::PointXYZ& a)
+        template<typename _Scalar, int NX, int NY>
+        const Eigen::Matrix< _Scalar, 3, 4> cxy_icp_rigid_func<_Scalar,NX,NY>::calculateJacobianKernel(const std::vector<_Scalar> &para
+                                                               , const pcl::PointXYZ& a) const
         {
 
             Eigen::Quaternionf q(para[3], para[4], para[5], para[6]);
@@ -116,7 +122,7 @@ namespace cxy
                     , (2*a.x*q.z() - 2*a.z*q.x()) , (2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x()) , (2*a.x*q.x() + 2*a.z*q.z())                 ,( 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y())
                     , (2*a.y*q.x() - 2*a.x*q.y()) , (2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x()) , (2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y()) , (2*a.x*q.x() + 2*a.y*q.y());
 
-            Eigen:Matrix44f normalJaco44;
+            Matrix44f normalJaco44;
             normalJaco44.setZero();
             normalJaco44 << q.x()*q.x()+q.y()*q.y()+q.z()*q.z(), -q.w()*q.x(), -q.w()*q.y(), -q.w()*q.z(),
                     -q.x()*q.w(), q.w()*q.w()+q.y()*q.y()+q.z()*q.z(), -q.x()*q.y(), -q.x()*q.z(),

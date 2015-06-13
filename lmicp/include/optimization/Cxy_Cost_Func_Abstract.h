@@ -45,3 +45,6 @@ namespace cxy
 
     }
 }
+template class cxy::cxy_optimization::Cxy_Cost_Func_Abstract<float>;
+template class cxy::cxy_optimization::Cxy_Cost_Func_Abstract<double>;
+
