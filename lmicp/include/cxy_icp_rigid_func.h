@@ -65,7 +65,5 @@ namespace cxy
 
         };
     }
-template class cxy::cxy_lmicp_lib::cxy_icp_rigid_func<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_rigid_func<double>;
 
 }

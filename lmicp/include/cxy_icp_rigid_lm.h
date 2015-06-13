@@ -24,5 +24,3 @@ namespace cxy {
         };
     }
 }
-template class cxy::cxy_lmicp_lib::cxy_icp_rigid_lm<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_rigid_lm<double>;

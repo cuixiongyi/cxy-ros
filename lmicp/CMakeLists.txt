@@ -38,9 +38,9 @@ add_library(lmicp_lib
                 src/cxy_transform.cpp
                 include/optimization/Cxy_Cost_Func_Abstract.h
              src/cxy_icp.cpp include/cxy_icp.h
-             src/cxy_icp_rigid.cpp
-              src/cxy_icp_rigid_lm.cpp
-              src/cxy_icp_rigid_func.cpp)
+             src/cxy_icp_rigid.cpp include/cxy_icp_rigid.h
+              src/cxy_icp_rigid_lm.cpp include/cxy_icp_rigid_lm.h
+              src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
 target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)
 

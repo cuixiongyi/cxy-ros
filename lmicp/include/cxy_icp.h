@@ -1,9 +1,7 @@
 //
 // Created by xiongyi on 6/7/15.
 //
-
-#ifndef PROJECT_LMICP_CXY_ICP_H
-#define PROJECT_LMICP_CXY_ICP_H
+#pragma once
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -117,6 +115,4 @@ namespace cxy
         };
     }
 }
-template class cxy::cxy_lmicp_lib::cxy_icp<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp<double>;
-#endif //PROJECT_LMICP_CXY_ICP_H
+

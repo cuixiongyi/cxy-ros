@@ -18,3 +18,7 @@ namespace cxy {
 
     }
 }
+
+
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid<float>;
+template class cxy::cxy_lmicp_lib::cxy_icp_rigid<double>;
