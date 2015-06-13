@@ -50,8 +50,8 @@ namespace cxy
                                                    , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                                                    , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr);
 
-                int operator()(ParaType const& x, ResidualType& fvec) const;
-                int df(ParaType const& x, JacobianType& fjac) const;
+                int operator()(ParaType & x, ResidualType& fvec) const;
+                int df(ParaType & x, JacobianType& fjac) const;
                 const Eigen::Matrix< _Scalar, 3, 4> calculateJacobianKernel(const std::vector<_Scalar> &para
                                                         , const pcl::PointXYZ& a) const;
 

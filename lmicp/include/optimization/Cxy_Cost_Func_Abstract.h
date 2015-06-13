@@ -35,8 +35,8 @@ namespace cxy
             constexpr int values() const { return nData_; }
 
             // you should define that in the subclass :
-            virtual int operator()(ParaType const& x, ResidualType& fvec) const = 0;
-            virtual int df(ParaType const& x, JacobianType& fjac) const = 0;
+            virtual int operator()(ParaType & x, ResidualType& fvec) const = 0;
+            virtual int df(ParaType & x, JacobianType& fjac) const = 0;
 
 
             //  void operator() (const InputType& x, ValueType* v, JacobianType* _j=0) const;

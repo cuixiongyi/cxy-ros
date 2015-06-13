@@ -16,8 +16,9 @@ namespace cxy
         }
 
         template<typename _Scalar, int NX, int NY>
-        int cxy_icp_rigid_func<_Scalar,NX,NY>::operator()(ParaType const &x, ResidualType &fvec) const
+        int cxy_icp_rigid_func<_Scalar,NX,NY>::operator()(ParaType  &x, ResidualType &fvec) const
         {
+            static int ac = 0;
             std::vector<_Scalar> vPara(7);
             vPara[0] = x(0);
             vPara[1] = x(1);
@@ -26,21 +27,28 @@ namespace cxy
             vPara[4] = x(4);
             vPara[5] = x(5);
             vPara[6] = x(6);
-
+            std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
+            double res(0.0);
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
                 pcl::PointXYZ transPoint;
                 cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
                 Eigen::Matrix< _Scalar, 3, 1> r3;
-                fvec(ii, 0) = matchPointCloud(transPoint, r3);
+                fvec[ii] = matchPointCloud(transPoint, r3);
+                res += fvec[ii] / this->values();
 
             }
+            ROS_INFO_STREAM("Call f the "<<ac++<<" time. Residual =  "<< res);
 
+            x[3] = vPara[3];
+            x[4] = vPara[4];
+            x[5] = vPara[5];
+            x[6] = vPara[6];
             return 1;
         }
 
         template<typename _Scalar, int NX, int NY>
-        int cxy_icp_rigid_func<_Scalar,NX,NY>::df(ParaType const &x, JacobianType &fjac) const
+        int cxy_icp_rigid_func<_Scalar,NX,NY>::df(ParaType  &x, JacobianType &fjac) const
         {
             std::vector<_Scalar> vPara(7);
             vPara[0] = x(0);
@@ -68,9 +76,15 @@ namespace cxy
                 fjac(ii, 4) = jq(0, 1);
                 fjac(ii, 5) = jq(0, 2);
                 fjac(ii, 6) = jq(0, 3);
-
+                if (ii == 500)
+                    {
+                        //std::cout<<r3(0, 0)<<"  "<<r3(1, 0)<<"  "<<r3(1, 0)<<"  "<<jq(0, 0)<<"  "<<jq(1, 0)<<"  "<<jq(2, 0)<<"  "<<jq(3, 0)<<std::endl;
+                    }
             }
-
+            x[3] = vPara[3];
+            x[4] = vPara[4];
+            x[5] = vPara[5];
+            x[6] = vPara[6];
 
             return 1;
         }
@@ -90,6 +104,7 @@ namespace cxy
             {
                 return std::nanf("");
             }
+
             /*if (pointNKNSquaredDistance[0] > max_correspondence_dist_square_)
             {
                 return std::nanf("");
@@ -97,7 +112,7 @@ namespace cxy
             */
             /// Use Euclidean distance
             const pcl::PointXYZ& pTmp((*modelCloud_)[pointIdxNKNSearch[0]]);
-            ROS_INFO_STREAM("closet point = "<<pTmp.x<<" "<<pTmp.y<<" "<<pTmp.z);
+            //ROS_INFO_STREAM("closet point = "<<pTmp.x<<" "<<pTmp.y<<" "<<pTmp.z);
             //ROS_INFO_STREAM(" ");
             res(0) = pTmp.x - data.x;
             res(1) = pTmp.y - data.y;

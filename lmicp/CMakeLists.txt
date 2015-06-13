@@ -6,7 +6,7 @@ endif()
 project(project_lmicp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS}")
-
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
