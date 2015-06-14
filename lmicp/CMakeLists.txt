@@ -6,7 +6,7 @@ endif()
 project(project_lmicp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS}")
-
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
@@ -23,7 +23,11 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         pcl_ros
                                         )
 
+#include(/home/xiongyi/Downloads/lib/dlib-18.16/dlib/cmake)
 
+# CMakeList for dlib
+# ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
+# TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
 include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
 
@@ -32,9 +36,15 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #
 add_library(lmicp_lib 
                 src/cxy_transform.cpp
-             )
+                include/optimization/cxy_cost_func_abstract.h
+                include/optimization/cxy_nonlinear_minimizer.h
+                include/optimization/cxy_nonlinear_minimizer_LM.h
+             src/cxy_icp.cpp include/cxy_icp.h
+             src/cxy_icp_rigid.cpp include/cxy_icp_rigid.h
+              src/cxy_icp_rigid_lm.cpp include/cxy_icp_rigid_lm.h
+              src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
-           target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES})
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)
 
 
 catkin_package(
@@ -45,4 +55,6 @@ catkin_package(
 )
 
 add_executable(lmicp_exe src/lmicp.cpp)
-target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib) 
+add_executable(main_exe src/main.cpp)
+target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
