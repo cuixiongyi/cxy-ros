@@ -73,20 +73,21 @@ namespace cxy
                 if (ii == 700)
                 {
                     //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
-                    std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
-                    std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
+                    //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+                    //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
                 }
                 Eigen::Matrix<_Scalar, 1, 4> jq(r3.transpose()*jac34);
                 //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
-                fjac(ii, 0) = r3(0, 0);
-                fjac(ii, 1) = r3(1, 0);
-                fjac(ii, 2) = r3(2, 0);
+                fjac(ii, 0) = r3(0);
+                fjac(ii, 1) = r3(1);
+                fjac(ii, 2) = r3(2);
                 fjac(ii, 3) = jq(0);
                 fjac(ii, 4) = jq(1);
                 fjac(ii, 5) = jq(2);
                 fjac(ii, 6) = jq(3);
                     
-                    //std::cout<<ii<<" = "<<r3(0, 0)<<"  "<<r3(1, 0)<<"  "<<r3(2, 0)<<"  "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
+                if (ii == 700)
+                    std::cout<<ii<<" = "<<r3(0)<<"  "<<r3(1)<<"  "<<r3(2)<<"  "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
                     
             }
             x[3] = vPara[3];
@@ -128,7 +129,7 @@ namespace cxy
             //int signTmp = 1;//(res(0)+res(1)+res(2)) > 0 ? 1 : -1;
             //ROS_INFO_STREAM(rtmp);
 
-            return sqrt(pointNKNSquaredDistance[0]);
+            return std::sqrt(pointNKNSquaredDistance[0]);
         }
 
 

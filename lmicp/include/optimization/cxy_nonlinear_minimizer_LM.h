@@ -32,7 +32,7 @@ namespace cxy {
             {
                 const int iter = 5;
                 Scalar lambda(0.0);
-                ROS_INFO_STREAM("x1 = "<<x.rows()<<std::endl<<x);
+                //ROS_INFO_STREAM("x1 = "<<x.rows()<<std::endl<<x);
                 
                 /* code */
                 JacobianType jacTjac(this->nPara_, this->nPara_);
@@ -75,7 +75,7 @@ namespace cxy {
                     //ROS_INFO_STREAM(jac_left);
                     result_Pose = jac_left * jac_right;
                     //ROS_INFO_STREAM("result_Pose   "<<result_Pose);
-                    result_Pose = x - result_Pose;
+                    result_Pose = x + result_Pose;
 
                     Scalar tmp (this->func_(result_Pose, this->rf));
 
@@ -91,11 +91,11 @@ namespace cxy {
                     jac_left = jac_left.inverse();
                     //ROS_INFO_STREAM(jac_left);
                     result_Pose = jac_left * jac_right;
-                    CXY_ASSERT(result_Pose.rows() == this->nPara_);
-                    assert(x.rows() != this->nPara_);
-                    ROS_INFO_STREAM(x);
-                    ROS_INFO_STREAM(result_Pose);
-                    x = x - result_Pose;
+                    //CXY_ASSERT(result_Pose.rows() == this->nPara_);
+                    //assert(x.rows() != this->nPara_);
+                    //ROS_INFO_STREAM("x = "<<x);
+                    ROS_INFO_STREAM("result = "<<result_Pose);
+                    x = x + result_Pose;
 
 
                 ROS_INFO_STREAM("lambda = "<<lambdaTmp<< "  Res =  "<< resdiual);

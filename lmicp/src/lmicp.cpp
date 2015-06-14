@@ -167,11 +167,13 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
             {
                 //std::cout<<ii<<" = "<<(*data)[ii].x<<"  "<<(*data)[ii].y<<"  "<<(*data)[ii].z<<std::endl;
                 //std::cout<<ii<<" = "<<residual[ii](0)<<"  "<<residual[ii](1)<<"  "<<residual[ii](2)<<std::endl;
-                std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+                //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
             }
 
             E::Matrix<float, 1, 4> jq(residual[ii].transpose()*jac34);
             rowJ<<residual[ii](0), residual[ii](1), residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
+            if (ii == 700)
+                std::cout<<ii<<" = "<<rowJ<<std::endl;
 	    rowJ = rowJ*2;
             jacTjac += rowJ.transpose()*rowJ;
             // JT*e
