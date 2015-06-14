@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     //std::ifstream fin_mod("bun090.ply");
     
     data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
-    if (1)
+    if (0)
     {
       model = loadPlyFile("/home/xiongyi/repo/bun045.ply");
     }
@@ -51,11 +51,11 @@ int main(int argc, char *argv[])
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       /* the following starting values provide a rough fit. */
       x.resize(7);
-      x.setConstant(n, 0.);
+      x.setZero();
       x(3) = 1.0;
-      x(4) = 0.0001;
-      x(5) = 0.0001;
-      x(6) = 0.0001;
+      x(4) = 0.01;
+      x(5) = 0.01;
+      x(6) = 0.01;
 
       // do the computation
       cxy_lmicp_lib::cxy_icp_rigid_lm<float> lmicp;

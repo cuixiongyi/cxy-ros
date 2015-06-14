@@ -1,6 +1,7 @@
 #pragma once
 #include "Eigen/Core"
 #include "cxy_nonlinear_minimizer.h"
+#include "cxy_debug.h"
 
 namespace cxy {
     namespace cxy_optimization {
@@ -31,15 +32,13 @@ namespace cxy {
             {
                 const int iter = 5;
                 Scalar lambda(0.0);
+                ROS_INFO_STREAM("x1 = "<<x.rows()<<std::endl<<x);
                 
                 /* code */
-                //MatrixX7f jacTjac(7, 7);
-                JacobianType jacTjac;
-                //Matrix7f jacTjac(7, 7);
-                JacobianType jac_right;
-                JacobianType jac_left;
-                JacobianType j_dia;
-                j_dia.resize(this->nPara_, this->nPara_);
+                JacobianType jacTjac(this->nPara_, this->nPara_);
+                JacobianType jac_right(this->nPara_, 1);
+                JacobianType jac_left(this->nPara_, this->nPara_);
+                JacobianType j_dia(this->nPara_, this->nPara_);
 
                 jacTjac.setZero();
                 jac_right.setZero();
@@ -48,13 +47,15 @@ namespace cxy {
 
                 this->func_(x, this->rf);
                 this->func_.df(x, this->jf);
-                jacTjac = this->jf.transpose()*this->jf;
 
+                jacTjac = this->jf.transpose()*this->jf;
                 for (int i = 0; i < this->nData_; ++i)
                 {
                     Scalar& r = this->rf(i); 
                     this->rf(i) = r < sigma_ ? r*r : 2*sigma_*std::abs(r)-sigma_*sigma_;
                 }
+                jac_right = this->jf.transpose()*this->rf;
+
                 for (int ii = 0; ii < this->nPara_; ++ii)
                 {
 
@@ -63,30 +64,41 @@ namespace cxy {
                 }
                 Scalar resdiual(std::numeric_limits<Scalar>::max());
                 Scalar lambdaTmp;
+                FVectorType result_Pose(this->nPara_, 1);
                 for (int i = 0; i < iter; ++i)
                 {
-                    FVectorType result_Pose;
+                    result_Pose.setZero();
                     lambda += Scalar(1.0) / iter;
-                    jac_left = jacTjac+lambda*j_dia;
+                    jac_left = -(jacTjac+lambda*j_dia);
                     //ROS_INFO_STREAM(jac_left);
                     jac_left = jac_left.inverse();
                     //ROS_INFO_STREAM(jac_left);
                     result_Pose = jac_left * jac_right;
-                    result_Pose += x;
+                    //ROS_INFO_STREAM("result_Pose   "<<result_Pose);
+                    result_Pose = x - result_Pose;
+
                     Scalar tmp (this->func_(result_Pose, this->rf));
+
                     if (resdiual > tmp)
                     {
                         resdiual = tmp;
                         lambdaTmp = lambda;
                     }
+                }
+
                     jac_left = jacTjac+lambdaTmp*j_dia;
                     //ROS_INFO_STREAM(jac_left);
                     jac_left = jac_left.inverse();
                     //ROS_INFO_STREAM(jac_left);
-                    x += jac_left * jac_right;
+                    result_Pose = jac_left * jac_right;
+                    CXY_ASSERT(result_Pose.rows() == this->nPara_);
+                    assert(x.rows() != this->nPara_);
+                    ROS_INFO_STREAM(x);
+                    ROS_INFO_STREAM(result_Pose);
+                    x = x - result_Pose;
 
-                }
-                ROS_INFO_STREAM("lambda = "<<lambdaTmp);
+
+                ROS_INFO_STREAM("lambda = "<<lambdaTmp<< "  Res =  "<< resdiual);
                 return resdiual;
             }
 

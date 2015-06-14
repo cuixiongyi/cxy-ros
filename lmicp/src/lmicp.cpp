@@ -114,6 +114,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
             tmp_inc.q().x() = pose_inc.q().x()+tmp_inc.q().x();
             tmp_inc.q().y() = pose_inc.q().y()+tmp_inc.q().y();
             tmp_inc.q().z() = pose_inc.q().z()+tmp_inc.q().z();
+            ROS_INFO_STREAM("Quaterniond = "<<tmp_inc.q().w()<<"  "<<tmp_inc.q().x()<<"  "<<tmp_inc.q().y()<<"  "<<tmp_inc.q().z());
             tmp_inc.normalize();
             
             pose_inc = tmp_inc;
@@ -157,10 +158,18 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
             //rowJ <<(2*d.x - 2*m.x), (2*d.y - 2*m.y), (2*d.z - 2*m.z), 0, (4*d.y*(d.z - m.z) - 4*d.z*(d.y - m.y)), (4*d.z*(d.x - m.x) - 4*d.x*(d.z - m.z)), (4*d.x*(d.y - m.y) - 4*d.y*(d.x - m.x));
             //rowJ <<(2*d.x - 2*m.x), (2*d.y - 2*m.y), (2*d.z - 2*m.z), (4*d.y*(d.z - m.z) - 4*d.z*(d.y - m.y)), (4*d.z*(d.x - m.x) - 4*d.x*(d.z - m.z)), (4*d.x*(d.y - m.y) - 4*d.y*(d.x - m.x));
             //ROS_INFO_STREAM_ONCE(rowJ);
+            
 
             Matrix34f jac34(calculateJacobianKernel(pose_k
                                                     , residual[ii]
                                                     , d));
+            if (ii == 700)
+            {
+                //std::cout<<ii<<" = "<<(*data)[ii].x<<"  "<<(*data)[ii].y<<"  "<<(*data)[ii].z<<std::endl;
+                //std::cout<<ii<<" = "<<residual[ii](0)<<"  "<<residual[ii](1)<<"  "<<residual[ii](2)<<std::endl;
+                std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+            }
+
             E::Matrix<float, 1, 4> jq(residual[ii].transpose()*jac34);
             rowJ<<residual[ii](0), residual[ii](1), residual[ii](2),  jq(0), jq(1), jq(2), jq(3);
 	    rowJ = rowJ*2;
@@ -171,6 +180,8 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
 	    //ROS_INFO_STREAM(r);
 	    double e = r < sigma ? r*r : 2*sigma*std::abs(r)-sigma*sigma;
             jac_right += rowJ.transpose()*e;
+        //std::cout<<ii<<" = "<<rowJ(0)<<"  "<<rowJ(1)<<"  "<<rowJ(2)<<"  "<<rowJ(3)<<"  "<<rowJ(4)<<"  "<<rowJ(5)<<"  "<<rowJ(6)<<std::endl;
+
         }
         //jacTjac = jac.transpose() * jac;
         //jacTjac
@@ -184,12 +195,12 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
 
         }
         jac_left = -(jacTjac+lambda*j_dia);
-        ROS_INFO_STREAM(jac_left);
+        //ROS_INFO_STREAM(jac_left);
         jac_left = jac_left.inverse();
-        ROS_INFO_STREAM(jac_left);
+        //ROS_INFO_STREAM(jac_left);
         result_Pose = jac_left * jac_right;
         
-        ROS_INFO_STREAM(result_Pose);
+        //ROS_INFO_STREAM(result_Pose);
         //result_Pose = jac_left.inverse()*jac.transpose()*res_tmp;
 	//result_Pose = -result_Pose;
         pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
@@ -888,10 +899,10 @@ int main(int argc, char *argv[])
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
     
-    data = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun000.ply");
-    if (1)
+    data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
+    if (0)
     {
-	model = loadPlyFile("/home/xiongyi/cxy_workspace/src/cxyros/perception_model_based_detection/model/bun045.ply");
+	model = loadPlyFile("/home/xiongyi/repo/bun045.ply");
     }
     else
     {

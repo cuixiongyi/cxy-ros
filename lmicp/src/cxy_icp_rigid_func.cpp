@@ -19,6 +19,7 @@ namespace cxy
         _Scalar cxy_icp_rigid_func<_Scalar,NX,NY>::operator()(ParaType  &x, ResidualType &fvec) const
         {
             static int ac = 0;
+            //ROS_INFO_STREAM("Call f the 1   "<<++ac);
             std::vector<_Scalar> vPara(7);
             vPara[0] = x(0);
             vPara[1] = x(1);
@@ -27,6 +28,7 @@ namespace cxy
             vPara[4] = x(4);
             vPara[5] = x(5);
             vPara[6] = x(6);
+            //ROS_INFO_STREAM("Call f the 2   "<<ac);
             std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
             _Scalar res(0.0);
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
@@ -38,7 +40,7 @@ namespace cxy
                 res += fvec[ii] / this->values();
 
             }
-            ROS_INFO_STREAM("Call f the "<<ac++<<" time. Residual =  "<< res);
+            //ROS_INFO_STREAM("Call f the 3    "<<ac<<" time. Residual =  "<< res);
 
             x[3] = vPara[3];
             x[4] = vPara[4];
@@ -65,21 +67,27 @@ namespace cxy
                 cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
                 Eigen::Matrix< _Scalar, 3, 1> r3;
                 matchPointCloud(transPoint, r3);
+                
                 Matrix34f jac34(calculateJacobianKernel(vPara
-                        , transPoint));
+                                                        , (*dataCloud_)[ii]));
+                if (ii == 700)
+                {
+                    //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
+                    std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+                    std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
+                }
                 Eigen::Matrix<_Scalar, 1, 4> jq(r3.transpose()*jac34);
                 //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
                 fjac(ii, 0) = r3(0, 0);
                 fjac(ii, 1) = r3(1, 0);
                 fjac(ii, 2) = r3(2, 0);
-                fjac(ii, 3) = jq(0, 0);
-                fjac(ii, 4) = jq(0, 1);
-                fjac(ii, 5) = jq(0, 2);
-                fjac(ii, 6) = jq(0, 3);
-                if (ii == 500)
-                    {
-                        //std::cout<<r3(0, 0)<<"  "<<r3(1, 0)<<"  "<<r3(1, 0)<<"  "<<jq(0, 0)<<"  "<<jq(1, 0)<<"  "<<jq(2, 0)<<"  "<<jq(3, 0)<<std::endl;
-                    }
+                fjac(ii, 3) = jq(0);
+                fjac(ii, 4) = jq(1);
+                fjac(ii, 5) = jq(2);
+                fjac(ii, 6) = jq(3);
+                    
+                    //std::cout<<ii<<" = "<<r3(0, 0)<<"  "<<r3(1, 0)<<"  "<<r3(2, 0)<<"  "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
+                    
             }
             x[3] = vPara[3];
             x[4] = vPara[4];
@@ -150,6 +158,7 @@ namespace cxy
              [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
              [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
              */
+
             return jacQuat*normalJaco44;
         }
     }
