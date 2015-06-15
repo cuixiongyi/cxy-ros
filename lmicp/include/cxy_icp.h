@@ -36,7 +36,7 @@ namespace cxy
 
 
 
-        template<typename _Scalar>
+        template<typename _Scalar, int _MinimizerType>
         class cxy_icp {
             typedef pcl::PointXYZ PointT;
             typedef pcl::PointCloud<PointT>    PointCloud;
@@ -54,13 +54,39 @@ namespace cxy
 
 
         public:
-            cxy_icp();
+            cxy_icp() :  hasSetModelCloud_(false)
+                        , hasSetDataCloud_(false)
+                        , func_(nullptr)
+            {
 
-            ~cxy_icp();
+            }
+
+            ~cxy_icp()
+            {
+                if (func_ != nullptr)
+                delete func_;
+            }
 
 
             // should be override in rigid or articulate
-            bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
+            bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model)
+            {
+                if (nullptr == model || model->size() < 10)
+                {
+                    return false;
+                }
+                hasSetModelCloud_ = true;
+                //pcl::PointCloud<pcl::PointXYZ>::Ptr tmp = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(*model);
+                //translateToCenter(tmp);
+                //modelCloud_ = tmp;
+                modelCloud_ = model;
+
+                kdtreeptr_ = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
+                kdtreeptr_->setInputCloud(modelCloud_);
+                return true;
+
+            }
+
             inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
             {
                 hasSetDataCloud_ = true;
@@ -74,7 +100,19 @@ namespace cxy
             // 3rd layer is cxy_icp_rigid_lm, deal with minimization interface
 
             //: This function belong to 1st layer
-            _Scalar icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x);
+            _Scalar icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
+            {
+                if ( ! hasSetModelCloud_ || ! hasSetDataCloud_)
+                {
+                    return -1.0;
+                }
+                icp_prepare_cost_function();
+                _Scalar result = icp_minimization(x);
+
+                
+                return result;
+            }
+
 
             //: This function belong to 2nd layer, initialize specific cost function
             virtual int icp_prepare_cost_function() = 0;
@@ -91,11 +129,10 @@ namespace cxy
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
         private:
-            void publish(const PointCloudConstPtr& data, const ros::Publisher& pub);
+            
 
         protected:
-            ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
-            ros::NodeHandle nh_, pnh_;
+            
             double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
 
             bool hasSetModelCloud_, hasSetDataCloud_;

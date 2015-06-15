@@ -2,7 +2,7 @@
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
-#include "cxy_icp_rigid_lm.h"
+#include "cxy_icp_rigid.h"
 //#include "main.h"
 
 using namespace  cxy;
@@ -16,6 +16,8 @@ typedef pcl::PointXYZ PointT;
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 
+void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub);
+
 int main(int argc, char *argv[])
 {
       int n = 3, info;
@@ -24,6 +26,13 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr data(new pcl::PointCloud<PointT>);
     pcl::PointCloud<PointT>::Ptr model(new pcl::PointCloud<PointT>);
 
+ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
+            ros::NodeHandle nh_, pnh_;
+
+            pub_model_ = nh_.advertise<visualization_msgs::MarkerArray>("model", 5);
+            pub_data_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("data_pointcloud", 5);
+            pub_model_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("model_pointcloud", 5);
+            pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 /*
     pcl::PolygonMesh mesh;
     pcl::io::loadPolygonFile("bun045.ply",mesh);
@@ -58,10 +67,12 @@ int main(int argc, char *argv[])
       x(6) = 0.01;
 
       // do the computation
-      cxy_lmicp_lib::cxy_icp_rigid_lm<float> lmicp;
+      cxy_lmicp_lib::cxy_icp_rigid<float, 2> lmicp;
       lmicp.setModelCloud(model);
       lmicp.setDataCloud(data);
       lmicp.icp_run(x);
+      publish(data, pub_data_pointcloud_);
+      publish(model, pub_model_pointcloud_);
 
       std::cout<<x<<std::endl;
 }
@@ -110,3 +121,17 @@ pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name)
     }
     return pointcloud;
 }
+
+void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub)
+        {
+            sensor_msgs::PointCloud2    cloud_msg;
+            //ROS_INFO_STREAM(data->size());
+            pcl::toROSMsg(*data, cloud_msg);
+            cloud_msg.header.frame_id = "icp";
+            cloud_msg.header.stamp = ros::Time::now();
+
+            //pub_depth = nhTmpe.advertise<sensor_msgs::PointCloud2>("depth_point_cloud_visualservo", 2);
+            pub.publish(cloud_msg);
+            return;
+        }
+

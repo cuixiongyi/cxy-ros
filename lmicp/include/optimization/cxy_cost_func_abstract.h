@@ -8,6 +8,7 @@ namespace cxy
     namespace cxy_optimization
     {
 
+        
         //: From Eigen unsupported/test/NonLinearOptimization.cpp
         // The reason do not use class here is that the function is not attached to class
         // So the function is not a member function, which can not be registered without knowing the class

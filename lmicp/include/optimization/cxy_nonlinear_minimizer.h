@@ -3,6 +3,15 @@
 
 namespace cxy {
     namespace cxy_optimization {
+        enum cxy_nonlinear_method : int
+        {
+            CXY_LEVENBERG_MARQUARDT = 1,
+            EIGEN_MINPACK           = 2,
+        };
+        enum minimizer_state : int
+        {
+            NotStarted = -1,
+        };
         //: The function type FunctorType need have 4 functions implemented
         // operator(), fd(), inputs(), values()
         // more details in the file cxy_cost_func_example.h
@@ -11,10 +20,7 @@ namespace cxy {
         {
             typedef Eigen::Matrix< Scalar, Eigen::Dynamic, 1 > FVectorType;
             typedef Eigen::Matrix< Scalar, Eigen::Dynamic, Eigen::Dynamic > JacobianType;
-            enum class minimizer_state : int
-            {
-                NotStarted = -1,
-            };
+            
         protected:
             FunctorType& func_;
             const unsigned int nPara_;
