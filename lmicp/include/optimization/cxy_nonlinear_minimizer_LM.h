@@ -30,7 +30,7 @@ namespace cxy {
 
             virtual Scalar minimizeOneStep(FVectorType& x)
             {
-                const int iter = 5;
+                const int iter = 2;
                 Scalar lambda(0.0);
                 //ROS_INFO_STREAM("x1 = "<<x.rows()<<std::endl<<x);
                 
@@ -78,6 +78,7 @@ namespace cxy {
                     result_Pose = x + result_Pose;
 
                     Scalar tmp (this->func_(result_Pose, this->rf));
+                    ROS_INFO_STREAM("result = "<<tmp);
 
                     if (resdiual > tmp)
                     {
@@ -94,7 +95,8 @@ namespace cxy {
                     //CXY_ASSERT(result_Pose.rows() == this->nPara_);
                     //assert(x.rows() != this->nPara_);
                     //ROS_INFO_STREAM("x = "<<x);
-                    ROS_INFO_STREAM("result = "<<result_Pose);
+                    ROS_INFO_STREAM("resultFinal = "<<resdiual);
+                    ROS_INFO_STREAM("  ");
                     x = x + result_Pose;
 
 
@@ -112,6 +114,7 @@ namespace cxy {
                     resdiual = minimizeOneStep(x);
                     if (resdiualLast - resdiual < stop)
                         break;
+                    resdiualLast = resdiual;
                 }   
                 return resdiual;             
             }

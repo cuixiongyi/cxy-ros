@@ -13,10 +13,12 @@ namespace cxy {
         _Scalar cxy_icp_rigid_lm<_Scalar>::icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
 
-            cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
+            //cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
+            //return lm.minimize(x);
 
-            return lm.minimize(x);
+            Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
 
+            lm.lmder1(x);
         }
 
 

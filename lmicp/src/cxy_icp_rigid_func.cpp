@@ -29,7 +29,7 @@ namespace cxy
             vPara[5] = x(5);
             vPara[6] = x(6);
             //ROS_INFO_STREAM("Call f the 2   "<<ac);
-            std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
+            //std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
             _Scalar res(0.0);
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
@@ -46,6 +46,7 @@ namespace cxy
             x[4] = vPara[4];
             x[5] = vPara[5];
             x[6] = vPara[6];
+            ROS_INFO_STREAM("Residual =  "<<res);
             return res;
         }
 

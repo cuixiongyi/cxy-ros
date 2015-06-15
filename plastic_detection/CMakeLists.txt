@@ -33,7 +33,7 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #target_link_libraries(plastic_detection_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
 catkin_package(
-   INCLUDE_DIRS include
+   #INCLUDE_DIRS include
    LIBRARIES plastic_detection
    CATKIN_DEPENDS roscpp std_msgs   
    DEPENDS opencv 
