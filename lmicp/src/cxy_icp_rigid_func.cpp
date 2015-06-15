@@ -34,7 +34,7 @@ namespace cxy
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
                 pcl::PointXYZ transPoint;
-                cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
+                cxy_transform::Pose<_Scalar>::composePoint((*dataCloud_)[ii], transPoint, vPara);
                 Eigen::Matrix< _Scalar, 3, 1> r3;
                 fvec[ii] = matchPointCloud(transPoint, r3);
                 res += fvec[ii] / this->values();
@@ -65,7 +65,7 @@ namespace cxy
             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
             {
                 pcl::PointXYZ transPoint;
-                cxy_transform::Pose::composePoint((*dataCloud_)[ii], transPoint, vPara);
+                cxy_transform::Pose<_Scalar>::composePoint((*dataCloud_)[ii], transPoint, vPara);
                 Eigen::Matrix< _Scalar, 3, 1> r3;
                 matchPointCloud(transPoint, r3);
                 
