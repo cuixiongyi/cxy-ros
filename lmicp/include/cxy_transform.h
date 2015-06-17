@@ -8,8 +8,9 @@
 #include "pcl/point_types.h"
 
 #include "ros/ros.h"
+#include <cstdint>
 
-
+#include "common/cxy_common.h"
 namespace cxy
 {
 namespace cxy_transform
@@ -20,20 +21,48 @@ namespace cxy_transform
 	{
 		typedef Eigen::Matrix<_Scalar, 3, 1> Vector;
 		typedef Eigen::Quaternion<_Scalar> Quaternoin;
-
+		enum Axis : uint8_t
+		{
+			X_axis = 1,
+			Y_axis = 2,
+			Z_axis = 3,
+		};
 	private:
 		Eigen::Quaternion<_Scalar> q_;
 		Eigen::Matrix<_Scalar, 3, 1>  t_;
-		bool bhasChanged_;
+		bool bhasNormalized_;
 	public:
 		// constructor with nan asigned
-		Pose() : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasChanged_(true) {}
+		Pose() : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasNormalized_(false) {}
 
 		// constructor with Identity asigned 
 		// a doesn't matter
-		Pose(int a) : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasChanged_(true) {}
+		Pose(int a) : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasNormalized_(false) {}
 
 		~Pose() {};
+
+		//: The inpute takes the rotating axis and the angle in degree
+		void rotateByAxis(Axis axis, _Scalar const& degree)
+		{
+			_Scalar radian = CXY_PI * degree / _Scalar(180.0);
+			_Scalar x = std::sin( radian / _Scalar(2.0) );
+			_Scalar w = std::cos( radian / _Scalar(2.0) );
+			Quaternoin q1(q_);
+			Quaternoin q2(w, 0, 0, 0);
+			switch (axis)
+			{
+				case X_axis : q2.x() = x; break;
+				case Y_axis : q2.y() = x; break;
+				case Z_axis : q2.z() = x; break;
+			}
+			q1.normalize();
+			q2.normalize();
+			q_.w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
+			q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
+			q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
+			q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
+
+		}
 		static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<_Scalar> & para)
 		{
 			Vector in(in_p.x, in_p.y, in_p.z) ,out;
@@ -56,9 +85,9 @@ namespace cxy_transform
 		}
 		void composePoint(const Vector& in_p, Vector &out_p)
 		{
-			if (bhasChanged_)
+			if ( ! bhasNormalized_)
 			{
-				q_.normalize();
+				normalize();
 			}
 			out_p(0) = in_p(0)+t_(0) + 2*(-(q_.y()*q_.y()+q_.z()*q_.z())*in_p(0) + (q_.x()*q_.y()-q_.w()*q_.z())*in_p(1) + (q_.w()*q_.y()+q_.x()*q_.z())*in_p(2));
 			out_p(1) = in_p(1)+t_(1) + 2*((q_.w()*q_.z()+q_.x()*q_.y())*in_p(0) - (q_.x()*q_.x()+q_.z()*q_.z())*in_p(1) + (q_.y()*q_.z()-q_.w()*q_.x())*in_p(2));
@@ -107,6 +136,11 @@ namespace cxy_transform
 
 		void inverseComposePoint(const Vector& in_p, Vector &out_p)
 		{
+			if ( ! bhasNormalized_)
+			{
+				normalize();
+
+			}
 			double xtmp((in_p(0)-t_(0)));
 			double ytmp((in_p(1)-t_(1)));
 			double ztmp((in_p(2)-t_(2)));
@@ -119,20 +153,24 @@ namespace cxy_transform
 		// p = p1*p2 == p1.composePose(p2, p)
 		void composePose(const Pose& in_pose, Pose &out_p)
 		{
+			if ( ! in_pose.bhasNormalized_)
+			{
+				in_pose.normalize();
+			}
 			composePoint(in_pose.t_, out_p.t_);
-			const Eigen::Quaterniond& q1(q_);
-			const Eigen::Quaterniond& q2(in_pose.q_);
+			const Quaternoin& q1(q_);
+			const Quaternoin& q2(in_pose.q_);
 			out_p.q_.w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
 			out_p.q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 			out_p.q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
 			out_p.q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
 			return;
 		}
-		inline void normalize() {q_.normalize(); return;}
+		inline void normalize() { bhasNormalized_ = true; q_.normalize(); return;}
 		inline const Vector& t() const {return t_;};
 		inline Vector& t() {return t_;};
 		inline const Quaternoin& q() const {return q_;};
-		inline Quaternoin& q() {return q_;};
+		inline Quaternoin& q() { bhasNormalized_ = false; return q_;};
 	};
 }
 }
