@@ -4,6 +4,7 @@
 #include <iostream>
 #include "cxy_icp_rigid.h"
 #include "cxy_transform.h"
+#include "cxy_icp_arti.h"
 //#include "main.h"
 
 using namespace  cxy;
@@ -73,7 +74,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       x(1) = 0.01;
 
       // do the computation
-      cxy_lmicp_lib::cxy_icp_rigid<float, 2> lmicp;
+      cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;
       lmicp.setModelCloud(data);
       //lmicp.icp_run(x);
       char c;
@@ -91,14 +92,18 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
         if ('t' == c)
         {
           pose.composePoint(data, transPoint);
+          publish(data, pub_data_pointcloud_);
+          publish(transPoint, pub_model_pointcloud_);
         }
         if ('r' == c)
         {
           lmicp.setDataCloud(transPoint);
           lmicp.icp_run(x);
-          cxy_transform::Pose<float> pose;
+          cxy_transform::Pose<float> pose2;
+          pose2.q().w() = x(0);
+          pose2.q().x() = x(1);
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-          pose.composePoint(transPoint, resultPoint);
+          pose2.composePoint(transPoint, resultPoint);
           publish(data, pub_data_pointcloud_);
           publish(resultPoint, pub_model_pointcloud_);
         }

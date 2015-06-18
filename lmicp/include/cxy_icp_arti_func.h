@@ -61,7 +61,7 @@ namespace cxy
                 {
                     static int ac = 0;
                     //ROS_INFO_STREAM("Call f the 1   "<<++ac);
-                    std::vector<_Scalar> vPara(1);
+                    std::vector<_Scalar> vPara(7);
                     vPara[0] = 0.0;
                     vPara[1] = .0;
                     vPara[2] = .0;
@@ -91,7 +91,7 @@ namespace cxy
 
                 _Scalar df(ParaType & x, JacobianType& fjac) const
                 {
-                    std::vector<_Scalar> vPara(2);
+                    std::vector<_Scalar> vPara(7);
                     vPara[0] = 0.0;
                     vPara[1] = .0;
                     vPara[2] = .0;
@@ -117,8 +117,7 @@ namespace cxy
                         pcl::PointXYZ transPoint;
                         cxy_transform::Pose<_Scalar>::composePoint((*dataCloud_)[ii], transPoint, vPara);
                         Eigen::Matrix< _Scalar, 3, 1> r3;
-                        fvec[ii] = matchPointCloud(transPoint, r3);
-                        res += fvec[ii] / this->values();
+                        matchPointCloud(transPoint, r3);
 
                         Matrix34f jac34(calculateJacobianKernel(vPara
                                                                 , (*dataCloud_)[ii]));
@@ -148,7 +147,7 @@ namespace cxy
                     
                     return 1;
                 }
-                template<typename _Scalar, int NX, int NY>
+
                 const _Scalar matchPointCloud(const PointT& data
                                                , Eigen::Matrix< _Scalar, 3, 1>& res) const
                 {
@@ -183,7 +182,6 @@ namespace cxy
                 }
 
 
-                template<typename _Scalar, int NX, int NY>
                 const Eigen::Matrix< _Scalar, 3, 4> calculateJacobianKernel(const std::vector<_Scalar> &para
                                                                            , const pcl::PointXYZ& a) const
                 {
