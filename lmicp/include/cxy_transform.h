@@ -16,17 +16,19 @@ namespace cxy
 namespace cxy_transform
 {
 
-    template <typename _Scalar>
-	class Pose
-	{
-		typedef Eigen::Matrix<_Scalar, 3, 1> Vector;
-		typedef Eigen::Quaternion<_Scalar> Quaternoin;
-		enum Axis : uint8_t
+enum Axis : uint8_t
 		{
 			X_axis = 1,
 			Y_axis = 2,
 			Z_axis = 3,
 		};
+		
+    template <typename _Scalar>
+	class Pose
+	{
+		typedef Eigen::Matrix<_Scalar, 3, 1> Vector;
+		typedef Eigen::Quaternion<_Scalar> Quaternoin;
+		
 	private:
 		Eigen::Quaternion<_Scalar> q_;
 		Eigen::Matrix<_Scalar, 3, 1>  t_;

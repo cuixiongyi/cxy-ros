@@ -3,6 +3,7 @@
 #include "Eigen/Core"
 #include <iostream>
 #include "cxy_icp_rigid.h"
+#include "cxy_transform.h"
 //#include "main.h"
 
 using namespace  cxy;
@@ -59,20 +60,53 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       /* the following starting values provide a rough fit. */
-      x.resize(7);
+      /*x.resize(7);
       x.setZero();
       x(3) = 1.0;
       x(4) = 0.01;
       x(5) = 0.01;
-      x(6) = 0.01;
+      x(6) = 0.01;*/
+
+      x.resize(2);
+      x.setZero();
+      x(0) = 1.0;
+      x(1) = 0.01;
 
       // do the computation
       cxy_lmicp_lib::cxy_icp_rigid<float, 2> lmicp;
-      lmicp.setModelCloud(model);
-      lmicp.setDataCloud(data);
-      lmicp.icp_run(x);
-      publish(data, pub_data_pointcloud_);
-      publish(model, pub_model_pointcloud_);
+      lmicp.setModelCloud(data);
+      //lmicp.icp_run(x);
+      char c;
+      pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
+
+      cxy_transform::Pose<float> pose;
+      pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+
+      cxy_transform::Pose<float> t1_0;
+      while (1)
+      {
+        std::cin>>c;
+        if ('b' == c)
+          break;
+        if ('t' == c)
+        {
+          pose.composePoint(data, transPoint);
+        }
+        if ('r' == c)
+        {
+          lmicp.setDataCloud(transPoint);
+          lmicp.icp_run(x);
+          cxy_transform::Pose<float> pose;
+          pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+          pose.composePoint(transPoint, resultPoint);
+          publish(data, pub_data_pointcloud_);
+          publish(resultPoint, pub_model_pointcloud_);
+        }
+
+        
+      }
+
+      
 
       std::cout<<x<<std::endl;
 }
@@ -135,3 +169,22 @@ void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub
             return;
         }
 
+
+
+// test rotateByAxis
+/*
+char c;
+      cxy_transform::Pose<float> pose;
+      while (1)
+      {
+        std::cin>>c;
+        if ('n' == c)
+            break;
+        pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+        pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
+        pose.composePoint(data, transPoint);
+
+        publish(data, pub_data_pointcloud_);
+        publish(transPoint, pub_model_pointcloud_);
+      }
+*/
