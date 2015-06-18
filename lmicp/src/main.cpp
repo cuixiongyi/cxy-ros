@@ -60,13 +60,14 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
 
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
+      Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
       /* the following starting values provide a rough fit. */
-      /*x.resize(7);
-      x.setZero();
-      x(3) = 1.0;
-      x(4) = 0.01;
-      x(5) = 0.01;
-      x(6) = 0.01;*/
+      x2.resize(7);
+      x2.setZero();
+      x2(3) = 1.0;
+      x2(4) = 0.01;
+      x2(5) = 0.01;
+      x2(6) = 0.01;
 
       x.resize(2);
       x.setZero();
@@ -74,8 +75,10 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       x(1) = 0.01;
 
       // do the computation
-      cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;
+      cxy_lmicp_lib::cxy_icp_arti<float, 1> lmicp;
+      cxy_lmicp_lib::cxy_icp_rigid<float, 1> lmicp2;
       lmicp.setModelCloud(data);
+      lmicp2.setModelCloud(data);
       //lmicp.icp_run(x);
       char c;
       pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
@@ -83,6 +86,9 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       cxy_transform::Pose<float> pose;
       pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
 
+      pose.composePoint(data, transPoint);
+      lmicp.setDataCloud(transPoint);
+      lmicp2.setDataCloud(transPoint);
       cxy_transform::Pose<float> t1_0;
       while (1)
       {
@@ -92,23 +98,52 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
         if ('t' == c)
         {
           pose.composePoint(data, transPoint);
+          std::cout<<"true = "<<pose.q().w()<<"  "<<pose.q().x()<<std::endl;
           publish(data, pub_data_pointcloud_);
           publish(transPoint, pub_model_pointcloud_);
+          continue;
         }
         if ('r' == c)
         {
-          lmicp.setDataCloud(transPoint);
           lmicp.icp_run(x);
           cxy_transform::Pose<float> pose2;
           pose2.q().w() = x(0);
           pose2.q().x() = x(1);
+          std::cout<<"result = "<<x(0)<<"  "<<x(1)<<std::endl;
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
           pose2.composePoint(transPoint, resultPoint);
           publish(data, pub_data_pointcloud_);
           publish(resultPoint, pub_model_pointcloud_);
+          continue;
         }
-
+        if ('l' == c)
+        {
+          lmicp2.icp_run(x2);
+          cxy_transform::Pose<float> pose2;
+          pose2.q().w() = x2(3);
+          pose2.q().x() = x2(4);
+          pose2.q().y() = x2(5);
+          pose2.q().z() = x2(6);
+          pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+          pose2.composePoint(transPoint, resultPoint);
+          std::cout<<"result = "<<x2(0)<<"  "<<x2(1)<<"  "<<x2(2)<<"  "<<x2(3)<<"  "<<x2(4)<<"  "<<x2(5)<<"  "<<x2(6)<<std::endl;
+          publish(data, pub_data_pointcloud_);
+          publish(resultPoint, pub_model_pointcloud_);
+          continue;
+        }
         
+        float in;
+        cxy_transform::Pose<float> pose2;
+        std::cin>>in;
+          pose2.q().w() = in;
+        std::cin>>in;
+          pose2.q().x() = in;
+          pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+          pose2.composePoint(transPoint, resultPoint);
+          std::cout<<"result = "<<pose2.q().w()<<"  "<<pose2.q().x()<<std::endl;
+          publish(data, pub_data_pointcloud_);
+          publish(resultPoint, pub_model_pointcloud_);
+
       }
 
       

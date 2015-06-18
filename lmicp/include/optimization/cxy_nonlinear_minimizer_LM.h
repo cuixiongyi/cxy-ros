@@ -19,10 +19,12 @@ namespace cxy {
             };
         private:
             const Scalar sigma_;
+            int iter_;
         public:
             cxy_nonlinear_minimizer_LM(FunctorType &_functor)
                 : cxy_nonlinear_minimizer<FunctorType, Scalar>(_functor)
-                 , sigma_(0.02)
+                 , sigma_(0.05)
+                 , iter_(0)
                 {
                     this->rf.resize(this->nData_, 1);
                     this->jf.resize(this->nData_, this->nPara_);
@@ -30,7 +32,8 @@ namespace cxy {
 
             virtual Scalar minimizeOneStep(FVectorType& x)
             {
-                const int iter = 2;
+
+                const int iter = 3;
                 Scalar lambda(0.0);
                 //ROS_INFO_STREAM("x1 = "<<x.rows()<<std::endl<<x);
                 
@@ -101,6 +104,7 @@ namespace cxy {
 
 
                 ROS_INFO_STREAM("lambda = "<<lambdaTmp<< "  Res =  "<< resdiual);
+                ++iter_;
                 return resdiual;
             }
 
@@ -112,7 +116,7 @@ namespace cxy {
                 while (1)
                 {
                     resdiual = minimizeOneStep(x);
-                    if (resdiualLast - resdiual < stop)
+                    if ((resdiualLast - resdiual < stop) && iter_ > 10)
                         break;
                     resdiualLast = resdiual;
                 }   

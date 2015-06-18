@@ -36,6 +36,7 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #
 add_library(lmicp_lib 
                 include/cxy_transform.h
+                include/lmicp.h
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
                 include/optimization/cxy_nonlinear_minimizer_LM.h
@@ -54,7 +55,7 @@ catkin_package(
    DEPENDS opencv eigen3 
 )
 
-#add_executable(lmicp_exe src/lmicp.cpp)
+add_executable(lmicp_exe src/lmicp.cpp)
 add_executable(main_exe src/main.cpp)
-#target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)

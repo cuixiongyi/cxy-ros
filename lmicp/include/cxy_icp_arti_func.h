@@ -73,10 +73,19 @@ namespace cxy
                     //ROS_INFO_STREAM("Call f the 2   "<<ac);
                     //std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
                     _Scalar res(0.0);
+                    cxy_transform::Pose<_Scalar> pose;
+                    pose.t()(0) = 0.0;
+                    pose.t()(1) = 0.0;
+                    pose.t()(2) = 0.0;
+                    pose.q().w() = x(0);
+                    pose.q().x() = x(1);
+                    pose.q().y() = 0.0;
+                    pose.q().z() = 0.0;
+                    pose.normalize();
                     for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                     {
                         pcl::PointXYZ transPoint;
-                        cxy_transform::Pose<_Scalar>::composePoint((*dataCloud_)[ii], transPoint, vPara);
+                        pose.composePoint((*dataCloud_)[ii], transPoint);
                         Eigen::Matrix< _Scalar, 3, 1> r3;
                         fvec[ii] = matchPointCloud(transPoint, r3);
                         res += fvec[ii] / this->values();
@@ -84,8 +93,9 @@ namespace cxy
                     }
                     //ROS_INFO_STREAM("Call f the 3    "<<ac<<" time. Residual =  "<< res);
 
-                    
-                    ROS_INFO_STREAM("Residual =  "<<res);
+                    x(0) = pose.q().w();
+                    x(1) = pose.q().x();
+                    ROS_INFO_STREAM("Residual =  "<<x(0)<< "  "<<x(1));
                     return res;
                 }
 
@@ -111,14 +121,31 @@ namespace cxy
                         fvec[ii] = matchPointCloud(transPoint[ii], r3);
                         res += fvec[ii] / this->values();
 */
-                    _Scalar res(0.0);
+                    cxy_transform::Pose<_Scalar> pose;
+                    pose.t()(0) = 0.0;
+                    pose.t()(1) = 0.0;
+                    pose.t()(2) = 0.0;
+                    pose.q().w() = x(0);
+                    pose.q().x() = x(1);
+                    pose.q().y() = 0.0;
+                    pose.q().z() = 0.0;
+                    pose.normalize();
+                    vPara[0] = 0.0;
+                    vPara[1] = .0;
+                    vPara[2] = .0;
+                    vPara[3] = pose.q().w();
+                    vPara[4] = pose.q().x();
+                    vPara[5] = .0;
+                    vPara[6] = .0;
                     for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                     {
                         pcl::PointXYZ transPoint;
-                        cxy_transform::Pose<_Scalar>::composePoint((*dataCloud_)[ii], transPoint, vPara);
+                        pose.composePoint((*dataCloud_)[ii], transPoint);
                         Eigen::Matrix< _Scalar, 3, 1> r3;
                         matchPointCloud(transPoint, r3);
 
+
+                    
                         Matrix34f jac34(calculateJacobianKernel(vPara
                                                                 , (*dataCloud_)[ii]));
                         if (ii == 700)
@@ -141,10 +168,12 @@ namespace cxy
 
                             
                         if (ii == 20)
-                            std::cout<<ii<<" = "<<r3(0)<<"  "<<r3(1)<<"  "<<r3(2)<<"  "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
+                            std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
                             
                     }
-                    
+                    x(0) = pose.q().w();
+                    x(1) = pose.q().x();
+                    //std::cout<<"wx = "<<x(0)<<"  "<<x(1)<<"  "<<std::endl;
                     return 1;
                 }
 

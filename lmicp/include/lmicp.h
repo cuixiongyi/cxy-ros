@@ -42,6 +42,8 @@
 
 namespace cxy_lmicp
 {
+    typedef float _Scalar ;
+    using namespace cxy;
     namespace gm = geometry_msgs;
     namespace E = Eigen;
     namespace ctrs = cxy_transform;
@@ -89,7 +91,7 @@ namespace cxy_lmicp
                                             , std::vector<float>& matchDistance);
             
             const float computeResidual(PointCloudPtr data
-                                            , ctrs::Pose &pose
+                                            , ctrs::Pose<_Scalar> &pose
                                             , std::vector<int>& dataMatchIdx
                                             , std::vector<int>& modelMatchIdx
                                             , std::vector<float>& matchDistance);
@@ -124,12 +126,12 @@ namespace cxy_lmicp
             LM_ICP();
             ~LM_ICP();
 
-            ctrs::Pose lmicp(const PointCloudPtr data
+            ctrs::Pose<_Scalar> lmicp(const PointCloudPtr data
                             , const PointCloudPtr model
-                            , const ctrs::Pose guess = ctrs::Pose());
-            void initGuess(ctrs::Pose& guess);
+                            , const ctrs::Pose<_Scalar> guess = ctrs::Pose<_Scalar>());
+            void initGuess(ctrs::Pose<_Scalar>& guess);
             bool setModelCloud(PointCloudConstPtr model);
-            inline const Matrix34f calculateJacobianKernel(const ctrs::Pose& pose_k
+            inline const Matrix34f calculateJacobianKernel(const ctrs::Pose<_Scalar>& pose_k
                                                     , const E::Vector3f& res
                                                     , const PointT& p);
 
@@ -138,22 +140,22 @@ namespace cxy_lmicp
             void calculateLevenbergMarquardt(const PointCloudPtr data
                                     , const std::vector<int>& dataMatchIdx
                                     , const std::vector<int>& modelMatchIdx
-                                    , const ctrs::Pose& pose_k
+                                    , const ctrs::Pose<_Scalar>& pose_k
                                     , const std::vector<E::Vector3f>& residual
-                                    , ctrs::Pose& pose_k1);
+                                    , ctrs::Pose<_Scalar>& pose_k1);
 
 
 
-            ctrs::Pose lmicpNumerical(const PointCloudPtr data
+            ctrs::Pose<_Scalar> lmicpNumerical(const PointCloudPtr data
                                     , const PointCloudPtr model
-                                    , const ctrs::Pose guess = ctrs::Pose());
+                                    , const ctrs::Pose<_Scalar> guess = ctrs::Pose<_Scalar>());
             void calculateLevenbergMarquardtNumerical(const PointCloudPtr data
                                     , const std::vector<int>& dataMatchIdx
                                     , const std::vector<int>& modelMatchIdx
-                                    , const ctrs::Pose& pose_k
+                                    , const ctrs::Pose<_Scalar>& pose_k
                                     , const std::vector<E::Vector3f>& residual
-                                    , ctrs::Pose& pose_k1);
-            inline const E::Matrix<float,1,7> calculateJacobianKernelNumerical(const ctrs::Pose& pose_k
+                                    , ctrs::Pose<_Scalar>& pose_k1);
+            inline const E::Matrix<float,1,7> calculateJacobianKernelNumerical(const ctrs::Pose<_Scalar>& pose_k
                                                     , const PointT& d
                                                     , const PointT& m
                                                     , float& l2norm

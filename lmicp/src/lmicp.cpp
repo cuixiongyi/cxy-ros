@@ -32,24 +32,24 @@ namespace cxy_lmicp
 
     }
 
-ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, const ctrs::Pose guess)
+ctrs::Pose<_Scalar> LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, const ctrs::Pose<_Scalar> guess)
     {
         if ( ! isNewModel_)
         {
-            return ctrs::Pose();
+            return ctrs::Pose<_Scalar>();
         }
         dataCloud_ = boost::make_shared<PointCloud>(*data);
-        ctrs::Pose guessTmp(guess);
+        ctrs::Pose<_Scalar> guessTmp(guess);
         //initGuess(guessTmp);
-        guessTmp = ctrs::Pose(0);
-        ctrs::Pose& pose_base(guessTmp);
+        guessTmp = ctrs::Pose<_Scalar>(0);
+        ctrs::Pose<_Scalar>& pose_base(guessTmp);
         PointCloudPtr transDataCloud;
         PointCloudPtr transDataCloud2;
         //pose_base.composePoint(data, transDataCloud);
 
         // pose_inc
-        ctrs::Pose pose_inc(0);
-        ctrs::Pose pose_tmp(0);
+        ctrs::Pose<_Scalar> pose_inc(0);
+        ctrs::Pose<_Scalar> pose_tmp(0);
         std::vector<int> modelMatchIdx;
         std::vector<float> matchDistance;
         std::vector<int> dataMatchIdx;
@@ -77,15 +77,15 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
              ROS_INFO_STREAM("pose_inc  new "<< pose_inc.t()<<"  "<< pose_inc.q().w()<<"  "<< pose_inc.q().x()<<"  "<< pose_inc.q().y()<<"  "<< pose_inc.q().z()<<"  ");
             //ROS_INFO_STREAM(transDataCloud->size());
 
-            while(true)
-            {
+            
                 publish(transDataCloud, pub_data_pointcloud_);
                 publish(modelCloud_, pub_model_pointcloud_);
                 ros::spinOnce();
                 std::cin>>c;
                 if ('n' == c)
+                    continue;
+                if ('b' == c)
                     break;
-            }
            const float residualSum =  searchMatchPoints(transDataCloud 
                                                         , dataMatchIdx 
                                                         , modelMatchIdx 
@@ -101,7 +101,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
                             , dataMatchIdx
                             , modelMatchIdx
                             , residual);
-            ctrs::Pose tmp_inc(0);
+            ctrs::Pose<_Scalar> tmp_inc(0);
             calculateLevenbergMarquardt(transDataCloud
                                         , dataMatchIdx
                                         , modelMatchIdx
@@ -129,9 +129,9 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
     void LM_ICP::calculateLevenbergMarquardt(const PointCloudPtr data
                                     , const std::vector<int>& dataMatchIdx
                                     , const std::vector<int>& modelMatchIdx
-                                    , const ctrs::Pose& pose_k
+                                    , const ctrs::Pose<_Scalar>& pose_k
                                     , const std::vector<E::Vector3f>& residual
-                                    , ctrs::Pose& pose_k1)
+                                    , ctrs::Pose<_Scalar>& pose_k1)
     {
         Matrix37f jac37;
         Matrix34f jacQuat;
@@ -177,7 +177,7 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
 	    rowJ = rowJ*2;
             jacTjac += rowJ.transpose()*rowJ;
             // JT*e
-	    const double sigma = 0.02;
+	    const double sigma = 0.2;
 	    const double &&r = std::sqrt((*matchDistancefPtr_)[ii]);
 	    //ROS_INFO_STREAM(r);
 	    double e = r < sigma ? r*r : 2*sigma*std::abs(r)-sigma*sigma;
@@ -205,15 +205,15 @@ ctrs::Pose LM_ICP::lmicp(const PointCloudPtr data, const PointCloudPtr model, co
         //ROS_INFO_STREAM(result_Pose);
         //result_Pose = jac_left.inverse()*jac.transpose()*res_tmp;
 	//result_Pose = -result_Pose;
-        pose_k1.t() = E::Vector3d(-result_Pose(0), -result_Pose(1), -result_Pose(2));
-        pose_k1.q() = E::Quaterniond(-result_Pose(3), -result_Pose(4), -result_Pose(5), -result_Pose(6));
+        pose_k1.t() = E::Vector3f(-result_Pose(0), -result_Pose(1), -result_Pose(2));
+        pose_k1.q() = E::Quaternionf(-result_Pose(3), -result_Pose(4), -result_Pose(5), -result_Pose(6));
         //pose_k1.q() = E::Quaterniond(1, .0, .0, .0);
         //pose_k1.normalize();
         //pose_k1 = lambda
         return;   
     }
 
-inline const Matrix34f LM_ICP::calculateJacobianKernel(const ctrs::Pose& pose_k
+inline const Matrix34f LM_ICP::calculateJacobianKernel(const ctrs::Pose<_Scalar>& pose_k
                                                 , const E::Vector3f& res
                                                 , const PointT& a)
     {
@@ -253,7 +253,7 @@ inline const Matrix34f LM_ICP::calculateJacobianKernel(const ctrs::Pose& pose_k
 
         return;
     }
-
+/*
 ctrs::Pose LM_ICP::lmicpNumerical(const PointCloudPtr data, const PointCloudPtr model, const ctrs::Pose guess)
     {
         if ( ! isNewModel_)
@@ -302,14 +302,14 @@ ctrs::Pose LM_ICP::lmicpNumerical(const PointCloudPtr data, const PointCloudPtr 
                             pose_inc.q().y() = 0.001;
                             pose_inc.q().z() = 0.001;
                         }
-                        */
+                        
             //publish(transData, pub_data_pointcloud_);
             //pose_tmp = ctrs::Pose(0);
             //pose_base.composePose(pose_tmp, pose_inc);
             pose_inc.composePoint(dataCloud_, transDataCloud);
             
             /*pose_inc.composePoint(transDataCloud, transDataCloud2);
-            transDataCloud = transDataCloud2;*/
+            transDataCloud = transDataCloud2;
 
             ROS_INFO_STREAM("pose_inc  new "<< pose_inc.t()<<"  "<< pose_inc.q().w()<<"  "<< pose_inc.q().x()<<"  "<< pose_inc.q().y()<<"  "<< pose_inc.q().z()<<"  ");
             //ROS_INFO_STREAM(transDataCloud->size());
@@ -610,7 +610,7 @@ inline const E::Matrix<float,1,7> LM_ICP::calculateJacobianKernelNumerical(const
         ROS_INFO_STREAM(rowJ.transpose());
         return rowJ.transpose();
     }
-
+*/
     void LM_ICP::calculateResidual(PointCloudPtr data
                                             , const std::vector<int>& dataMatchIdx
                                             , const std::vector<int>& modelMatchIdx
@@ -629,6 +629,7 @@ inline const E::Matrix<float,1,7> LM_ICP::calculateJacobianKernelNumerical(const
 
         return;
     }
+
     const float LM_ICP::searchMatchPoints(PointCloudPtr data
                                             , std::vector<int>& dataMatchIdx
                                             , std::vector<int>& modelMatchIdx
@@ -675,7 +676,7 @@ inline const E::Matrix<float,1,7> LM_ICP::calculateJacobianKernelNumerical(const
     }
 
 const float LM_ICP::computeResidual(PointCloudPtr data
-                                            , ctrs::Pose &pose
+                                            , ctrs::Pose<_Scalar> &pose
                                             , std::vector<int>& dataMatchIdx
                                             , std::vector<int>& modelMatchIdx
                                             , std::vector<float>& matchDistance)
@@ -722,7 +723,7 @@ inline  const float LM_ICP::searchMatchPoints(const PointT& data
 
         return signTmp*sqrt(pointNKNSquaredDistance[0]);
     } 
-    void LM_ICP::initGuess(ctrs::Pose& guess)
+    void LM_ICP::initGuess(ctrs::Pose<_Scalar>& guess)
     {
         Eigen::Matrix3f data_cov, model_cov;
         Eigen::Vector4f data_centroid, model_centroid;
@@ -881,6 +882,7 @@ inline  const float LM_ICP::searchMatchPoints(const PointT& data
     }
 
 }
+using namespace cxy;
 typedef pcl::PointXYZ PointT;
 pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name);
 int main(int argc, char *argv[])
@@ -900,19 +902,30 @@ int main(int argc, char *argv[])
 */
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
+  pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
     
     data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
-    if (0)
+    const int t = 2;
+    if (0 == t)
     {
 	model = loadPlyFile("/home/xiongyi/repo/bun045.ply");
     }
-    else
+    else if (1 == t)
     {
 	for (int i = 0; i < data->points.size(); ++i)
     	{
-		model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
-	}
+    		model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
+    	}
     }
+    else if (2 == t)
+    {
+            cxy_transform::Pose<float> pose;
+          pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+
+          pose.composePoint(data, transPoint);
+          model = transPoint;
+    }
+
     /*	*/
     //model->push_back(PointT(0.00, 0.00, 0.0));
     //model->push_back(PointT(0.20, 0.00, 0.0));
