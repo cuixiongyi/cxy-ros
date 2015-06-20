@@ -48,6 +48,7 @@ namespace cxy {
                 j_dia.setZero();
                 jac_left.setZero();
 
+                
                 this->func_(x, this->rf);
                 this->func_.df(x, this->jf);
 
