@@ -63,39 +63,9 @@ namespace cxy
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const
                 {
                     /// test manifold start
-                    if (1)
+                    if (0)
                     {
-                        std::ofstream fout("/home/xiongyi/repo/manifold.txt");
-                        cxy_transform::Pose<_Scalar> pose;
-                        const _Scalar delta = 1.0;
-                        int counter1(0);
-                        while (1)
-                        {
-                            counter1++;
-                            pose.rotateByAxis(cxy_transform::Axis::X_axis, delta);
-                            fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<this->func_(x, this->rf)<<std::endl;
-                            std::vector<_Scalar> vPara(7);
-                            vPara[0] = 0.0;
-                            vPara[1] = .0;
-                            vPara[2] = .0;
-                            vPara[3] = pose.q().w();
-                            vPara[4] = pose.q().x();
-                            vPara[5] = .0;
-                            vPara[6] = .0;
-                            pose.normalize();
-                            for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
-                            {
-                                pcl::PointXYZ transPoint;
-                                pose.composePoint((*dataCloud_)[ii], transPoint);
-                                Eigen::Matrix< _Scalar, 3, 1> r3;
-                                fvec[ii] = matchPointCloud(transPoint, r3);
-                                res += fvec[ii] / this->values();
-
-                            }
-                            fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<std::endl;
-                            if (counter1 >= 361)
-                                std::exit(1);
-                        }
+                        manifold();
                     }
                     /// test manifold end
 
@@ -136,6 +106,11 @@ namespace cxy
                     x(0) = pose.q().w();
                     x(1) = pose.q().x();
                     ROS_INFO_STREAM("Residual =  "<<x(0)<< "  "<<x(1));
+                    if (1)
+                    {
+                        static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
+                        fout<<x(0)<<" "<<x(1)<<" "<<res<<std::endl;
+                    }
                     return res;
                 }
 
@@ -282,6 +257,42 @@ namespace cxy
 
                     return jacQuat*normalJaco44;
                 }
+                void manifold()
+                {
+
+                        std::ofstream fout("/home/xiongyi/repo/manifold.txt");
+                        cxy_transform::Pose<_Scalar> pose;
+                        const _Scalar delta = 1.0;
+                        int counter1(0);
+                        while (1)
+                        {
+                            counter1++;
+                            pose.rotateByAxis(cxy_transform::Axis::X_axis, delta);
+                            std::vector<_Scalar> vPara(7);
+                            _Scalar res(0.0);
+                            vPara[0] = 0.0;
+                            vPara[1] = .0;
+                            vPara[2] = .0;
+                            vPara[3] = pose.q().w();
+                            vPara[4] = pose.q().x();
+                            vPara[5] = .0;
+                            vPara[6] = .0;
+                            pose.normalize();
+                            for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
+                            {
+                                pcl::PointXYZ transPoint;
+                                pose.composePoint((*dataCloud_)[ii], transPoint);
+                                Eigen::Matrix< _Scalar, 3, 1> r3;
+                                fvec[ii] = matchPointCloud(transPoint, r3);
+                                res += fvec[ii] / this->values();
+
+                            }
+                            fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<std::endl;
+                            if (counter1 >= 361)
+                                std::exit(1);
+                        }
+                    }
+                    return ;
             private:
                 pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
                 pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
