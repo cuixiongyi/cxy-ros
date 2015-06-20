@@ -65,7 +65,7 @@ namespace cxy
                     /// test manifold start
                     if (0)
                     {
-                        manifold();
+                        this->manifold();
                     }
                     /// test manifold end
 
@@ -170,8 +170,8 @@ namespace cxy
                             //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
                             //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
                         }
-                        ROS_INFO_STREAM(jac34);
-                        ROS_INFO(" ");
+                        //ROS_INFO_STREAM(jac34);
+                        //ROS_INFO(" ");
                         Eigen::Matrix<_Scalar, 1, 4> jq(r3.transpose()*jac34);
                         //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
                         /*fjac(ii, 0) = r3(0);
@@ -257,12 +257,12 @@ namespace cxy
 
                     return jacQuat*normalJaco44;
                 }
-                void manifold()
+                void manifold() const
                 {
 
                         std::ofstream fout("/home/xiongyi/repo/manifold.txt");
                         cxy_transform::Pose<_Scalar> pose;
-                        const _Scalar delta = 1.0;
+                        const _Scalar delta = 2.0;
                         int counter1(0);
                         while (1)
                         {
@@ -283,16 +283,17 @@ namespace cxy
                                 pcl::PointXYZ transPoint;
                                 pose.composePoint((*dataCloud_)[ii], transPoint);
                                 Eigen::Matrix< _Scalar, 3, 1> r3;
-                                fvec[ii] = matchPointCloud(transPoint, r3);
-                                res += fvec[ii] / this->values();
+                                res += matchPointCloud(transPoint, r3);
 
                             }
+                            res = this->values();
                             fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<std::endl;
                             if (counter1 >= 361)
                                 std::exit(1);
                         }
-                    }
                     return ;
+
+                    }
             private:
                 pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
                 pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
