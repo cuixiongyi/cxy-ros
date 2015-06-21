@@ -64,15 +64,17 @@ namespace cxy {
                 {
 
                     j_dia(ii,ii) = jacTjac(ii,ii);
+                    //j_dia(ii,ii) = 1.0;
 
                 }
                 Scalar resdiual(std::numeric_limits<Scalar>::max());
                 Scalar lambdaTmp;
                 FVectorType result_Pose(this->nPara_, 1);
-                for (int i = 0; i < iter; ++i)
+                static const std::vector<Scalar> v{0.1, 0.5, 1.0, 3.0};
+                for (int i = 0; i < v.size(); ++i)
                 {
                     result_Pose.setZero();
-                    lambda += Scalar(1.0) / iter;
+                    lambda = v[i];
                     jac_left = -(jacTjac+lambda*j_dia);
                     //ROS_INFO_STREAM(jac_left);
                     jac_left = jac_left.inverse();
@@ -99,7 +101,7 @@ namespace cxy {
                     //CXY_ASSERT(result_Pose.rows() == this->nPara_);
                     //assert(x.rows() != this->nPara_);
                     //ROS_INFO_STREAM("x = "<<x);
-                    ROS_INFO_STREAM("resultFinal = "<<resdiual);
+                    ROS_INFO_STREAM("resultFinal = "<<resdiual<<" pose_inc = "<<result_Pose(0)<<"  "<<result_Pose(1));
                     ROS_INFO_STREAM("  ");
                     x = x + result_Pose;
 
