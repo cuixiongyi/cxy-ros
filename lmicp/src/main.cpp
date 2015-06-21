@@ -71,11 +71,11 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
       x.resize(2);
       x.setZero();
-      x(0) = 1.0;
+      x(0) = -30.0;
       x(1) = 0.01;
 
       // do the computation
-      cxy_lmicp_lib::cxy_icp_arti<float, 1> lmicp;
+      cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;
       cxy_lmicp_lib::cxy_icp_rigid<float, 1> lmicp2;
       lmicp.setModelCloud(data);
       lmicp2.setModelCloud(data);

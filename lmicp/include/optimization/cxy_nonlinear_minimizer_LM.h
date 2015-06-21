@@ -70,7 +70,7 @@ namespace cxy {
                 Scalar resdiual(std::numeric_limits<Scalar>::max());
                 Scalar lambdaTmp;
                 FVectorType result_Pose(this->nPara_, 1);
-                static const std::vector<Scalar> v{0.1, 0.5, 1.0, 3.0};
+                static const std::vector<Scalar> v{0.1, 0.5, 1.0};
                 for (int i = 0; i < v.size(); ++i)
                 {
                     result_Pose.setZero();

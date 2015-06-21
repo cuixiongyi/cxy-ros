@@ -98,7 +98,7 @@ namespace cxy
 
                     }
                     res = res / this->values();
-                    //ROS_INFO_STREAM("Call f the 3    "<<ac<<" time. Residual =  "<< res);
+                    ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
 
                     
                     ROS_INFO_STREAM("theta =  "<<x(0));
@@ -116,7 +116,7 @@ namespace cxy
                     pose.rotateByAxis(cxy_transform::Axis::X_axis, x(0));
                     pose.normalize();
                     std::vector<_Scalar> vPara(7);
-                    vPara[0] = 0.0;
+                    vPara[0] = x(0);
                     vPara[1] = .0;
                     vPara[2] = .0;
                     vPara[3] = pose.q().w();
@@ -133,7 +133,7 @@ namespace cxy
 
 
                         //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
-                        
+                        //ROS_INFO_STREAM("r3 = "<<r3);
                         Matrix jac34(calculateJacobianKernel(vPara
                                                             , (*dataCloud_)[ii]));
                         if (ii == 700)
@@ -142,9 +142,15 @@ namespace cxy
                             //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
                             //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
                         }
-                        //ROS_INFO_STREAM(jac34);
+                        Matrix header(1,2);
+                        header<<r3(1), r3(2);
+
+                        //ROS_INFO_STREAM("jac34 = "<<jac34);
                         //ROS_INFO(" ");
-                        Matrix jq(r3.transpose()*jac34);
+
+                        Matrix jq(header*jac34);
+                        //ROS_INFO_STREAM("jacobian = "<<jq);
+                        //ROS_INFO(" ");
 
                         //rowJ<<r3(0), r3(1), r3(2),  jq(0), jq(1), jq(2), jq(3);
                         /*fjac(ii, 0) = r3(0);
@@ -155,7 +161,7 @@ namespace cxy
                         fjac(ii, 5) = jq(2);
                         fjac(ii, 6) = jq(3);*/
                         fjac(ii, 0) = jq(0);
-                        fjac(ii, 1) = jq(1);
+                        //fjac(ii, 1) = jq(1);
 
                             
                         if (ii == 20)
@@ -163,8 +169,8 @@ namespace cxy
                             //std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
                             
                     }
-                    x(0) = pose.q().w();
-                    x(1) = pose.q().x();
+                    //x(0) = pose.q().w();
+                    //x(1) = pose.q().x();
                     //std::cout<<"wx = "<<x(0)<<"  "<<x(1)<<"  "<<std::endl;
                     return 1;
                 }
@@ -207,15 +213,17 @@ namespace cxy
                                                                            , const pcl::PointXYZ& a) const
                 {
                     const int n(2);
-
+                    //ROS_INFO_STREAM("JacoIn "<<para[0]<<"  "<<para[3]<<"  "<<para[4]);
                     Eigen::Quaternionf q(para[3], para[4], 0.0, 0.0);
                     Matrix jacQuat;
-                    jacQuat.resize(3, n);
+                    jacQuat.resize(2, n);
                     jacQuat.setZero();
-
-                    jacQuat << (2*a.z*q.y() - 2*a.y*q.z()) , (2*a.y*q.y() + 2*a.z*q.z())
-                            , (2*a.x*q.z() - 2*a.z*q.x()) , (2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x());
-
+                    const _Scalar Y_Qw_QxAz = -q.x()*a.z;
+                    const _Scalar Y_Qx_QxAy_QwAz = -2*q.x()*a.y-q.w()*a.z;
+                    const _Scalar Z_Qw_QxAy = q.x()*a.y;
+                    const _Scalar Z_Qx_QwAy_QxAz = -2*q.x()*a.z+q.w()*a.y;
+                    jacQuat << Y_Qw_QxAz, Y_Qw_QxAz,
+                               Z_Qw_QxAy, Z_Qx_QwAy_QxAz;
                     Matrix normalJaco44;
                     normalJaco44.resize(n, n);
                     normalJaco44.setZero();
@@ -223,14 +231,16 @@ namespace cxy
                             -q.x()*q.w(), q.w()*q.w();
                             
                     normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
+                    Matrix JacTheata(2,1);
+                    JacTheata<< -std::sin(para[0]), std::cos(para[0]);
 
                     /*
                      [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
                      [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
                      [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
                      */
-
-                    return jacQuat*normalJaco44;
+                     assert(jacQuat.cols() == normalJaco44.rows() && normalJaco44.cols() == JacTheata.rows());
+                    return jacQuat*normalJaco44*JacTheata;
                 }
                 void manifold() const
                 {
