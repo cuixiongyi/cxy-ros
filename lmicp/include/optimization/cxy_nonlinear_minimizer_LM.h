@@ -75,7 +75,7 @@ namespace cxy {
                 {
                     result_Pose.setZero();
                     lambda = v[i];
-                    jac_left = -(jacTjac+lambda*j_dia);
+                    jac_left = (jacTjac+lambda*j_dia);
                     //ROS_INFO_STREAM(jac_left);
                     jac_left = jac_left.inverse();
                     //ROS_INFO_STREAM(jac_left);

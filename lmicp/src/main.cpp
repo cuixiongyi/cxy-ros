@@ -69,10 +69,10 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       x2(5) = 0.01;
       x2(6) = 0.01;
 
-      x.resize(2);
+      x.resize(1);
       x.setZero();
-      x(0) = -30.0;
-      x(1) = 0.01;
+      x(0) = -15.0;
+      //x(1) = 0.01;
 
       // do the computation
       cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;

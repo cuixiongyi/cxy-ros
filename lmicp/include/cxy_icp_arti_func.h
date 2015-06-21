@@ -2,6 +2,7 @@
 #include "optimization/cxy_cost_func_abstract.h"
 #include "cxy_transform.h"
 #include "cxy_debug.h"
+#include "common/cxy_common.h"
 #include <cstdlib>
 #include <fstream>
 
@@ -135,7 +136,7 @@ namespace cxy
                         //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
                         //ROS_INFO_STREAM("r3 = "<<r3);
                         Matrix jac34(calculateJacobianKernel(vPara
-                                                            , (*dataCloud_)[ii]));
+                                                            , transPoint)); //(*dataCloud_)[ii]));
                         if (ii == 700)
                         {
                             //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
@@ -148,7 +149,7 @@ namespace cxy
                         //ROS_INFO_STREAM("jac34 = "<<jac34);
                         //ROS_INFO(" ");
 
-                        Matrix jq(header*jac34);
+                        Matrix jq(-header*jac34);
                         //ROS_INFO_STREAM("jacobian = "<<jq);
                         //ROS_INFO(" ");
 
@@ -232,7 +233,7 @@ namespace cxy
                             
                     normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
                     Matrix JacTheata(2,1);
-                    JacTheata<< -std::sin(para[0]), std::cos(para[0]);
+                    JacTheata<< -std::sin(Deg2Rad(para[0])), std::cos(Deg2Rad(para[0]));
 
                     /*
                      [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
@@ -240,7 +241,7 @@ namespace cxy
                      [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
                      */
                      assert(jacQuat.cols() == normalJaco44.rows() && normalJaco44.cols() == JacTheata.rows());
-                    return jacQuat*normalJaco44*JacTheata;
+                    return jacQuat*JacTheata;
                 }
                 void manifold() const
                 {
