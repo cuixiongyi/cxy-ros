@@ -71,7 +71,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
       x.resize(1);
       x.setZero();
-      x(0) = -50.0;
+      x(0) = -60.0;
       //x(1) = 0.01;
 
       // do the computation

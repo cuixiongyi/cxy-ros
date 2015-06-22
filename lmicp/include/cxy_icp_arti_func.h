@@ -64,7 +64,7 @@ namespace cxy
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const
                 {
                     /// test manifold start
-                    if (0)
+                    if (1)
                     {
                         this->manifold();
                     }
@@ -143,13 +143,14 @@ namespace cxy
                             //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
                             //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
                         }
-                        Matrix header(1,2);
+                        Matrix header(2,1);
                         header<<r3(1), r3(2);
 
                         //ROS_INFO_STREAM("jac34 = "<<jac34);
                         //ROS_INFO(" ");
 
-                        Matrix jq(-header*jac34);
+                        Matrix jq(-jac34.transpose()*header);
+                        jq *= 2;
                         //ROS_INFO_STREAM("jacobian = "<<jq);
                         //ROS_INFO(" ");
 
@@ -223,7 +224,7 @@ namespace cxy
                     const _Scalar Y_Qx_QxAy_QwAz = -2*q.x()*a.y-q.w()*a.z;
                     const _Scalar Z_Qw_QxAy = q.x()*a.y;
                     const _Scalar Z_Qx_QwAy_QxAz = -2*q.x()*a.z+q.w()*a.y;
-                    jacQuat << Y_Qw_QxAz, Y_Qw_QxAz,
+                    jacQuat << Y_Qw_QxAz, Y_Qx_QxAy_QwAz,
                                Z_Qw_QxAy, Z_Qx_QwAy_QxAz;
                     Matrix normalJaco44;
                     normalJaco44.resize(n, n);
@@ -233,7 +234,7 @@ namespace cxy
                             
                     normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
                     Matrix JacTheata(2,1);
-                    JacTheata<< -std::sin(Deg2Rad(para[0])), std::cos(Deg2Rad(para[0]));
+                    JacTheata<< -std::sin(Deg2Rad(para[0]/2)), std::cos(Deg2Rad(para[0]/2));
 
                     /*
                      [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
@@ -248,7 +249,7 @@ namespace cxy
 
                         std::ofstream fout("/home/xiongyi/repo/manifold.txt");
                         //cxy_transform::Pose<_Scalar> pose;
-                        const int delta = 6.0;
+                        const int delta = 8.0;
                         int counter1(0);
                         while (1)
                         {
