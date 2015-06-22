@@ -46,7 +46,20 @@ enum Axis : uint8_t
 		//: The inpute takes the rotating axis and the angle in degree
 		void rotateByAxis(Axis axis, _Scalar const& degree)
 		{
-			_Scalar radian = CXY_PI * degree / _Scalar(180.0);
+			int n(0);
+			_Scalar theta(degree);
+			if (degree > _Scalar(180))
+			{
+				n = (degree-180) / _Scalar(360);
+				theta = degree - (n+1)*_Scalar(360);
+			}
+			else if (degree < _Scalar(-180))
+			{
+				n = std::abs( (degree+180) / _Scalar(360));
+				theta = degree + (n+1)*_Scalar(360);
+			}
+			//std::cout<<theta<<std::endl;
+			_Scalar radian = CXY_PI * theta / _Scalar(180.0);
 			_Scalar x = std::sin( radian / _Scalar(2.0) );
 			_Scalar w = std::cos( radian / _Scalar(2.0) );
 			Quaternoin q1(q_);
