@@ -103,7 +103,7 @@ namespace cxy
 
                     
                     ROS_INFO_STREAM("theta =  "<<x(0));
-                    if (1)
+                    if (0)
                     {
                         static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
                         fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<std::endl;
