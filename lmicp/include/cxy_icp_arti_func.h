@@ -64,7 +64,7 @@ namespace cxy
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const
                 {
                     /// test manifold start
-                    if (0)
+                    if (1)
                     {
                         this->manifold();
                     }
@@ -247,15 +247,18 @@ namespace cxy
                 {
 
                         std::ofstream fout("/home/xiongyi/repo/manifold.txt");
-                        cxy_transform::Pose<_Scalar> pose;
-                        const _Scalar delta = 2.0;
+                        //cxy_transform::Pose<_Scalar> pose;
+                        const int delta = 6.0;
                         int counter1(0);
                         while (1)
                         {
-                            counter1++;
-                            pose.rotateByAxis(cxy_transform::Axis::X_axis, delta);
+                            cxy_transform::Pose<_Scalar> pose;
+
+                            counter1 += delta;
+                            pose.rotateByAxis(cxy_transform::Axis::X_axis, counter1);
                             std::vector<_Scalar> vPara(7);
                             _Scalar res(0.0);
+                            _Scalar jac(0.0);
                             vPara[0] = 0.0;
                             vPara[1] = .0;
                             vPara[2] = .0;
@@ -264,18 +267,33 @@ namespace cxy
                             vPara[5] = .0;
                             vPara[6] = .0;
                             pose.normalize();
+
                             for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                             {
                                 pcl::PointXYZ transPoint;
                                 pose.composePoint((*dataCloud_)[ii], transPoint);
                                 Eigen::Matrix< _Scalar, 3, 1> r3;
                                 res += matchPointCloud(transPoint, r3);
+                                Matrix jac34(calculateJacobianKernel(vPara
+                                                            , (*dataCloud_)[ii]));//transPoint)); //(*dataCloud_)[ii]));
+                                
+                                Matrix header(1,2);
+                                header<<r3(1), r3(2);
+
+                                //ROS_INFO_STREAM("jac34 = "<<jac34);
+                                //ROS_INFO(" ");
+
+                                Matrix jq(-header*jac34);
+                                jac += jq(0);
 
                             }
-                            res = this->values();
-                            fout<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<std::endl;
+                            res = res / this->values();
+                            jac = jac / this->values();
+                            std::cout<<counter1<<std::endl;
+                            fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;
                             if (counter1 >= 361)
                                 std::exit(1);
+
                         }
                     return ;
 
