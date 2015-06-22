@@ -58,8 +58,8 @@ enum Axis : uint8_t
 				n = std::abs( (degree+180) / _Scalar(360));
 				theta = degree + (n+1)*_Scalar(360);
 			}
-			std::cout<<theta<<std::endl;
-			_Scalar radian = CXY_PI * degree / _Scalar(180.0);
+			//std::cout<<theta<<std::endl;
+			_Scalar radian = CXY_PI * theta / _Scalar(180.0);
 			_Scalar x = std::sin( radian / _Scalar(2.0) );
 			_Scalar w = std::cos( radian / _Scalar(2.0) );
 			Quaternoin q1(q_);

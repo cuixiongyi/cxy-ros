@@ -64,7 +64,7 @@ namespace cxy
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const
                 {
                     /// test manifold start
-                    if (1)
+                    if (0)
                     {
                         this->manifold();
                     }
@@ -289,7 +289,7 @@ namespace cxy
                             }
                             res = res / this->values();
                             jac = jac / this->values();
-                            std::cout<<counter1<<std::endl;
+                            std::cout<<counter1<<" "<<pose.q().w()<<" "<<pose.q().x()<<std::endl;
                             fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;
                             if (counter1 >= 361)
                                 std::exit(1);
