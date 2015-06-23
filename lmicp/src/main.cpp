@@ -45,6 +45,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
     
+    /*
     data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
     if (0)
     {
@@ -57,7 +58,25 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
             model->push_back(pcl::PointXYZ(data->points[i].x, data->points[i].y+0.01, data->points[i].z+0.01));
       }
     }
-
+    */
+    const int pointSize = 200;
+    const float delta_X = 0.05;
+    const float delta_Y = 0.025;
+    const float delta_Z = 0.025;
+    data->points().reserve(pointSize);
+    float X = 0.0;
+    float Y = 0.0;
+    float Z = 0.0;
+    for (int ii = 0; ii < pointSize; ++ii)
+    {
+      data->push_back(PointT(X, Y, Z));
+      X += delta_X;
+      if ( X >= 0.3)
+      {
+        Z += delta_Z;
+        X = 0.0;
+      }
+    }
 
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
