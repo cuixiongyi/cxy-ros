@@ -77,7 +77,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
         X = 0.0;
       }
     }
-
+    
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
       /* the following starting values provide a rough fit. */

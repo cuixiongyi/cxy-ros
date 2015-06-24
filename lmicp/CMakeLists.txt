@@ -7,6 +7,15 @@ project(project_lmicp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+
+option(ENABLE_MY_ASSERT "Turn on CXY_ASSERT checks" OFF)
+
+if(ENABLE_CXY_ASSERT)
+  add_definitions(-DMY_DEBUG=1)
+else()
+  add_definitions(-DMY_DEBUG=0)
+endif()
+
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
