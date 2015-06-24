@@ -61,6 +61,7 @@ namespace cxy {
             std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> modelCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
             std::vector<int> kinematicChain_JointRoot_;
+            std::vector<cxy_transform::Pose> kinematicChain_Pose_;
             // store matchPointCloud result
             
 
