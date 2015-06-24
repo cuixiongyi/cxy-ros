@@ -51,6 +51,8 @@ add_library(lmicp_lib
                 include/optimization/cxy_nonlinear_minimizer_LM.h
               include/cxy_icp.h
               include/cxy_icp_rigid.h
+              include/cxy_icp_arti.h
+              src/cxy_icp_arti.cpp
               
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 

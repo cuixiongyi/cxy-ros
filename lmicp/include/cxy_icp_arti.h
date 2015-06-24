@@ -38,6 +38,11 @@ namespace cxy {
             //virtual dataType translatePointCloud() = 0;
 
 
+        public:
+            cxy_icp_arti();
+
+
+
 
             //bool setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 
@@ -58,13 +63,6 @@ namespace cxy {
             std::vector<int> kinematicChain_JointRoot_;
             // store matchPointCloud result
             
-
-
-        public:
-            cxy_icp_arti();
-            int icp_prepare_cost_function();
-
-            _Scalar icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x);
 
 
         protected:

@@ -1,3 +1,4 @@
+#pragma once
 #include "iostream"
 #ifdef ENABLE_CXY_ASSERT
 #   define CXY_ASSERT(condition, message) \

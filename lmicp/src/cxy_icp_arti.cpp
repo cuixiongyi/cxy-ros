@@ -6,7 +6,7 @@ namespace cxy {
     namespace cxy_lmicp_lib {
 
     template<typename _Scalar, int _MinimizerType>
-        bool setModelCloud(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> model)
+        bool cxy_icp_arti<_Scalar, _MinimizerType>::setModelCloud(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> model)
         {
             
             hasSetModelCloud_ = true;
@@ -17,7 +17,7 @@ namespace cxy {
             for (int ii = 0; ii < modelCloud_.size(); ++ii)
             {
                 /* code */
-                CXY_ASSERT(nullptr == modelCloud_[ii])
+                CXY_ASSERT(nullptr == modelCloud_[ii]);
                 if (nullptr == modelCloud_[ii] || modelCloud_[ii]->size() < 5)
                 {
                     return false;
@@ -29,7 +29,7 @@ namespace cxy {
         }
 
         template<typename _Scalar, int _MinimizerType>
-        inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
+        inline bool cxy_icp_arti<_Scalar, _MinimizerType>::setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
         {
             hasSetDataCloud_ = true;
             dataCloud_ = data;
@@ -46,7 +46,7 @@ namespace cxy {
 
         //: This function belong to 1st layer
     template<typename _Scalar, int _MinimizerType>
-        _Scalar icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
+        _Scalar cxy_icp_arti<_Scalar, _MinimizerType>::icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
             if ( ! hasSetModelCloud_ || ! hasSetDataCloud_)
             {
@@ -61,13 +61,13 @@ namespace cxy {
 
 
     template<typename _Scalar, int _MinimizerType>
-        cxy_icp_arti()
+        cxy_icp_arti<_Scalar, _MinimizerType>::cxy_icp_arti()
         {
-            
+
         }
 
     template<typename _Scalar, int _MinimizerType>
-        int icp_prepare_cost_function()
+        int cxy_icp_arti<_Scalar, _MinimizerType>::icp_prepare_cost_function()
         {
             cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
             this->func_ = tmp;
@@ -75,7 +75,7 @@ namespace cxy {
         }
 
     template<typename _Scalar, int _MinimizerType>
-        _Scalar icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
+        _Scalar cxy_icp_arti<_Scalar, _MinimizerType>::icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
             cxy_optimization::cxy_nonlinear_method state(static_cast<cxy_optimization::cxy_nonlinear_method>(_MinimizerType));
             switch (state)
@@ -100,3 +100,8 @@ namespace cxy {
 
     }
 }
+
+template class cxy::cxy_lmicp_lib::cxy_icp_arti<float, 1>;
+template class cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2>;
+template class cxy::cxy_lmicp_lib::cxy_icp_arti<double, 1>;
+template class cxy::cxy_lmicp_lib::cxy_icp_arti<double, 2>;
