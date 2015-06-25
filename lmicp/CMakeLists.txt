@@ -51,9 +51,11 @@ add_library(lmicp_lib
                 include/optimization/cxy_nonlinear_minimizer_LM.h
               include/cxy_icp.h
               include/cxy_icp_rigid.h
-              include/cxy_icp_arti.h
-              src/cxy_icp_arti.cpp
-              
+              include/cxy_icp_arti.h  src/cxy_icp_arti.cpp
+              include/cxy_icp_arti_func.h  src/cxy_icp_arti_func.cpp
+              include/cxy_icp_kinematic_node.h  src/cxy_icp_kinematic_node.cpp
+              include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp
+
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
 target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)

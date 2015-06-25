@@ -1,10 +1,12 @@
 #pragma once
 
 #include "cxy_transform.h"
+#include "cxy_icp_kinematic_chain.h"
 #include "cxy_icp_arti_func.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "optimization/cxy_nonlinear_minimizer_LM.h"
 #include "cxy_debug.h"
+#include "../../../../../../../usr/include/c++/4.8/backward/auto_ptr.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {
@@ -60,10 +62,9 @@ namespace cxy {
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
             std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> modelCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
-            std::vector<int> kinematicChain_JointRoot_;
-            std::vector<cxy_transform::Pose> kinematicChain_Pose_;
-            // store matchPointCloud result
-            
+            std::auto_ptr<cxy_icp_kinematic_node> kc_;
+
+
 
 
         protected:
