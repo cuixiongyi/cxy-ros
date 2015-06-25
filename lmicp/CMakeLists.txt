@@ -68,7 +68,9 @@ catkin_package(
    DEPENDS opencv eigen3 
 )
 
+add_executable(icp_main src/icp_main.cpp)
 add_executable(lmicp_exe src/lmicp.cpp)
 add_executable(main_exe src/main.cpp)
 target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)

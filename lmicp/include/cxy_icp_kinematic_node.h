@@ -19,8 +19,8 @@ namespace cxy
 		template<typename _Scalar>
         class cxy_icp_kinematic_node 
         {
-			
-			private:
+
+		public:
 				cxy_transform::Pose<_Scalar> pose_;
 				_Scalar theta_;
 				pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;

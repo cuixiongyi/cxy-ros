@@ -78,6 +78,39 @@ enum Axis : uint8_t
 			q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
 
 		}
+        static Pose& rotateByAxis_fromIdentity(Axis axis, _Scalar const& degree)
+        {
+
+            int n(0);
+            _Scalar theta(degree);
+            if (degree > _Scalar(180))
+            {
+                n = (degree-180) / _Scalar(360);
+                theta = degree - (n+1)*_Scalar(360);
+            }
+            else if (degree < _Scalar(-180))
+            {
+                n = std::abs( (degree+180) / _Scalar(360));
+                theta = degree + (n+1)*_Scalar(360);
+            }
+            //std::cout<<theta<<std::endl;
+            _Scalar radian = CXY_PI * theta / _Scalar(180.0);
+            _Scalar x = std::sin( radian / _Scalar(2.0) );
+            _Scalar w = std::cos( radian / _Scalar(2.0) );
+            Quaternoin q1(q_);
+            Quaternoin q2(w, 0, 0, 0);
+            switch (axis)
+            {
+                case X_axis : q2.x() = x; break;
+                case Y_axis : q2.y() = x; break;
+                case Z_axis : q2.z() = x; break;
+            }
+            q1.normalize();
+            q2.normalize();
+
+
+        }
+
 		static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<_Scalar> & para)
 		{
 			Vector in(in_p.x, in_p.y, in_p.z) ,out;

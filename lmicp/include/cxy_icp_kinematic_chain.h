@@ -38,6 +38,7 @@ namespace cxy
             void setKinematicNodes(const std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes);
             void setKinematicRootList(const std::vector<int>& list);
 
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
 
         };
 
