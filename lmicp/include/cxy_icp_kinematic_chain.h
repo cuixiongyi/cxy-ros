@@ -25,7 +25,7 @@ namespace cxy
         private:
 
             std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kc_nodes_;
-
+            std::vector<int> kc_root_list_;
 
 
         public:
@@ -33,10 +33,10 @@ namespace cxy
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getTransCloud();
 
-            std::vector<cxy_icp_kinematic_node<_Scalar>>& getKinematicChain() {return kc_nodes_;}
-            const std::vector<cxy_icp_kinematic_node<_Scalar>>& getKinematicChain() const {return kc_nodes_;}
-            void setKinematicNodes(std::vector<cxy_icp_kinematic_node<_Scalar>> kin_nodes) {kc_nodes_ = kin_nodes;};
-
+            std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes();
+            const std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes() const;
+            void setKinematicNodes(const std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes);
+            void setKinematicRootList(const std::vector<int>& list);
 
 
         };

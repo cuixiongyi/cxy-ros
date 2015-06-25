@@ -69,7 +69,8 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
     initKinematicChain(kin_nodes);
     cxy_lmicp_lib::cxy_icp_kinematic_chain kc;
-    kc.setKinematicNodes(kin_nodes);
+    std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kc_nodes(std::make_shared(kin_nodes));
+    kc.setKinematicNodes(kc_nodes);
 
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
