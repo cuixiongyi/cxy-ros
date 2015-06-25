@@ -5,15 +5,15 @@
 namespace cxy {
     namespace cxy_lmicp_lib {
 
-    template<typename _Scalar, int _MinimizerType>
-        bool cxy_icp_arti<_Scalar, _MinimizerType>::setModelCloud(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> model)
+        template<typename _Scalar, int _MinimizerType>
+        bool cxy_icp_arti<_Scalar, _MinimizerType>::setKinematicChain(std::auto_ptr<cxy_icp_kinematic_node> kc)
         {
-            
-            hasSetModelCloud_ = true;
+
+            hasSetKC_ = true;
             //pcl::PointCloud<pcl::PointXYZ>::Ptr tmp = boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(*model);
             //translateToCenter(tmp);
             //modelCloud_ = tmp;
-            modelCloud_ = model;
+            kc_ = kc;
             for (int ii = 0; ii < modelCloud_.size(); ++ii)
             {
                 /* code */
@@ -48,7 +48,7 @@ namespace cxy {
     template<typename _Scalar, int _MinimizerType>
         _Scalar cxy_icp_arti<_Scalar, _MinimizerType>::icp_run(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
-            if ( ! hasSetModelCloud_ || ! hasSetDataCloud_)
+            if ( ! hasSetKC_ || ! hasSetDataCloud_)
             {
                 return -1.0;
             }
@@ -61,15 +61,23 @@ namespace cxy {
 
 
     template<typename _Scalar, int _MinimizerType>
-        cxy_icp_arti<_Scalar, _MinimizerType>::cxy_icp_arti()
+        cxy_icp_arti<_Scalar, _MinimizerType>::cxy_icp_arti() :  hasSetKC_(false)
+                , hasSetDataCloud_(false)
+                , func_(nullptr)
         {
 
+        }
+        template<typename _Scalar, int _MinimizerType>
+        cxy_icp_arti<_Scalar, _MinimizerType>::~cxy_icp_arti()
+        {
+            if (func_ != nullptr)
+                delete func_;
         }
 
     template<typename _Scalar, int _MinimizerType>
         int cxy_icp_arti<_Scalar, _MinimizerType>::icp_prepare_cost_function()
         {
-            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
+            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(kc_->size(), this->dataCloud_, this->kdtreeptr_);
             this->func_ = tmp;
             return 1;
         }

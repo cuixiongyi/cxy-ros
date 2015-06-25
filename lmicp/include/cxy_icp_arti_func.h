@@ -44,10 +44,9 @@ namespace cxy
                 typedef Eigen::Matrix<_Scalar,DataAtCompileTime,ParaAtCompileTime> JacobianType;
 
             cxy_icp_arti_func(int nPara
-                    ,pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud
+                    , std::auto_ptr<cxy_icp_kinematic_node> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
-                    , std::auto_ptr<cxy_icp_kinematic_node> kc
             );
 
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const;
@@ -66,7 +65,6 @@ namespace cxy
                 void manifold() const;
 
             private:
-                pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
                 pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
                 pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
                 std::auto_ptr<cxy_icp_kinematic_node> kc_;

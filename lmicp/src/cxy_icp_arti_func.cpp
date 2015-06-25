@@ -1,18 +1,5 @@
 #pragma once
-#include "optimization/cxy_cost_func_abstract.h"
-#include "cxy_transform.h"
-#include "cxy_debug.h"
-#include "common/cxy_common.h"
-#include <cstdlib>
-#include <fstream>
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <iostream>
-#include "pcl/point_cloud.h"
-#include "pcl/point_types.h"
-#include <pcl/kdtree/kdtree_flann.h>
-#include "pcl_ros/transforms.h"
+#include "cxy_icp_arti_func.h"
 
 namespace cxy
 {
@@ -22,14 +9,12 @@ namespace cxy
 
     template<typename _Scalar>
     cxy_icp_arti_func<_Scalar>::cxy_icp_arti_func(int nPara
-                    ,pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud
+                    , std::auto_ptr<cxy_icp_kinematic_node> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
-                    , std::auto_ptr<cxy_icp_kinematic_node> kc
                     )
                     : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, NX, NY>(nPara, dataCloud->size())
     {
-        modelCloud_ = modelCloud;
         dataCloud_ = dataCloud;
         kdtreeptr_ = kdtreeptr;
         kc_ = kc;

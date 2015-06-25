@@ -14,7 +14,7 @@ namespace cxy {
         class cxy_icp_arti
         {
 
-            bool setModelCloud(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> model);
+            bool setKinematicChain(std::auto_ptr<cxy_icp_kinematic_node> kc);
 
 
             inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
@@ -55,7 +55,7 @@ namespace cxy {
             
             double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
 
-            bool hasSetModelCloud_, hasSetDataCloud_;
+            bool hasSetKC_, hasSetDataCloud_;
             cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>*  func_;
 
 
