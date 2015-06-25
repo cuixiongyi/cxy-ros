@@ -5,6 +5,10 @@
 #include "cxy_icp_rigid.h"
 #include "cxy_transform.h"
 #include "cxy_icp_arti.h"
+#include "../../../../../../../usr/include/pcl-1.7/pcl/point_cloud.h"
+#include "../include/cxy_transform.h"
+#include "../include/cxy_icp_kinematic_node.h"
+#include "../include/cxy_icp_kinematic_chain.h"
 //#include "main.h"
 
 using namespace  cxy;
@@ -19,6 +23,8 @@ typedef pcl::PointXYZ PointT;
 pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 
 void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub);
+
+void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes);
 
 int main(int argc, char *argv[])
 {
@@ -59,25 +65,12 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       }
     }
     */
-    const int pointSize = 200;
-    const float delta_X = 0.05;
-    const float delta_Y = 0.025;
-    const float delta_Z = 0.025;
-    data->points().reserve(pointSize);
-    float X = 0.0;
-    float Y = 0.0;
-    float Z = 0.0;
-    for (int ii = 0; ii < pointSize; ++ii)
-    {
-      data->push_back(PointT(X, Y, Z));
-      X += delta_X;
-      if ( X >= 0.3)
-      {
-        Z += delta_Z;
-        X = 0.0;
-      }
-    }
-    
+    std::vector<cxy_icp_kinematic_node<float>> kin_nodes;
+
+    initKinematicChain(kin_nodes);
+    cxy_lmicp_lib::cxy_icp_kinematic_chain kc;
+    kc.setKinematicNodes(kin_nodes);
+
       Eigen::Matrix< float, Eigen::Dynamic, 1> x;
       Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
       /* the following starting values provide a rough fit. */
@@ -92,7 +85,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       x.setZero();
       x(0) = -60.0;
       //x(1) = 0.01;
-
+        
       // do the computation
       cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;
       cxy_lmicp_lib::cxy_icp_rigid<float, 1> lmicp2;
@@ -169,6 +162,36 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
       
 
       std::cout<<x<<std::endl;
+}
+
+void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
+    const int pointSize = 200;
+    const float delta_X = 0.05;
+    const float delta_Y = 0.025;
+    const float delta_Z = 0.025;
+    data->points().reserve(pointSize);
+    float X = 0.0;
+    float Y = 0.0;
+    float Z = 0.0;
+    for (int ii = 0; ii < pointSize; ++ii)
+    {
+        data->push_back(PointT(X, Y, Z));
+        X += delta_X;
+        if ( X >= 0.3)
+        {
+            Z += delta_Z;
+            X = 0.0;
+        }
+    }
+    for (int ii = 0; ii < 2; ++ii)
+    {
+        cxy_lmicp_lib::cxy_icp_kinematic_node<float> kcTmp;
+        kcTmp.setRotateAxis(cxy_transform::Axis::X_axis);
+        kcTmp.setModelCloud(data);
+        kin_nodes.push_back(kcTmp);
+    }
 }
 
 

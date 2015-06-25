@@ -1,5 +1,4 @@
 #pragma once
-#include "optimization/cxy_cost_func_abstract.h"
 #include "cxy_transform.h"
 #include "cxy_debug.h"
 #include "common/cxy_common.h"
@@ -12,7 +11,6 @@
 #include <iostream>
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-#include "pcl_ros/transforms.h"
 
 namespace cxy
 {
@@ -23,10 +21,10 @@ namespace cxy
         {
 			
 			private:
-				cxy_transform::Pose pose_;
+				cxy_transform::Pose<_Scalar> pose_;
 				_Scalar theta_;
 				pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
-				
+				cxy_transform::Axis rotateAxis_;
 				
 				
 			
@@ -35,10 +33,14 @@ namespace cxy
 				
 				pcl::PointCloud<pcl::PointXYZ>::Ptr getTransCloud();
 					
-				
-				
+				cxy_transform::Pose& getPose() {return pose_;}
+				const cxy_transform::Pose& getPose() const {return pose_;}
+
+                void setRotateAxis(cxy_transform::Axis axis) {rotateAxis_ = axis;}
+
+                void setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model) {modelCloud_ = model;}
 			
-		}
+		};
 		
 
 	}

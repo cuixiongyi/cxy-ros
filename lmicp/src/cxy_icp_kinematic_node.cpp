@@ -14,7 +14,8 @@ namespace cxy
 		template<typename _Scalar>
 		pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_node::getTransCloud()
 		{
-			
+			pcl::PointCloud<pcl::PointXYZ>::Ptr tmp;
+			pose_.composePoint()
 		}
 				
 

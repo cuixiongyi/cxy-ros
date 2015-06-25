@@ -100,8 +100,7 @@ namespace cxy
         }
 
         template<typename _Scalar, int NX, int NY>
-        const _Scalar cxy_icp_rigid_func<_Scalar,NX,NY>::matchPointCloud(const PointT& data
-                                                   , Eigen::Matrix< _Scalar, 3, 1>& res) const
+        const _Scalar cxy_icp_rigid_func<_Scalar,NX,NY>::matchPointCloud(const PointT& data  , Eigen::Matrix< _Scalar, 3, 1>& res) const
         {
             static const int K(1);
             std::vector<int> pointIdxNKNSearch(K);
