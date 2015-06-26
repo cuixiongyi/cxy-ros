@@ -31,7 +31,6 @@ namespace cxy
 			public:
 				cxy_icp_kinematic_node();
 				
-				pcl::PointCloud<pcl::PointXYZ>::Ptr getTransCloud();
 					
 				cxy_transform::Pose& getPose() {return pose_;}
 				const cxy_transform::Pose& getPose() const {return pose_;}

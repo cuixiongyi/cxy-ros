@@ -24,31 +24,38 @@ namespace cxy
             }
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
             transCloud->reserve(pointCloudSize);
+            for (int ii = 0; ii < x.rows(); ++ii)
+            {
+                pcl::PointCloud<pcl::PointXYZ>::Ptr tmpCloud (new pcl::PointCloud<pcl::PointXYZ>);
+                tmpCloud = getOneModelCloud(x, ii);
+                for (int jj = 0; jj < tmpCloud->size(); ++jj)
+                {
+                    transCloud->push_back((*tmpCloud)[ii]);
+                    /* code */
+                }
 
+            }
+            return transCloud;
 
         }
 
         template<typename _Scalar>
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int joint)
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint)
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             CXY_ASSERT(x.rows() >= joint);
 
-            unsigned int pointCloudSize = 0;
-            for (int ii = 0; ii < x.rows(); ++ii)
-            {
-                pointCloudSize += (*kc_nodes_)[ii].modelCloud_->size();
-
-            }
+            cxy_transform::Pose pose_world;
+            getPose2Root(x, joint, pose_world);
+            
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
-            transCloud->reserve(pointCloudSize);
-
-
+            pose_world.composePoint((*kc_nodes_)[joint].modelCloud_, transCloud);
+            return transCloud;
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::getPose2Root(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int joint, cxy_transform::Pose& pose)
+        void cxy_icp_kinematic_chain<_Scalar>::getPose2Root(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose& pose)
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
@@ -57,7 +64,8 @@ namespace cxy
             if ( -1 == kc_root_list_[joint])
             {
                 pose = cxy_transform::Pose();
-                pose.
+                pose = cxy_transform::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+                
                 return;
             }
             else
@@ -65,8 +73,11 @@ namespace cxy
                 getPose2Root(x, kc_root_list_[joint], pose);
             }
 
-
-
+            cxy_transform::Pose poseTmp = cxy_transform::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+            cxy_transform::Pose pose_out;
+            pose.composePose(poseTmp, pose_out);
+            pose = pose_out;
+            return;
         }
 
         /*
