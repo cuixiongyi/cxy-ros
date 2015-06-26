@@ -32,7 +32,7 @@ enum Axis : uint8_t
 	private:
 		mutable Eigen::Quaternion<_Scalar> q_;
 		Eigen::Matrix<_Scalar, 3, 1>  t_;
-		bool bhasNormalized_;
+		mutable bool bhasNormalized_;
 	public:
 		// constructor with nan asigned
 		Pose() : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasNormalized_(false) {}
@@ -64,7 +64,6 @@ enum Axis : uint8_t
 			_Scalar w = std::cos( radian / _Scalar(2.0) );
 			Quaternoin q1(q_);
 			Quaternoin q2(w, 0, 0, 0);
-			Pose pose(p_org);
 			switch (axis)
 			{
 				case X_axis : q2.x() = x; break;
@@ -73,11 +72,11 @@ enum Axis : uint8_t
 			}
 			q1.normalize();
 			q2.normalize();
-			pose.q().w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
-			pose.q().x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
-			pose.q().y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
-			pose.q().z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
-			return pose;
+			q_.w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
+			q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
+			q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
+			q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
+
 		}
         static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, const _Scalar & degree, const Pose& p_org = Pose())
         {
@@ -98,7 +97,7 @@ enum Axis : uint8_t
             _Scalar radian = Deg2Rad(theta);
             _Scalar x = std::sin( radian / _Scalar(2.0) );
             _Scalar w = std::cos( radian / _Scalar(2.0) );
-            const Quaternoin& q1(p_org.q());
+            Quaternoin q1(p_org.q());
             Quaternoin q2(w, 0, 0, 0);
             Pose pose(p_org);
 			switch (axis)

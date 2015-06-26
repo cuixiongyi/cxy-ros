@@ -18,6 +18,7 @@ using namespace  cxy;
 
 using namespace cxy_optimization;
 using namespace Eigen;
+using namespace cxy_lmicp_lib;
 
 typedef pcl::PointXYZ PointT;
 
@@ -44,7 +45,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
             pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 
 
-    std::vector<cxy_icp_kinematic_node<float>> kin_nodes;
+    std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>> kin_nodes;
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
     kc_root_list.push_back(0);
@@ -62,7 +63,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
     x(1) = 0.0;
 
     // do the computation
-    cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+    //cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
     //lmicp.setModelCloud(data);
     //lmicp.icp_run(x);
     char c;

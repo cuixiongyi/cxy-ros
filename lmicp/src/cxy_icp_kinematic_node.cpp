@@ -1,4 +1,3 @@
-#pragma once
 
 #include "cxy_icp_kinematic_node.h"
 
@@ -11,11 +10,8 @@ namespace cxy
         {
         }
 
-        template<typename _Scalar>
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_node<_Scalar>::getTransCloud()
-        {
-        }
-
+        
+/*
         template<typename _Scalar>
         cxy_transform::Pose& cxy_icp_kinematic_node<_Scalar>::getPose()
         {
@@ -27,7 +23,7 @@ namespace cxy
         {
             return pose_;
         }
-
+*/
         template<typename _Scalar>
         void cxy_icp_kinematic_node<_Scalar>::setRotateAxis(cxy_transform::Axis axis)
         {

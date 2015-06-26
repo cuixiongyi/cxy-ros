@@ -32,12 +32,12 @@ namespace cxy
 				cxy_icp_kinematic_node();
 				
 					
-				cxy_transform::Pose& getPose() {return pose_;}
-				const cxy_transform::Pose& getPose() const {return pose_;}
+				//cxy_transform::Pose& getPose() {return pose_;}
+				//const cxy_transform::Pose& getPose() const {return pose_;}
 
-                void setRotateAxis(cxy_transform::Axis axis) {rotateAxis_ = axis;}
+                void setRotateAxis(cxy_transform::Axis axis);
 
-                void setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model) {modelCloud_ = model;}
+                void setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
 			
 		};
 		

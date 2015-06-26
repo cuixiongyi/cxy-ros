@@ -1,4 +1,3 @@
-#pragma once
 #include "cxy_icp_kinematic_chain.h"
 
 namespace cxy
@@ -39,6 +38,8 @@ namespace cxy
 
         }
 
+
+
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint)
         {
@@ -46,7 +47,7 @@ namespace cxy
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             CXY_ASSERT(x.rows() >= joint);
 
-            cxy_transform::Pose pose_world;
+            cxy_transform::Pose<_Scalar> pose_world;
             getPose2Root(x, joint, pose_world);
             
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -55,7 +56,7 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::getPose2Root(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose& pose)
+        void cxy_icp_kinematic_chain<_Scalar>::getPose2Root(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose<_Scalar>& pose)
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
@@ -63,8 +64,8 @@ namespace cxy
 
             if ( -1 == kc_root_list_[joint])
             {
-                pose = cxy_transform::Pose();
-                pose = cxy_transform::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+                pose = cxy_transform::Pose<_Scalar>();
+                pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
                 
                 return;
             }
@@ -73,8 +74,8 @@ namespace cxy
                 getPose2Root(x, kc_root_list_[joint], pose);
             }
 
-            cxy_transform::Pose poseTmp = cxy_transform::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
-            cxy_transform::Pose pose_out;
+            cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+            cxy_transform::Pose<_Scalar> pose_out;
             pose.composePose(poseTmp, pose_out);
             pose = pose_out;
             return;
@@ -94,7 +95,7 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(const std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes)
+        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes)
         {
             CXY_ASSERT(nullptr == kin_nodes );
             kc_nodes_ = kin_nodes;
@@ -102,7 +103,7 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicRootList(const std::vector<int> &list)
+        void cxy_icp_kinematic_chain<_Scalar>::setKinematicRootList(std::vector<int> &list)
         {
             CXY_ASSERT( 0 == list.size() );
 

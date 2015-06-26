@@ -1,4 +1,3 @@
-#pragma once
 #include "cxy_icp_arti_func.h"
 
 namespace cxy
@@ -9,11 +8,11 @@ namespace cxy
 
     template<typename _Scalar>
     cxy_icp_arti_func<_Scalar>::cxy_icp_arti_func(int nPara
-                    , std::auto_ptr<cxy_icp_kinematic_node> kc
+                    , std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
                     )
-                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, NX, NY>(nPara, dataCloud->size())
+                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, Eigen::Dynamic, Eigen::Dynamic>(nPara, dataCloud->size())
     {
         dataCloud_ = dataCloud;
         kdtreeptr_ = kdtreeptr;
@@ -176,7 +175,7 @@ namespace cxy
 
     template<typename _Scalar>
 
-    const Matrix cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
+    const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
                                         const std::vector<_Scalar> &para
                                         , const pcl::PointXYZ& a) const
     {

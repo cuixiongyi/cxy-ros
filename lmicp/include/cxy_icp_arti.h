@@ -14,7 +14,7 @@ namespace cxy {
         class cxy_icp_arti
         {
 
-            bool setKinematicChain(std::auto_ptr<cxy_icp_kinematic_node> kc);
+            bool setKinematicChain(std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc);
 
 
             inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
@@ -42,6 +42,7 @@ namespace cxy {
 
         public:
             cxy_icp_arti();
+            ~cxy_icp_arti();
 
 
 
@@ -62,7 +63,7 @@ namespace cxy {
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
             std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> modelCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
-            std::auto_ptr<cxy_icp_kinematic_node> kc_;
+            std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 
 
 

@@ -44,7 +44,7 @@ namespace cxy
                 typedef Eigen::Matrix<_Scalar,DataAtCompileTime,ParaAtCompileTime> JacobianType;
 
             cxy_icp_arti_func(int nPara
-                    , std::auto_ptr<cxy_icp_kinematic_node> kc
+                    , std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
             );
@@ -66,8 +66,9 @@ namespace cxy
 
             private:
                 pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
+                pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
                 pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
-                std::auto_ptr<cxy_icp_kinematic_node> kc_;
+                std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 
 
         };

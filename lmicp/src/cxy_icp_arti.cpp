@@ -1,4 +1,3 @@
-#pragma once
 
 #include "cxy_icp_arti.h"
 
@@ -6,7 +5,7 @@ namespace cxy {
     namespace cxy_lmicp_lib {
 
         template<typename _Scalar, int _MinimizerType>
-        bool cxy_icp_arti<_Scalar, _MinimizerType>::setKinematicChain(std::auto_ptr<cxy_icp_kinematic_node> kc)
+        bool cxy_icp_arti<_Scalar, _MinimizerType>::setKinematicChain(std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc)
         {
 
             hasSetKC_ = true;
@@ -77,7 +76,7 @@ namespace cxy {
     template<typename _Scalar, int _MinimizerType>
         int cxy_icp_arti<_Scalar, _MinimizerType>::icp_prepare_cost_function()
         {
-            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(kc_->size(), this->dataCloud_, this->kdtreeptr_);
+            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(kc_->size(), kc_, this->dataCloud_, this->kdtreeptr_);
             this->func_ = tmp;
             return 1;
         }
