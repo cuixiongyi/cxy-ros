@@ -38,9 +38,9 @@ namespace cxy
             void setKinematicNodes( std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes);
             void setKinematicRootList( std::vector<int>& list);
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint);
-            void getPose2Root(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose<_Scalar>& pose);
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint);
+            void getKinematicPose2World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose<_Scalar>& pose);
 
             inline const int size() {CXY_ASSERT( kc_root_list_.size() == kc_nodes_->size());
                                     return kc_root_list_.size();};
