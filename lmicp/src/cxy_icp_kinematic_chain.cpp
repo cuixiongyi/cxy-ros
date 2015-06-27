@@ -13,9 +13,8 @@ namespace cxy
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x)
         {
-            CXY_ASSERT(0);
             CXY_ASSERT(1);
-            CXY_ASSERT(x.rows() != kc_nodes_->size());
+            CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             unsigned int pointCloudSize = 0;
             for (int ii = 0; ii < x.rows(); ++ii)
