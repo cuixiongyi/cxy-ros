@@ -62,23 +62,18 @@ int main(int argc, char *argv[])
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
     Eigen::Matrix< float, Eigen::Dynamic, 1> x2;
     /* the following starting values provide a rough fit. */
-    x2.resize(7);
-    x2.setZero();
-    x2(3) = 1.0;
-    x2(4) = 0.01;
-    x2(5) = 0.01;
-    x2(6) = 0.01;
-
-    x.resize(1);
+    x.resize(7);
     x.setZero();
-    x(0) = -50.0;
+    x(3) = 1.0;
+    x(4) = 0.01;
+    x(5) = 0.01;
+    x(6) = 0.01;
+
     //x(1) = 0.01;
 
     // do the computation
-    cxy_lmicp_lib::cxy_icp_arti<float, 2> lmicp;
-    cxy_lmicp_lib::cxy_icp_rigid<float, 1> lmicp2;
+    cxy_lmicp_lib::cxy_icp_rigid<float, 1> lmicp;
     lmicp.setModelCloud(data);
-    lmicp2.setModelCloud(data);
     //lmicp.icp_run(x);
     char c;
     pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
@@ -88,7 +83,6 @@ int main(int argc, char *argv[])
 
     pose.composePoint(data, transPoint);
     lmicp.setDataCloud(transPoint);
-    lmicp2.setDataCloud(transPoint);
     cxy_transform::Pose<float> t1_0;
     while (1)
     {
@@ -116,21 +110,7 @@ int main(int argc, char *argv[])
             publish(resultPoint, pub_model_pointcloud_);
             continue;
         }
-        if ('l' == c)
-        {
-            lmicp2.icp_run(x2);
-            cxy_transform::Pose<float> pose2;
-            pose2.q().w() = x2(3);
-            pose2.q().x() = x2(4);
-            pose2.q().y() = x2(5);
-            pose2.q().z() = x2(6);
-            pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-            pose2.composePoint(transPoint, resultPoint);
-            std::cout<<"result = "<<x2(0)<<"  "<<x2(1)<<"  "<<x2(2)<<"  "<<x2(3)<<"  "<<x2(4)<<"  "<<x2(5)<<"  "<<x2(6)<<std::endl;
-            publish(data, pub_data_pointcloud_);
-            publish(resultPoint, pub_model_pointcloud_);
-            continue;
-        }
+        
 
         while (1)
         {

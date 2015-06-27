@@ -13,7 +13,9 @@ namespace cxy
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x)
         {
-            CXY_ASSERT(x.rows() == kc_nodes_->size());
+            CXY_ASSERT(0);
+            CXY_ASSERT(1);
+            CXY_ASSERT(x.rows() != kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             unsigned int pointCloudSize = 0;
             for (int ii = 0; ii < x.rows(); ++ii)
@@ -83,21 +85,21 @@ namespace cxy
 
         /*
         template<typename _Scalar>
-        std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes()
+        std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes()
         {
             return kc_nodes_;
         }*/
 
         template<typename _Scalar>
-        const std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes() const
+        const std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes() const
         {
             return kc_nodes_;
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::auto_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes)
+        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes)
         {
-            CXY_ASSERT(nullptr == kin_nodes );
+            CXY_ASSERT(nullptr != kin_nodes );
             kc_nodes_ = kin_nodes;
             return;
         }
@@ -105,7 +107,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::setKinematicRootList(std::vector<int> &list)
         {
-            CXY_ASSERT( 0 == list.size() );
+            CXY_ASSERT( 0 != list.size() );
 
             kc_root_list_ = list;
             return;

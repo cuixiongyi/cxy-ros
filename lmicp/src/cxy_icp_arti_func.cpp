@@ -8,7 +8,7 @@ namespace cxy
 
     template<typename _Scalar>
     cxy_icp_arti_func<_Scalar>::cxy_icp_arti_func(int nPara
-                    , std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
+                    , std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
                     )

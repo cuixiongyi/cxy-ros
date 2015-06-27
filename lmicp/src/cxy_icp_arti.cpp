@@ -5,7 +5,7 @@ namespace cxy {
     namespace cxy_lmicp_lib {
 
         template<typename _Scalar, int _MinimizerType>
-        bool cxy_icp_arti<_Scalar, _MinimizerType>::setKinematicChain(std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc)
+        bool cxy_icp_arti<_Scalar, _MinimizerType>::setKinematicChain(std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc)
         {
 
             hasSetKC_ = true;

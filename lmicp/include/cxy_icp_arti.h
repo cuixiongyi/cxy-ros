@@ -5,8 +5,8 @@
 #include "cxy_icp_arti_func.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "optimization/cxy_nonlinear_minimizer_LM.h"
+#include <memory>
 #include "cxy_debug.h"
-#include "../../../../../../../usr/include/c++/4.8/backward/auto_ptr.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {
@@ -14,7 +14,7 @@ namespace cxy {
         class cxy_icp_arti
         {
 
-            bool setKinematicChain(std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc);
+            bool setKinematicChain(std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc);
 
 
             inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
@@ -63,7 +63,7 @@ namespace cxy {
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
             std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> modelCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
-            std::auto_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
+            std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 
 
 
