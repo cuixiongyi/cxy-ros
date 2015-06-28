@@ -1,6 +1,8 @@
 #pragma once
 #include "iostream"
-#define ENABLE_CXY_ASSERT 
+//#define ENABLE_CXY_ASSERT 
+
+/*
 #ifdef ENABLE_CXY_ASSERT
 #   define CXY_ASSERT(condition, message) \
     do { \
@@ -13,7 +15,7 @@
 #else
 #   define ASSERT(condition, message) do { } while (false)
 #endif
-
+*/
 
 #ifdef ENABLE_CXY_ASSERT
 #   define CXY_ASSERT(condition) \

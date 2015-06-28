@@ -19,7 +19,6 @@ endif()
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
-find_package(VXL REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.7 REQUIRED common io visualization)
 find_package(Boost REQUIRED)
@@ -58,7 +57,7 @@ add_library(lmicp_lib
 
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}  ${EIGEN3_LIBRARIES} )#dlib)
 
 
 catkin_package(

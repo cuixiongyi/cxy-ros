@@ -30,7 +30,8 @@ namespace cxy
                 tmpCloud = getOneModelCloud_World(x, ii);
                 for (int jj = 0; jj < tmpCloud->size(); ++jj)
                 {
-                    transCloud->push_back((*tmpCloud)[ii]);
+                    transCloud->push_back((*tmpCloud)[jj]);
+                    //ROS_INFO_STREAM((*kc_nodes_)[joint].modelCloud_[ii].x<<" "<<(*kc_nodes_)[joint].modelCloud_[ii].y<<"  "<<[ii].z);
                     /* code */
                 }
 
@@ -50,7 +51,8 @@ namespace cxy
 
             cxy_transform::Pose<_Scalar> pose_world;
             getKinematicPose2World(x, joint, pose_world);
-            
+            //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
+
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
             pose_world.composePoint((*kc_nodes_)[joint].modelCloud_, transCloud);
             return transCloud;
@@ -67,7 +69,7 @@ namespace cxy
             {
                 pose = cxy_transform::Pose<_Scalar>();
                 pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
-                ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose);
+                //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
                 return;
             }
             else
@@ -79,8 +81,8 @@ namespace cxy
             cxy_transform::Pose<_Scalar> pose_out;
             pose.composePose(poseTmp, pose_out);
             pose = pose_out;
-            ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose);
-            
+            //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
+
             return;
         }
 
