@@ -823,7 +823,7 @@ inline  const float LM_ICP::searchMatchPoints(const PointT& data
         for (int i = 0; i < model_filenames_.size(); i++)
         {
 
-            //rotateOrientation(q, RotationAxis::X_AXIS, -M_PI_2);
+            //rotateOrientation(q, RotationAxis::X_axis_rotation, -M_PI_2);
 
             marker.header.frame_id = estimate_frame_id_;
             marker.header.stamp = ros::Time::now();
@@ -920,7 +920,7 @@ int main(int argc, char *argv[])
     else if (2 == t)
     {
             cxy_transform::Pose<float> pose;
-          pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
 
           pose.composePoint(data, transPoint);
           model = transPoint;

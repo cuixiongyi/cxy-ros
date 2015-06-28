@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
 
     cxy_transform::Pose<float> pose;
-    pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+    pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
 
     pose.composePoint(data, transPoint);
     lmicp.setDataCloud(transPoint);
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
             float in;
             cxy_transform::Pose<float> pose2;
             std::cin>>in;
-            pose2.rotateByAxis(cxy_transform::Axis::X_axis, in);
+            pose2.rotateByAxis(cxy_transform::Axis::X_axis_rotation, in);
 
             pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
             pose2.composePoint(transPoint, resultPoint);

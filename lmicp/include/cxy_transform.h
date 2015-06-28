@@ -18,9 +18,12 @@ namespace cxy_transform
 
 enum Axis : uint8_t
 		{
-			X_axis = 1,
-			Y_axis = 2,
-			Z_axis = 3,
+			X_axis_rotation = 1,
+			Y_axis_rotation = 2,
+			Z_axis_rotation = 3,
+			x_axis_translation = 4,
+			Y_axis_translation = 5,
+			Z_axis_translation = 6,
 		};
 		
     template <typename _Scalar>
@@ -66,9 +69,9 @@ enum Axis : uint8_t
 			Quaternoin q2(w, 0, 0, 0);
 			switch (axis)
 			{
-				case X_axis : q2.x() = x; break;
-				case Y_axis : q2.y() = x; break;
-				case Z_axis : q2.z() = x; break;
+				case X_axis_rotation : q2.x() = x; break;
+				case Y_axis_rotation : q2.y() = x; break;
+				case Z_axis_rotation : q2.z() = x; break;
 			}
 			q1.normalize();
 			q2.normalize();
@@ -102,9 +105,9 @@ enum Axis : uint8_t
             Pose pose(p_org);
 			switch (axis)
 			{
-				case X_axis : q2.x() = x; break;
-				case Y_axis : q2.y() = x; break;
-				case Z_axis : q2.z() = x; break;
+				case X_axis_rotation : q2.x() = x; break;
+				case Y_axis_rotation : q2.y() = x; break;
+				case Z_axis_rotation : q2.z() = x; break;
 			}
 			q1.normalize();
 			q2.normalize();

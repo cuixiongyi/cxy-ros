@@ -37,7 +37,7 @@ namespace cxy
         //std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
         _Scalar res(0.0);
         cxy_transform::Pose<_Scalar> pose;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis, x(0));
+        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
         pose.normalize();
         std::vector<_Scalar> vPara(7);
         vPara[0] = 0.0;
@@ -74,7 +74,7 @@ namespace cxy
     _Scalar cxy_icp_arti_func<_Scalar>::df(ParaType & x, JacobianType& fjac) const
     {
         cxy_transform::Pose<_Scalar> pose;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis, x(0));
+        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
         pose.normalize();
         std::vector<_Scalar> vPara(7);
         vPara[0] = x(0);
@@ -223,7 +223,7 @@ namespace cxy
             cxy_transform::Pose<_Scalar> pose;
 
             counter1 += delta;
-            pose.rotateByAxis(cxy_transform::Axis::X_axis, counter1);
+            pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, counter1);
             std::vector<_Scalar> vPara(7);
             _Scalar res(0.0);
             _Scalar jac(0.0);

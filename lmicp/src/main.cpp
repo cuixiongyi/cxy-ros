@@ -141,7 +141,7 @@ void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>
             kcTmp.pose_.t()(2) = Z;
             /* code */
         }
-        kcTmp.setRotateAxis(cxy_transform::Axis::X_axis);
+        kcTmp.setRotateAxis(cxy_transform::Axis::X_axis_rotation);
         kcTmp.setModelCloud(data);
         kin_nodes.push_back(kcTmp);
     }
@@ -172,7 +172,7 @@ char c;
         std::cin>>c;
         if ('n' == c)
             break;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
         pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
         pose.composePoint(data, transPoint);
 
