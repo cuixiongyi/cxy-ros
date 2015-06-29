@@ -14,7 +14,7 @@ namespace cxy
                     , int joint
                     , Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full
                     )
-                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, Eigen::Dynamic, Eigen::Dynamic>(nPara, (*kc)[joint].modelCloud_->size())
+                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, Eigen::Dynamic, Eigen::Dynamic>(nPara, kc->getModelCloud(joint)->size())
     {
         dataCloud_ = dataCloud;
         kdtreeptr_ = kdtreeptr;
@@ -37,14 +37,15 @@ namespace cxy
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        transCloud = kc_->getOneModelCloud_World(x_full_, ii, pose);
-        for (unsigned int jj = 0; jj < transCloud->size(); ++ii)
+        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose);
+        fvec.resize(transCloud->size(), 1);
+        for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
             //pose.composePoint((*transCloud)[ii], transPoint);
             Eigen::Matrix< _Scalar, 3, 1> r3;
-            fvec[ii] = matchPointCloud((*transCloud)[ii], r3);
-            res += fvec[ii];
+            fvec[jj] = matchPointCloud((*transCloud)[jj], r3);
+            res += fvec[jj];
             ++counter;
 
         }
@@ -75,20 +76,21 @@ namespace cxy
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        transCloud = kc_->getOneModelCloud_World(x_full_, ii, pose);
-        for (unsigned int jj = 0; jj < transCloud->size(); ++ii)
+        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose);
+        fjac.resize(transCloud->size(), 1);
+        for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
             //pose.composePoint((*transCloud)[ii], transPoint);
             Eigen::Matrix< _Scalar, 3, 1> r3;
-            matchPointCloud((*transCloud)[ii], r3);
+            matchPointCloud((*transCloud)[jj], r3);
             
             //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
             //ROS_INFO_STREAM("r3 = "<<r3);
             Matrix jac34(calculateJacobianKernel(x
                                                 , pose
                                                 , transPoint)); //(*dataCloud_)[ii]));
-            if (ii == 700)
+            if (jj == 700)
             {
                 //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
                 //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
@@ -113,12 +115,12 @@ namespace cxy
             fjac(ii, 4) = jq(1);
             fjac(ii, 5) = jq(2);
             fjac(ii, 6) = jq(3);*/
-            fjac(ii, 0) = jq(0);
+            fjac(jj, 0) = jq(0);
             //fjac(ii, 1) = jq(1);
 
 
-            if (ii == 20)
-                std::cout<<" cols = "<<jq.cols()<<" rows = "<<jq.rows()<<"  j = "<<jq<<std::endl;
+            //if (jj == 20)
+            //    std::cout<<" cols = "<<jq.cols()<<" rows = "<<jq.rows()<<"  j = "<<jq<<std::endl;
             //std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
 
         }
@@ -173,7 +175,7 @@ namespace cxy
     {
         const int n(2);
         //ROS_INFO_STREAM("JacoIn "<<para[0]<<"  "<<para[3]<<"  "<<para[4]);
-        Eigen::Quaternion<_Scalar>& q(para_pose.q());
+        const Eigen::Quaternion<_Scalar>& q(para_pose.q());
         Matrix jacQuat;
         jacQuat.resize(2, n);
         jacQuat.setZero();
@@ -212,6 +214,7 @@ namespace cxy
         int counter1(0);
         while (1)
         {
+            /*
             cxy_transform::Pose<_Scalar> pose;
 
             counter1 += delta;
@@ -253,7 +256,7 @@ namespace cxy
             fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;
             if (counter1 >= 361)
                 std::exit(1);
-
+            */
         }
         return ;
 

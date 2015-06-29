@@ -49,6 +49,8 @@ namespace cxy
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
                     , int joint
+                    , Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full
+                    
             );
 
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const;

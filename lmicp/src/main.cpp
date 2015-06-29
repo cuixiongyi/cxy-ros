@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr data(new pcl::PointCloud<PointT>);
     pcl::PointCloud<PointT>::Ptr model(new pcl::PointCloud<PointT>);
 
-ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
+    ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
             ros::NodeHandle nh_, pnh_;
 
             pub_model_ = nh_.advertise<visualization_msgs::MarkerArray>("model", 5);
@@ -60,7 +60,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
     x.resize(2);
     x.setZero();
     x(0) = 0.0;
-    x(1) = 0.0;
+    x(1) = 40.0;
 
 
     // do the computation
@@ -84,7 +84,7 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 
             publish(kin_nodes[1].modelCloud_, pub_data_pointcloud_);
             publish(resultPoint, pub_model_pointcloud_);
-            std::cin>>x2;
+            //std::cin>>x2;
             //std::cout<<resultPoint->size()<<std::endl;
             x(1) = x2;
           continue;
@@ -93,7 +93,13 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
         {
 
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+        x(1) = 0.0;
 
+
+          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          arti_icp.setKinematicChain(kc);
+          arti_icp.setDataCloud(transPoint);
+          arti_icp.icp_run(x)
           publish(data, pub_data_pointcloud_);
           publish(resultPoint, pub_model_pointcloud_);
           continue;

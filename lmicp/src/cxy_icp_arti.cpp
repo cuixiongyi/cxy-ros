@@ -69,8 +69,7 @@ namespace cxy {
         template<typename _Scalar, int _MinimizerType>
         cxy_icp_arti<_Scalar, _MinimizerType>::~cxy_icp_arti()
         {
-            if (func_ != nullptr)
-                delete func_;
+            
         }
 
     template<typename _Scalar, int _MinimizerType>
@@ -96,6 +95,7 @@ namespace cxy {
                     x_joint.resize(1);
                     x_joint(0) = x(ii);
                     lm2.lmder1(x_joint);
+                    x(ii) = x_joint(0);
                 }
                 
             }

@@ -27,7 +27,7 @@ namespace cxy
             for (int ii = 0; ii < x.rows(); ++ii)
             {
                 pcl::PointCloud<pcl::PointXYZ>::Ptr tmpCloud (new pcl::PointCloud<pcl::PointXYZ>);
-                cxy_transform::Pose<_Scalar>& pose;
+                cxy_transform::Pose<_Scalar> pose;
                 tmpCloud = getOneModelCloud_World(x, ii, pose);
                 for (int jj = 0; jj < tmpCloud->size(); ++jj)
                 {

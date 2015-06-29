@@ -31,7 +31,10 @@ namespace cxy
         public:
             cxy_icp_kinematic_chain();
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getTransCloud();
+            inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr getModelCloud(int joint)
+            {   CXY_ASSERT(joint < 0 || joint > kc_nodes_->size());
+                return (*kc_nodes_)[joint].modelCloud_;
+                };
 
             //std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes();
             const std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes() const;
@@ -42,7 +45,7 @@ namespace cxy
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
                                             const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                           , const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose)
+                                          , cxy_transform::Pose<_Scalar>& pose);
             pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
             void getKinematicPose2World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose<_Scalar>& pose);
 
