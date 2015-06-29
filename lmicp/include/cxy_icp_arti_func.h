@@ -48,6 +48,7 @@ namespace cxy
                     , std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
+                    , int joint
             );
 
                 _Scalar operator()(ParaType & x, ResidualType& fvec) const;
@@ -59,17 +60,20 @@ namespace cxy
                 const _Scalar matchPointCloud(const PointT& data
                                                , Eigen::Matrix< _Scalar, 3, 1>& res) const;
 
-                const Matrix calculateJacobianKernel(const std::vector<_Scalar> &para
-                                                                           , const pcl::PointXYZ& a) const;
+                const Matrix calculateJacobianKernel(
+                                                const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
+                                               , const cxy_transform::Pose<_Scalar> &para_pose
+                                               , const pcl::PointXYZ& a) const;
 
 
                 void manifold() const;
 
             private:
                 pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
-                pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
                 pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
                 std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
+                int joint_;
+                Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full_;
 
 
         };

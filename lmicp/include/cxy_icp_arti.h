@@ -57,11 +57,10 @@ namespace cxy {
             double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
 
             bool hasSetKC_, hasSetDataCloud_;
-            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>*  func_;
+            std::shared_ptr<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>  func_;
 
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
-            std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> modelCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
             std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 

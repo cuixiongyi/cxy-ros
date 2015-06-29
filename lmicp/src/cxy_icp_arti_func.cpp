@@ -11,12 +11,16 @@ namespace cxy
                     , std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc
                     , pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud
                     , pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr
+                    , int joint
+                    , Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full
                     )
-                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, Eigen::Dynamic, Eigen::Dynamic>(nPara, dataCloud->size())
+                    : cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar, Eigen::Dynamic, Eigen::Dynamic>(nPara, (*kc)[joint].modelCloud_->size())
     {
         dataCloud_ = dataCloud;
         kdtreeptr_ = kdtreeptr;
         kc_ = kc;
+        joint_ = joint;
+        x_full_ = x_full;
     }
 
     template<typename _Scalar>
@@ -28,40 +32,33 @@ namespace cxy
             this->manifold();
         }
         /// test manifold end
+        _Scalar res(0.0);
+        int counter = 0;
+        
+        pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
+        cxy_transform::Pose<_Scalar> pose;
+        transCloud = kc_->getOneModelCloud_World(x_full_, ii, pose);
+        for (unsigned int jj = 0; jj < transCloud->size(); ++ii)
+        {
+            pcl::PointXYZ transPoint;
+            //pose.composePoint((*transCloud)[ii], transPoint);
+            Eigen::Matrix< _Scalar, 3, 1> r3;
+            fvec[ii] = matchPointCloud((*transCloud)[ii], r3);
+            res += fvec[ii];
+            ++counter;
 
+        }
+        
+        res = res / counter;
         static int ac = 0;
         //ROS_INFO_STREAM("Call f the 1   "<<++ac);
 
 
-        //ROS_INFO_STREAM("Call f the 2   "<<ac);
-        //std::cout<<x(0)<<" "<<x(1)<<" "<<x(2)<<"  q= "<<x(3)<<" "<<x(4)<<" "<<x(5)<<" "<<x(6)<<std::endl;
-        _Scalar res(0.0);
-        cxy_transform::Pose<_Scalar> pose;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
-        pose.normalize();
-        std::vector<_Scalar> vPara(7);
-        vPara[0] = 0.0;
-        vPara[1] = .0;
-        vPara[2] = .0;
-        vPara[3] = pose.q().w();
-        vPara[4] = pose.q().x();
-        vPara[5] = .0;
-        vPara[6] = .0;
-
-        for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
-        {
-            pcl::PointXYZ transPoint;
-            pose.composePoint((*dataCloud_)[ii], transPoint);
-            Eigen::Matrix< _Scalar, 3, 1> r3;
-            fvec[ii] = matchPointCloud(transPoint, r3);
-            res += fvec[ii];
-
-        }
-        res = res / this->values();
+        
         ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
 
 
-        ROS_INFO_STREAM("theta =  "<<x(0));
+        //ROS_INFO_STREAM("theta =  "<<x(0));
         if (0)
         {
             static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
@@ -73,30 +70,24 @@ namespace cxy
     template<typename _Scalar>
     _Scalar cxy_icp_arti_func<_Scalar>::df(ParaType & x, JacobianType& fjac) const
     {
+        _Scalar res(0.0);
+        int counter = 0;
+        
+        pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
-        pose.normalize();
-        std::vector<_Scalar> vPara(7);
-        vPara[0] = x(0);
-        vPara[1] = .0;
-        vPara[2] = .0;
-        vPara[3] = pose.q().w();
-        vPara[4] = pose.q().x();
-        vPara[5] = .0;
-        vPara[6] = .0;
-
-        for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
+        transCloud = kc_->getOneModelCloud_World(x_full_, ii, pose);
+        for (unsigned int jj = 0; jj < transCloud->size(); ++ii)
         {
             pcl::PointXYZ transPoint;
-            pose.composePoint((*dataCloud_)[ii], transPoint);
+            //pose.composePoint((*transCloud)[ii], transPoint);
             Eigen::Matrix< _Scalar, 3, 1> r3;
-            matchPointCloud(transPoint, r3);
-
-
+            matchPointCloud((*transCloud)[ii], r3);
+            
             //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
             //ROS_INFO_STREAM("r3 = "<<r3);
-            Matrix jac34(calculateJacobianKernel(vPara
-                    , transPoint)); //(*dataCloud_)[ii]));
+            Matrix jac34(calculateJacobianKernel(x
+                                                , pose
+                                                , transPoint)); //(*dataCloud_)[ii]));
             if (ii == 700)
             {
                 //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
@@ -139,8 +130,8 @@ namespace cxy
 
 
     template<typename _Scalar>
-    const _Scalar cxy_icp_arti_func<_Scalar>::matchPointCloud(const PointT& data
-                                    , Eigen::Matrix< _Scalar, 3, 1>& res) const
+    const _Scalar cxy_icp_arti_func<_Scalar>::matchPointCloud(const PointT& model
+                                                            , Eigen::Matrix< _Scalar, 3, 1>& res) const
     {
         static const int K(1);
         std::vector<int> pointIdxNKNSearch(K);
@@ -149,7 +140,7 @@ namespace cxy
         if (nullptr == kdtreeptr_)
             ROS_INFO("nullptr kdtree");
 
-        if ( 0 == kdtreeptr_->nearestKSearch (data, K, pointIdxNKNSearch, pointNKNSquaredDistance)  )
+        if ( 0 == kdtreeptr_->nearestKSearch (model, K, pointIdxNKNSearch, pointNKNSquaredDistance)  )
         {
             return std::nanf("");
         }
@@ -160,12 +151,12 @@ namespace cxy
         }
         */
         /// Use Euclidean distance
-        const pcl::PointXYZ& pTmp((*modelCloud_)[pointIdxNKNSearch[0]]);
+        const pcl::PointXYZ& data((*dataCloud_)[pointIdxNKNSearch[0]]);
         //ROS_INFO_STREAM("closet point = "<<pTmp.x<<" "<<pTmp.y<<" "<<pTmp.z);
         //ROS_INFO_STREAM(" ");
-        res(0) = pTmp.x - data.x;
-        res(1) = pTmp.y - data.y;
-        res(2) = pTmp.z - data.z;
+        res(0) = data.x - model.x;
+        res(1) = data.y - model.y;
+        res(2) = data.z - model.z;
         //int signTmp = 1;//(res(0)+res(1)+res(2)) > 0 ? 1 : -1;
         //ROS_INFO_STREAM(rtmp);
 
@@ -176,12 +167,13 @@ namespace cxy
     template<typename _Scalar>
 
     const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
-                                        const std::vector<_Scalar> &para
-                                        , const pcl::PointXYZ& a) const
+                                                const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
+                                            , const cxy_transform::Pose<_Scalar> &para_pose
+                                            , const pcl::PointXYZ& a) const
     {
         const int n(2);
         //ROS_INFO_STREAM("JacoIn "<<para[0]<<"  "<<para[3]<<"  "<<para[4]);
-        Eigen::Quaternionf q(para[3], para[4], 0.0, 0.0);
+        Eigen::Quaternion<_Scalar>& q(para_pose.q());
         Matrix jacQuat;
         jacQuat.resize(2, n);
         jacQuat.setZero();
@@ -199,7 +191,7 @@ namespace cxy
 
         normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
         Matrix JacTheata(2,1);
-        JacTheata<< -std::sin(Deg2Rad(para[0]/2)), std::cos(Deg2Rad(para[0]/2));
+        JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
 
         /*
          [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();

@@ -27,7 +27,8 @@ namespace cxy
             for (int ii = 0; ii < x.rows(); ++ii)
             {
                 pcl::PointCloud<pcl::PointXYZ>::Ptr tmpCloud (new pcl::PointCloud<pcl::PointXYZ>);
-                tmpCloud = getOneModelCloud_World(x, ii);
+                cxy_transform::Pose<_Scalar>& pose;
+                tmpCloud = getOneModelCloud_World(x, ii, pose);
                 for (int jj = 0; jj < tmpCloud->size(); ++jj)
                 {
                     transCloud->push_back((*tmpCloud)[jj]);
@@ -43,23 +44,30 @@ namespace cxy
 
 
         template<typename _Scalar>
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint)
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
+                                            const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
+                                          , const int& joint
+                                          , cxy_transform::Pose<_Scalar>& pose)
+                                        
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             CXY_ASSERT(x.rows() >= joint);
 
-            cxy_transform::Pose<_Scalar> pose_world;
-            getKinematicPose2World(x, joint, pose_world);
+            //cxy_transform::Pose<_Scalar> pose_world;
+            getKinematicPose2World(x, joint, pose);
             //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
-            pose_world.composePoint((*kc_nodes_)[joint].modelCloud_, transCloud);
+            pose.composePoint((*kc_nodes_)[joint].modelCloud_, transCloud);
             return transCloud;
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x, const int& joint, cxy_transform::Pose<_Scalar>& pose)
+        void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
+                                              const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
+                                            , const int& joint
+                                            , cxy_transform::Pose<_Scalar>& pose)
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());

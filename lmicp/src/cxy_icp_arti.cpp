@@ -13,16 +13,16 @@ namespace cxy {
             //translateToCenter(tmp);
             //modelCloud_ = tmp;
             kc_ = kc;
-            for (int ii = 0; ii < modelCloud_.size(); ++ii)
+            /*
+            for (int ii = 0; ii < (*kc_).size(); ++ii)
             {
-                /* code */
                 CXY_ASSERT(nullptr == modelCloud_[ii]);
                 if (nullptr == modelCloud_[ii] || modelCloud_[ii]->size() < 5)
                 {
                     return false;
                 }
             }
-
+            */
             return true;
 
         }
@@ -76,8 +76,7 @@ namespace cxy {
     template<typename _Scalar, int _MinimizerType>
         int cxy_icp_arti<_Scalar, _MinimizerType>::icp_prepare_cost_function()
         {
-            cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(kc_->size(), kc_, this->dataCloud_, this->kdtreeptr_);
-            this->func_ = tmp;
+            //func_ = std::make_shared<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>(kc_->size(), kc_, this->dataCloud_, this->kdtreeptr_);
             return 1;
         }
 
@@ -85,21 +84,22 @@ namespace cxy {
         _Scalar cxy_icp_arti<_Scalar, _MinimizerType>::icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
             cxy_optimization::cxy_nonlinear_method state(static_cast<cxy_optimization::cxy_nonlinear_method>(_MinimizerType));
-            switch (state)
+            if ( cxy_optimization::cxy_nonlinear_method::EIGEN_MINPACK == state)
             {
-                case cxy_optimization::cxy_nonlinear_method::CXY_LEVENBERG_MARQUARDT :  
-                {
-                    cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
-                    return lm.minimize(x);
-                }
-                case cxy_optimization::cxy_nonlinear_method::EIGEN_MINPACK :  
-                {
-                    Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm2(*this->func_);
-                    return lm2.lmder1(x);
-                }
 
+                for (int ii = 0; ii < kc_->size(); ii++)
+                {
+                    func_ = std::make_shared<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>(1, kc_, this->dataCloud_, this->kdtreeptr_, ii, x);
 
+                    Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm2(*func_);
+                    Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x_joint;
+                    x_joint.resize(1);
+                    x_joint(0) = x(ii);
+                    lm2.lmder1(x_joint);
+                }
+                
             }
+           
             //cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
             //return lm.minimize(x);
         }

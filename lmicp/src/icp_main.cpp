@@ -201,7 +201,7 @@ char c;
         std::cin>>c;
         if ('n' == c)
             break;
-        pose.rotateByAxis(cxy_transform::Axis::X_axis, 30.0);
+        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
         pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
         pose.composePoint(data, transPoint);
 
