@@ -31,6 +31,7 @@ namespace cxy
             typedef pcl::PointCloud<PointT>::Ptr    PointCloudPtr;
             typedef pcl::PointCloud<PointT>::ConstPtr    PointCloudConstPtr;
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> Matrix;
+            typedef Eigen::Matrix< _Scalar, 4, 4> Matrix44;
 
             public:
                 enum {
@@ -62,11 +63,12 @@ namespace cxy
                 const _Scalar matchPointCloud(const PointT& data
                                                , Eigen::Matrix< _Scalar, 3, 1>& res) const;
 
-                const Matrix calculateJacobianKernel(
+                const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> calculateJacobianKernel(
                                                 const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
-                                               , const cxy_transform::Pose<_Scalar> &para_pose
-                                               , const pcl::PointXYZ& a) const;
-
+                                            , const pcl::PointXYZ& a
+                                            , const cxy_transform::Pose<_Scalar> &para_pose
+                                            , const cxy_transform::Pose<_Scalar> &para_pose_parent
+                                            ) const;
 
                 void manifold() const;
 
@@ -75,7 +77,7 @@ namespace cxy
                 pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
                 std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
                 int joint_;
-                Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full_;
+                mutable Eigen::Matrix<_Scalar, Eigen::Dynamic, 1> x_full_;
 
 
         };

@@ -139,7 +139,7 @@ enum Axis : uint8_t
 			para[5] = p.q().y();
 			para[6] = p.q().z();
 		}
-		void composePoint(const Vector& in_p, Vector &out_p)
+		void composePoint(const Vector& in_p, Vector &out_p) const
 		{
 			if ( ! bhasNormalized_)
 			{
@@ -150,7 +150,7 @@ enum Axis : uint8_t
 			out_p(2) = in_p(2)+t_(2) + 2*((q_.x()*q_.z()-q_.w()*q_.y())*in_p(0) + (q_.w()*q_.x()+q_.y()*q_.z())*in_p(1) - (q_.x()*q_.x()+q_.y()*q_.y())*in_p(2));
 			
 		}
-		void composePoint(const Vector& in_p, pcl::PointXYZ &out_p)
+		void composePoint(const Vector& in_p, pcl::PointXYZ &out_p) const
 		{
 			Vector tmp;
 			composePoint(in_p, tmp);
@@ -158,7 +158,7 @@ enum Axis : uint8_t
 			out_p.y = tmp(1);
 			out_p.z = tmp(2);
 		}
-		void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ &out_p)
+		void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ &out_p) const
 		{
 			Vector in(in_p.x, in_p.y, in_p.z) ,out;
 			composePoint(in, out);
@@ -166,7 +166,7 @@ enum Axis : uint8_t
 			out_p.y = out(1);
 			out_p.z = out(2);
 		}
-		void composePoint(const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_cloud)
+		void composePoint(const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_cloud) const
 		{
 			if ( nullptr == in_cloud)
 			{
@@ -190,7 +190,7 @@ enum Axis : uint8_t
 			return;
 		}
 
-		void inverseComposePoint(const Vector& in_p, Vector &out_p)
+		void inverseComposePoint(const Vector& in_p, Vector &out_p) const
 		{
 			if ( ! bhasNormalized_)
 			{
@@ -207,11 +207,15 @@ enum Axis : uint8_t
 		}
 
 		// p = p1*p2 == p1.composePose(p2, p)
-		void composePose(const Pose& in_pose, Pose &out_p)
+		void composePose(const Pose& in_pose, Pose &out_p) const
 		{
 			if ( ! in_pose.bhasNormalized_)
 			{
 				in_pose.normalize();
+			}
+			if ( ! bhasNormalized_)
+			{
+				normalize();
 			}
 			composePoint(in_pose.t_, out_p.t_);
 			const Quaternoin& q1(q_);
@@ -220,6 +224,7 @@ enum Axis : uint8_t
 			out_p.q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 			out_p.q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
 			out_p.q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
+			out_p.bhasNormalized_ = false;
 			return;
 		}
 		inline void normalize() const { bhasNormalized_ = true; q_.normalize(); return;}

@@ -14,10 +14,11 @@ namespace cxy {
         class cxy_icp_arti
         {
 
+        public:
             bool setKinematicChain(std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc);
 
 
-            inline bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
+            bool setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
 
 
             // There are 3 layers of minimization class
@@ -40,7 +41,6 @@ namespace cxy {
             //virtual dataType translatePointCloud() = 0;
 
 
-        public:
             cxy_icp_arti();
             ~cxy_icp_arti();
 
@@ -57,7 +57,7 @@ namespace cxy {
             double transformation_epsilon_, euclidean_fitness_epsilon_, max_correspondence_dist_, max_correspondence_dist_square_;
 
             bool hasSetKC_, hasSetDataCloud_;
-            std::shared_ptr<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>  func_;
+            std::shared_ptr<cxy_lmicp_lib::cxy_icp_arti_func<_Scalar>>  func_;
 
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;

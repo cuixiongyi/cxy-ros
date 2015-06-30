@@ -142,10 +142,10 @@ namespace cxy
             Matrix34f jacQuat;
             jacQuat.setZero();
 
-            jacQuat << (2*a.z*q.y() - 2*a.y*q.z()) , (2*a.y*q.y() + 2*a.z*q.z())                ,(2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x()) , (2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w())
-                    , (2*a.x*q.z() - 2*a.z*q.x()) , (2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x()) , (2*a.x*q.x() + 2*a.z*q.z())                 ,( 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y())
-                    , (2*a.y*q.x() - 2*a.x*q.y()) , (2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x()) , (2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y()) , (2*a.x*q.x() + 2*a.y*q.y());
-
+            jacQuat << (a.z*q.y() - a.y*q.z()) , (a.y*q.y() + a.z*q.z())                ,(a.z*q.w() - 2*a.x*q.y() + a.y*q.x()) , (a.z*q.x() - 2*a.x*q.z() - a.y*q.w())
+                        , (a.x*q.z() - a.z*q.x()) , (a.x*q.y() - a.z*q.w() - 2*a.y*q.x()) , (a.x*q.x() + a.z*q.z())                 ,( a.x*q.w() - 2*a.y*q.z() + a.z*q.y())
+                        , (a.y*q.x() - a.x*q.y()) , (a.y*q.w() + a.x*q.z() - 2*a.z*q.x()) , (a.y*q.z() - a.x*q.w() - 2*a.z*q.y()) , (a.x*q.x() + a.y*q.y());
+            jacQuat = jacQuat * 2;
             Matrix44f normalJaco44;
             normalJaco44.setZero();
             normalJaco44 << q.x()*q.x()+q.y()*q.y()+q.z()*q.z(), -q.w()*q.x(), -q.w()*q.y(), -q.w()*q.z(),

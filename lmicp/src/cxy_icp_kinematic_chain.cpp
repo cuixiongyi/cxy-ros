@@ -41,21 +41,19 @@ namespace cxy
 
         }
 
-
-
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
                                             const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                           , const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose)
-                                        
+                                          , cxy_transform::Pose<_Scalar>& pose
+                                          , cxy_transform::Pose<_Scalar>& pose_parent )
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
             CXY_ASSERT(x.rows() >= joint);
 
             //cxy_transform::Pose<_Scalar> pose_world;
-            getKinematicPose2World(x, joint, pose);
+            getKinematicPose2World(x, joint, pose, pose_parent);
             //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -64,10 +62,22 @@ namespace cxy
         }
 
         template<typename _Scalar>
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
+                                            const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
+                                          , const int& joint
+                                          , cxy_transform::Pose<_Scalar>& pose)
+                                        
+        {
+            cxy_transform::Pose<_Scalar> pose_parent;
+            return getOneModelCloud_World(x, joint, pose, pose_parent);
+        }
+
+        template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
                                               const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                             , const int& joint
-                                            , cxy_transform::Pose<_Scalar>& pose)
+                                            , cxy_transform::Pose<_Scalar>& pose
+                                            , cxy_transform::Pose<_Scalar>& pose_parent)
         {
             CXY_ASSERT(x.rows() == kc_nodes_->size());
             CXY_ASSERT(x.rows() == kc_root_list_.size());
@@ -78,16 +88,18 @@ namespace cxy
                 pose = cxy_transform::Pose<_Scalar>();
                 pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
                 //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
+                pose_parent = cxy_transform::Pose<_Scalar>();
                 return;
             }
             else
             {
-                getKinematicPose2World(x, kc_root_list_[joint], pose);
+                getKinematicPose2World(x, kc_root_list_[joint], pose, pose_parent);
             }
 
             cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
             cxy_transform::Pose<_Scalar> pose_out;
             pose.composePose(poseTmp, pose_out);
+            pose_parent = pose;
             pose = pose_out;
             //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
 

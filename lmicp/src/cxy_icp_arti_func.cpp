@@ -21,6 +21,7 @@ namespace cxy
         kc_ = kc;
         joint_ = joint;
         x_full_ = x_full;
+        ROS_INFO_STREAM("fcun_init size =  "<<kc->getModelCloud(joint)->size());
     }
 
     template<typename _Scalar>
@@ -34,6 +35,7 @@ namespace cxy
         /// test manifold end
         _Scalar res(0.0);
         int counter = 0;
+        x_full_(joint_) = x(0);
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
@@ -73,10 +75,12 @@ namespace cxy
     {
         _Scalar res(0.0);
         int counter = 0;
+        x_full_(joint_) = x(0);
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose);
+        cxy_transform::Pose<_Scalar> para_pose_parent;
+        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose, para_pose_parent);
         fjac.resize(transCloud->size(), 1);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
@@ -87,9 +91,10 @@ namespace cxy
             
             //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
             //ROS_INFO_STREAM("r3 = "<<r3);
-            Matrix jac34(calculateJacobianKernel(x
+            Matrix jac31(calculateJacobianKernel(x
+                                                , (*transCloud)[jj]
                                                 , pose
-                                                , transPoint)); //(*dataCloud_)[ii]));
+                                                , para_pose_parent)); //(*dataCloud_)[ii]));
             if (jj == 700)
             {
                 //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
@@ -102,7 +107,7 @@ namespace cxy
             //ROS_INFO_STREAM("jac34 = "<<jac34);
             //ROS_INFO(" ");
 
-            Matrix jq(-jac34.transpose()*header);
+            Matrix jq(-r3.transpose()*jac31);
             jq *= 2;
             //ROS_INFO_STREAM("jacobian = "<<jq);
             //ROS_INFO(" ");
@@ -170,38 +175,61 @@ namespace cxy
 
     const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
                                                 const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
+                                            , const pcl::PointXYZ& a
                                             , const cxy_transform::Pose<_Scalar> &para_pose
-                                            , const pcl::PointXYZ& a) const
+                                            , const cxy_transform::Pose<_Scalar> &para_pose_parent
+                                            ) const
     {
-        const int n(2);
-        //ROS_INFO_STREAM("JacoIn "<<para[0]<<"  "<<para[3]<<"  "<<para[4]);
-        const Eigen::Quaternion<_Scalar>& q(para_pose.q());
-        Matrix jacQuat;
-        jacQuat.resize(2, n);
-        jacQuat.setZero();
-        const _Scalar Y_Qw_QxAz = -q.x()*a.z;
-        const _Scalar Y_Qx_QxAy_QwAz = -2*q.x()*a.y-q.w()*a.z;
-        const _Scalar Z_Qw_QxAy = q.x()*a.y;
-        const _Scalar Z_Qx_QwAy_QxAz = -2*q.x()*a.z+q.w()*a.y;
-        jacQuat << Y_Qw_QxAz, Y_Qx_QxAy_QwAz,
-                Z_Qw_QxAy, Z_Qx_QwAy_QxAz;
-        Matrix normalJaco44;
-        normalJaco44.resize(n, n);
-        normalJaco44.setZero();
-        normalJaco44 << q.x()*q.x(), -q.w()*q.x(),
-                -q.x()*q.w(), q.w()*q.w();
+        
 
-        normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
+        cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_->getKinematicChainNodes())[joint_].rotateAxis_, x_full_(joint_), cxy_transform::Pose<_Scalar>());
+        const Eigen::Quaternion<_Scalar>& q_theta(poseTmp.q());
+        // compute jacobian including kinematic chain
+        const Eigen::Quaternion<_Scalar>& q_w_norm(para_pose.q());
+        // quaternion transfer 3D points term
+        Matrix jac_dqwX_dqw(3,4);
+        // quaternion normalization term
+        Matrix jac_dqw_norm_dqw_unnorm(4,4);
+        /// quaternion composePose term
+        Matrix jac_dqw_unnorm_dqtheta(4,2);
+        /// quaternion theta 
         Matrix JacTheata(2,1);
-        JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
 
-        /*
-         [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
-         [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
-         [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
-         */
-        assert(jacQuat.cols() == normalJaco44.rows() && normalJaco44.cols() == JacTheata.rows());
-        return jacQuat*JacTheata;
+        {
+            const Eigen::Quaternion<_Scalar>& q(q_w_norm);
+            jac_dqwX_dqw << (a.z*q.y() - a.y*q.z()) , (a.y*q.y() + a.z*q.z())                ,(a.z*q.w() - 2*a.x*q.y() + a.y*q.x()) , (a.z*q.x() - 2*a.x*q.z() - a.y*q.w())
+                        , (a.x*q.z() - a.z*q.x()) , (a.x*q.y() - a.z*q.w() - 2*a.y*q.x()) , (a.x*q.x() + a.z*q.z())                 ,( a.x*q.w() - 2*a.y*q.z() + a.z*q.y())
+                        , (a.y*q.x() - a.x*q.y()) , (a.y*q.w() + a.x*q.z() - 2*a.z*q.x()) , (a.y*q.z() - a.x*q.w() - 2*a.z*q.y()) , (a.x*q.x() + a.y*q.y());
+
+        }
+        /// Normalization term
+        {
+            cxy_transform::Pose<_Scalar> pose_out;
+            para_pose.composePose(poseTmp, pose_out);
+            // unnormalized Quaternion
+            const Eigen::Quaternion<_Scalar>& q(pose_out.q());
+
+            jac_dqw_norm_dqw_unnorm << q.x()*q.x()+q.y()*q.y()+q.z()*q.z(), -q.w()*q.x(), -q.w()*q.y(), -q.w()*q.z(),
+                    -q.x()*q.w(), q.w()*q.w()+q.y()*q.y()+q.z()*q.z(), -q.x()*q.y(), -q.x()*q.z(),
+                    -q.y()*q.w(), -q.y()*q.x(), q.w()*q.w()+q.x()*q.x()+q.z()*q.z(), -q.y()*q.z(),
+                    -q.z()*q.w(), -q.z()*q.x(), -q.z()*q.y(), q.w()*q.w()+q.y()*q.y()+q.x()*q.x();
+            jac_dqw_norm_dqw_unnorm = jac_dqw_norm_dqw_unnorm / std::pow(q.w()*q.w()+q.y()*q.y()+q.x()*q.x()+q.z()*q.z(), 1.5);
+        }
+        /// quaternion composePose term
+        {
+            const Eigen::Quaternion<_Scalar>& q(para_pose_parent.q());
+            jac_dqw_unnorm_dqtheta<<q.w(), -q.x()
+                                  , q.x(), q.w()
+                                  , q.y(), q.z()
+                                  , q.z(), -q.y();
+
+        }
+        {
+            JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
+
+        }
+        return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
+        //return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
     }
 
     template<typename _Scalar>
