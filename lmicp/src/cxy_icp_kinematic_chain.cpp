@@ -61,6 +61,7 @@ namespace cxy
             return transCloud;
         }
 
+
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
                                             const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
@@ -71,6 +72,7 @@ namespace cxy
             cxy_transform::Pose<_Scalar> pose_parent;
             return getOneModelCloud_World(x, joint, pose, pose_parent);
         }
+
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
@@ -85,7 +87,7 @@ namespace cxy
 
             if ( -1 == kc_root_list_[joint])
             {
-                pose = cxy_transform::Pose<_Scalar>();
+                //pose = cxy_transform::Pose<_Scalar>();
                 pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
                 //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
                 pose_parent = cxy_transform::Pose<_Scalar>();
