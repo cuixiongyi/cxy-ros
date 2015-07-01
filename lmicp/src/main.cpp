@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     //lmicp.setModelCloud(data);
     //lmicp.icp_run(x);
     char c;
-    float x2(40);
+    float x2(20);
     //pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
     pcl::PointCloud<PointT>::Ptr transPoint = kc.getFullModelCloud_World(x);
 
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
         {
 
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-            x(0) = 0.0;
+            x(0) = 0.1;
             //x(1) = 0.0;
 
 

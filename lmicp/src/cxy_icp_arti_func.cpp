@@ -84,6 +84,7 @@ namespace cxy
         ROS_INFO_STREAM(pose.q().w()<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z());
         ROS_INFO_STREAM(para_pose_parent.q().w()<<" "<<para_pose_parent.q().x()<<" "<<para_pose_parent.q().y()<<" "<<para_pose_parent.q().z());
         fjac.resize(transCloud->size(), 1);
+        std::cout<<"df()"<<std::endl;
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
@@ -107,8 +108,9 @@ namespace cxy
 
             //ROS_INFO_STREAM("jac34 = "<<jac34);
             //ROS_INFO(" ");
-
-            Matrix jq(-r3.transpose()*jac31);
+            Matrix header(1,2);
+            header<<r3(1), r3(2);
+            Matrix jq(-header.transpose()*jac31);
             jq *= 2;
             //ROS_INFO_STREAM("jacobian = "<<jq);
             //ROS_INFO(" ");
@@ -122,6 +124,7 @@ namespace cxy
             fjac(ii, 5) = jq(2);
             fjac(ii, 6) = jq(3);*/
             fjac(jj, 0) = jq(0);
+            //std::cout<<"jac = "<<jq(0)<<std::endl;
             //fjac(ii, 1) = jq(1);
 
 
@@ -130,6 +133,8 @@ namespace cxy
             //std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
 
         }
+        //std::exit(0);
+
         //x(0) = pose.q().w();
         //x(1) = pose.q().x();
         //std::cout<<"wx = "<<x(0)<<"  "<<x(1)<<"  "<<std::endl;
@@ -187,55 +192,38 @@ namespace cxy
         const Eigen::Quaternion<_Scalar>& q_theta(poseTmp.q());
         // compute jacobian including kinematic chain
         const Eigen::Quaternion<_Scalar>& q_w_norm(para_pose.q());
-        Eigen::Quaternion<_Scalar> q_w_unnorm;
-        // quaternion transfer 3D points term
-        Matrix jac_dqwX_dqw(3,4);
-        // quaternion normalization term
-        Matrix jac_dqw_norm_dqw_unnorm(4,4);
-        /// quaternion composePose term
-        Matrix jac_dqw_unnorm_dqtheta(4,2);
-        /// quaternion theta 
-        Matrix JacTheata(2,1);
 
-        {
-            const Eigen::Quaternion<_Scalar>& q(para_pose.q());
-            jac_dqwX_dqw << (a.z*q.y() - a.y*q.z()) , (a.y*q.y() + a.z*q.z())                ,(a.z*q.w() - 2*a.x*q.y() + a.y*q.x()) , (a.z*q.x() - 2*a.x*q.z() - a.y*q.w())
-                        , (a.x*q.z() - a.z*q.x()) , (a.x*q.y() - a.z*q.w() - 2*a.y*q.x()) , (a.x*q.x() + a.z*q.z())                 ,( a.x*q.w() - 2*a.y*q.z() + a.z*q.y())
-                        , (a.y*q.x() - a.x*q.y()) , (a.y*q.w() + a.x*q.z() - 2*a.z*q.x()) , (a.y*q.z() - a.x*q.w() - 2*a.z*q.y()) , (a.x*q.x() + a.y*q.y());
+        const int n(2);
+        Eigen::Quaternionf q(para_pose.q());
+                    Matrix jacQuat;
+                    jacQuat.resize(2, n);
+                    jacQuat.setZero();
+                    const _Scalar Y_Qw_QxAz = -q.x()*a.z;
+                    const _Scalar Y_Qx_QxAy_QwAz = -2*q.x()*a.y-q.w()*a.z;
+                    const _Scalar Z_Qw_QxAy = q.x()*a.y;
+                    const _Scalar Z_Qx_QwAy_QxAz = -2*q.x()*a.z+q.w()*a.y;
+                    jacQuat << Y_Qw_QxAz, Y_Qx_QxAy_QwAz,
+                               Z_Qw_QxAy, Z_Qx_QwAy_QxAz;
+                    Matrix normalJaco44;
+                    normalJaco44.resize(n, n);
+                    normalJaco44.setZero();
+                    normalJaco44 << q.x()*q.x(), -q.w()*q.x(), 
+                            -q.x()*q.w(), q.w()*q.w();
+                            
+                    normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
+                    Matrix JacTheata(2,1);
+                    JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
 
-        }
-        /// Normalization term
-        {
-            cxy_transform::Pose<_Scalar> pose_out;
-            para_pose_parent.composePose(poseTmp, pose_out);
-            // unnormalized Quaternion
-            const Eigen::Quaternion<_Scalar>& q(pose_out.q());
-            q_w_unnorm = pose_out.q();
-            jac_dqw_norm_dqw_unnorm << q.x()*q.x()+q.y()*q.y()+q.z()*q.z(), -q.w()*q.x(), -q.w()*q.y(), -q.w()*q.z(),
-                    -q.x()*q.w(), q.w()*q.w()+q.y()*q.y()+q.z()*q.z(), -q.x()*q.y(), -q.x()*q.z(),
-                    -q.y()*q.w(), -q.y()*q.x(), q.w()*q.w()+q.x()*q.x()+q.z()*q.z(), -q.y()*q.z(),
-                    -q.z()*q.w(), -q.z()*q.x(), -q.z()*q.y(), q.w()*q.w()+q.y()*q.y()+q.x()*q.x();
-            jac_dqw_norm_dqw_unnorm = jac_dqw_norm_dqw_unnorm / std::pow(q.w()*q.w()+q.y()*q.y()+q.x()*q.x()+q.z()*q.z(), 1.5);
-        }
-        /// quaternion composePose term
-        {
-            const Eigen::Quaternion<_Scalar>& q(q_w_unnorm);
-            jac_dqw_unnorm_dqtheta<<q.w(), -q.x()
-                                  , q.x(), q.w()
-                                  , q.y(), q.z()
-                                  , q.z(), -q.y();
+                    /*
+                     [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
+                     [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
+                     [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
+                     */
+                     assert(jacQuat.cols() == normalJaco44.rows() && normalJaco44.cols() == JacTheata.rows());
+                    return jacQuat*JacTheata;
 
-        }
-        {
-            JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
-
-        }
-        std::cout<<"jac_dqwX_dqw = "<<std::endl<<jac_dqwX_dqw<<std::endl;
-        std::cout<<"jac_dqw_norm_dqw_unnorm = "<<std::endl<<jac_dqw_norm_dqw_unnorm<<std::endl;
-        std::cout<<"jac_dqw_unnorm_dqtheta = "<<std::endl<<jac_dqw_unnorm_dqtheta<<std::endl;
-        std::cout<<"JacTheata = "<<std::endl<<JacTheata<<std::endl;
-        return jac_dqwX_dqw*jac_dqw_unnorm_dqtheta*JacTheata;
-        return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
+        //return jac_dqwX_dqw*jac_dqw_unnorm_dqtheta*JacTheata;
+        //return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
         //return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
     }
 
