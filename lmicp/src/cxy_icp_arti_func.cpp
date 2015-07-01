@@ -43,7 +43,6 @@ namespace cxy
         fvec.resize(transCloud->size(), 1);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
-            pcl::PointXYZ transPoint;
             //pose.composePoint((*transCloud)[ii], transPoint);
             Eigen::Matrix< _Scalar, 3, 1> r3;
             fvec[jj] = matchPointCloud((*transCloud)[jj], r3);
@@ -84,7 +83,6 @@ namespace cxy
         fjac.resize(transCloud->size(), 1);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
-            pcl::PointXYZ transPoint;
             //pose.composePoint((*transCloud)[ii], transPoint);
             Eigen::Matrix< _Scalar, 3, 1> r3;
             matchPointCloud((*transCloud)[jj], r3);
@@ -105,7 +103,7 @@ namespace cxy
             header<<r3(1), r3(2);
 
             //ROS_INFO_STREAM("jac34 = "<<jac34);
-            //ROS_INFO(" ");
+            //ROS_INFO_STREAM("para_pose_parent =  "<<para_pose_parent.q().w()<<" "<<para_pose_parent.q().x());
 
             Matrix jq(-r3.transpose()*jac31);
             jq *= 2;
@@ -205,7 +203,7 @@ namespace cxy
         /// Normalization term
         {
             cxy_transform::Pose<_Scalar> pose_out;
-            para_pose.composePose(poseTmp, pose_out);
+            para_pose_parent.composePose(poseTmp, pose_out);
             // unnormalized Quaternion
             const Eigen::Quaternion<_Scalar>& q(pose_out.q());
 
