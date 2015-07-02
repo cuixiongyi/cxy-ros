@@ -39,7 +39,7 @@ namespace cxy
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose);
+        transCloud = kc_->getOneModelCloud_World(x, joint_, pose);
         fvec.resize(transCloud->size(), 1);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
@@ -76,15 +76,16 @@ namespace cxy
         _Scalar res(0.0);
         int counter = 0;
         x_full_(joint_) = x(0);
-        
+        std::cout<<" x = "<<x(0)<<std::endl;
+
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
         cxy_transform::Pose<_Scalar> para_pose_parent;
         transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose, para_pose_parent);
-        ROS_INFO_STREAM(pose.q().w()<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z());
-        ROS_INFO_STREAM(para_pose_parent.q().w()<<" "<<para_pose_parent.q().x()<<" "<<para_pose_parent.q().y()<<" "<<para_pose_parent.q().z());
+        //ROS_INFO_STREAM(pose.q().w()<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z());
+        //ROS_INFO_STREAM(para_pose_parent.q().w()<<" "<<para_pose_parent.q().x()<<" "<<para_pose_parent.q().y()<<" "<<para_pose_parent.q().z());
         fjac.resize(transCloud->size(), 1);
-        std::cout<<"df()"<<std::endl;
+        //std::cout<<"df()"<<std::endl;
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
@@ -188,7 +189,7 @@ namespace cxy
     {
         
 
-        cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_->getKinematicChainNodes())[joint_].rotateAxis_, x_full_(joint_), cxy_transform::Pose<_Scalar>());
+        cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_->getKinematicChainNodes())[joint_].rotateAxis_, x(0), cxy_transform::Pose<_Scalar>());
         const Eigen::Quaternion<_Scalar>& q_theta(poseTmp.q());
         // compute jacobian including kinematic chain
         const Eigen::Quaternion<_Scalar>& q_w_norm(para_pose.q());
