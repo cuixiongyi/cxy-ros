@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
             //x(1) = 0.0;
 
 
-          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 1> arti_icp;
           std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
           arti_icp.setKinematicChain(kc_ptr);
           arti_icp.setDataCloud(transPoint);
@@ -109,7 +109,20 @@ int main(int argc, char *argv[])
         }
         if ('l' == c)
         {
+            pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+            x(0) = 0.1;
+            //x(1) = 0.0;
 
+
+          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
+          arti_icp.setKinematicChain(kc_ptr);
+          arti_icp.setDataCloud(transPoint);
+          arti_icp.icp_run(x);
+          resultPoint = kc.getFullModelCloud_World(x);
+          publish(transPoint, pub_data_pointcloud_);
+          publish(resultPoint, pub_model_pointcloud_);
+          continue;
           continue;
         }
 

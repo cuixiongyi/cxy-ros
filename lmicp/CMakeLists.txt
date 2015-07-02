@@ -19,7 +19,8 @@ endif()
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
-find_package(Eigen3 REQUIRED)
+#find_package(Eigen3 REQUIRED)
+set(${EIGEN3_INCLUDE_DIRS} "/usr/include/eigen3")
 find_package(PCL 1.7 REQUIRED common io visualization)
 find_package(Boost REQUIRED)
 find_package(catkin REQUIRED COMPONENTS roscpp
@@ -57,14 +58,14 @@ add_library(lmicp_lib
 
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}  ${EIGEN3_LIBRARIES} )#dlib)
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}   )#dlib)
 
 
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES lmicp_lib  
    CATKIN_DEPENDS roscpp std_msgs   
-   DEPENDS opencv eigen3 
+   DEPENDS opencv  
 )
 
 add_executable(icp_main src/icp_main.cpp)

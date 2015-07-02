@@ -28,7 +28,7 @@ namespace cxy
     _Scalar cxy_icp_arti_func<_Scalar>::operator()(ParaType & x, ResidualType& fvec) const
     {
         /// test manifold start
-        if (0)
+        if (1)
         {
             this->manifold();
         }
@@ -234,6 +234,7 @@ namespace cxy
 
         Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x(1);
         std::ofstream fout("/home/atlas/repo/manifold.txt");
+        std::ofstream foutjac("/home/atlas/repo/manifold_jac.txt");
         //cxy_transform::Pose<_Scalar> pose;
         const int delta = 8.0;
         int counter1(0.0);
@@ -312,6 +313,7 @@ namespace cxy
                 Matrix jq(-r3.transpose()*jac31);
                 jq *= 2;
                 jac += jq(0);
+                foutjac<<jq(0)<<" ";
                 //ROS_INFO_STREAM("jacobian = "<<jq);
                 //ROS_INFO(" ");
 
@@ -320,6 +322,7 @@ namespace cxy
 
                 
             }
+            foutjac<<std::endl;
             res = res / this->values();
             jac = jac / this->values();
             fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;

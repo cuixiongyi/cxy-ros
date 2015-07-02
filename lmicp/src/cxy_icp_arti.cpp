@@ -102,6 +102,25 @@ namespace cxy {
                 }
                 
             }
+            if ( cxy_optimization::cxy_nonlinear_method::CXY_LEVENBERG_MARQUARDT == state)
+            {
+
+                for (int ii = 0; ii < kc_->size(); ii++)
+                {
+                    func_ = std::make_shared<cxy_lmicp_lib::cxy_icp_arti_func<_Scalar>>(1, kc_, this->dataCloud_, this->kdtreeptr_, ii, x);
+
+                    cxy_optimization::cxy_nonlinear_minimizer_LM <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm2((*std::dynamic_pointer_cast<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>(func_).get()));
+                    Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x_joint;
+                    x_joint.resize(1);
+                    x_joint(0) = x(ii);
+                    ROS_INFO_STREAM("kc_ "<< ii<<" before  x(ii) = "<< x_joint);
+                    lm2.minimize(x_joint);
+                    x(ii) = x_joint(0);
+                    ROS_INFO_STREAM("kc_ "<< ii<<" after  x(ii) = "<< x_joint);
+
+                }
+                
+            }
            
             //cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
             //return lm.minimize(x);
