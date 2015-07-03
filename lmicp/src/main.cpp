@@ -44,8 +44,18 @@ ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_resu
 */
     //std::ifstream fin_tar("bun045.ply");
     //std::ifstream fin_mod("bun090.ply");
-    
+    srand(0);
     data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
+    pcl::PointCloud<PointT>::Ptr data_tmp(new pcl::PointCloud<PointT>);
+    {
+        const int& size = data->size();
+        for (int ii = 0; ii < 2000; ++ii)
+        {
+            const int ramdon_idx = rand() % size;
+            data_tmp->push_back((*data)[ramdon_idx]);
+        }
+    }
+    data = data_tmp;
     if (0)
     {
       model = loadPlyFile("/home/xiongyi/repo/bun045.ply");
