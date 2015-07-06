@@ -139,7 +139,8 @@ int main(int argc, char *argv[])
           cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
           one_icp.setModelCloud(data);
           cxy_transform::Pose<float> pose;
-          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
+          float theta_tmp = 170.0;
+          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
           pose.composePoint(data, transPoint);
           one_icp.setDataCloud(transPoint);
           Eigen::Matrix< float, Eigen::Dynamic, 1> x;

@@ -43,19 +43,18 @@ namespace cxy
 
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                            const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
+                                             Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                           , const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent );
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                            const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
+                                             Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                           , const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose);
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World(const Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
-            void getKinematicPose2World(const Eigen::Matrix<_Scalar
-                                      , Eigen::Dynamic, 1>& x
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World( Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
+            void getKinematicPose2World( Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
                                       , const int& joint
                                       , cxy_transform::Pose<_Scalar>& pose
                                       , cxy_transform::Pose<_Scalar>& pose_parent);

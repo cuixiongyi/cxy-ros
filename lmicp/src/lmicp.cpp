@@ -919,8 +919,9 @@ int main(int argc, char *argv[])
     }
     else if (2 == t)
     {
-            cxy_transform::Pose<float> pose;
-          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
+        cxy_transform::Pose<float> pose;
+        float theta_tmp = 30.0;
+        pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
 
           pose.composePoint(data, transPoint);
           model = transPoint;

@@ -47,7 +47,7 @@ enum Axis : uint8_t
 		~Pose() {};
 
 		//: The inpute takes the rotating axis and the angle in degree
-		void rotateByAxis(Axis axis, _Scalar const& degree)
+		void rotateByAxis(Axis axis, _Scalar & degree)
 		{
 			int n(0);
 			_Scalar theta(degree);
@@ -61,6 +61,7 @@ enum Axis : uint8_t
 				n = std::abs( (degree+180) / _Scalar(360));
 				theta = degree + (n+1)*_Scalar(360);
 			}
+            degree = theta;
 			//std::cout<<theta<<std::endl;
 			_Scalar radian = Deg2Rad(theta);
 			_Scalar x = std::sin( radian / _Scalar(2.0) );
@@ -81,7 +82,7 @@ enum Axis : uint8_t
 			q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
 
 		}
-        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, const _Scalar & degree, const Pose& p_org = Pose())
+        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org = Pose())
         {
 
             int n(0);
@@ -96,6 +97,7 @@ enum Axis : uint8_t
                 n = std::abs( (degree+180) / _Scalar(360));
                 theta = degree + (n+1)*_Scalar(360);
             }
+            degree = theta;
             //std::cout<<theta<<std::endl;
             _Scalar radian = Deg2Rad(theta);
             _Scalar x = std::sin( radian / _Scalar(2.0) );

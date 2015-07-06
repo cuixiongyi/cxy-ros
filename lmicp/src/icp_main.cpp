@@ -79,7 +79,8 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
 
     cxy_transform::Pose<float> pose;
-    pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
+    float theta_tmp = 30.0;
+    pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
 
     pose.composePoint(data, transPoint);
     lmicp.setDataCloud(transPoint);

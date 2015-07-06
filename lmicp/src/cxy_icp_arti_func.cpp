@@ -181,7 +181,7 @@ namespace cxy
     template<typename _Scalar>
 
     const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
-                                                const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
+                                                Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
                                             , const pcl::PointXYZ& a
                                             , const cxy_transform::Pose<_Scalar> &para_pose
                                             , const cxy_transform::Pose<_Scalar> &para_pose_parent

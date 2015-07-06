@@ -64,7 +64,7 @@ namespace cxy
                                                , Eigen::Matrix< _Scalar, 3, 1>& res) const;
 
                 const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> calculateJacobianKernel(
-                                                const Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
+                                                Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
                                             , const pcl::PointXYZ& a
                                             , const cxy_transform::Pose<_Scalar> &para_pose
                                             , const cxy_transform::Pose<_Scalar> &para_pose_parent
