@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint = kc.getFullModelCloud_World(x);
 
 //    lmicp.setDataCloud(transPoint);
+    cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
     while (1)
     {
         std::cin>>c;
@@ -136,17 +137,42 @@ int main(int argc, char *argv[])
           static pcl::PointCloud<PointT>::Ptr data = getPointCloud(z);
           pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-          cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
           one_icp.setModelCloud(data);
           cxy_transform::Pose<float> pose;
-          float theta_tmp = 170.0;
+          float theta_tmp = -140.0;
           pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
           pose.composePoint(data, transPoint);
           one_icp.setDataCloud(transPoint);
           Eigen::Matrix< float, Eigen::Dynamic, 1> x;
           x.resize(1);
           x(0) = 0.0;
-          one_icp.icp_run(x);
+          
+          /// draw convergence map
+          /*std::ofstream fout("/home/xiongyi/repo/one-para-manifold-convergence.txt");
+          theta_tmp = -180;
+          while (1)
+          {
+            const float delta = 6.0;
+            float counter1(-180);
+            cxy_transform::Pose<float> pose;
+            pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
+            pose.composePoint(data, transPoint);
+            one_icp.setDataCloud(transPoint);
+              while (1)
+              {
+
+                  x(0) = counter1;
+                  fout<<x(0)<<"  "<<theta_tmp<<"  "<<one_icp.icp_run(x)<<std::endl;
+                  if (counter1 >= 174)
+                      break;
+                  counter1 += delta;
+
+              } 
+              theta_tmp += delta;
+              if (theta_tmp >= 174)
+                return 1;
+          }    */      
+              one_icp.icp_run(x);
           pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
           
           
