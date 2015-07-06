@@ -5,6 +5,7 @@
 #include "cxy_icp_rigid.h"
 #include "cxy_transform.h"
 #include "cxy_icp_arti.h"
+#include "cxy_icp_arti_one.h"
 #include "../../../../../../../usr/include/pcl-1.7/pcl/point_cloud.h"
 #include "../include/cxy_transform.h"
 #include "../include/cxy_icp_kinematic_node.h"
@@ -27,6 +28,10 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub);
 
 void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes, int chain_number);
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z);
+
+pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name);
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +60,7 @@ int main(int argc, char *argv[])
     kc.setKinematicNodes(kc_nodes_ptr);
     kc.setKinematicRootList(kc_root_list);
 
+    
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
 
     x.resize(1);
@@ -123,6 +129,29 @@ int main(int argc, char *argv[])
           publish(transPoint, pub_data_pointcloud_);
           publish(resultPoint, pub_model_pointcloud_);
           continue;
+        }
+        if ('o' == c)
+        {
+          float z = 0.0;
+          static pcl::PointCloud<PointT>::Ptr data = getPointCloud(z);
+          pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
+          pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+          cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
+          one_icp.setModelCloud(data);
+          cxy_transform::Pose<float> pose;
+          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, 30.0);
+          pose.composePoint(data, transPoint);
+          one_icp.setDataCloud(transPoint);
+          Eigen::Matrix< float, Eigen::Dynamic, 1> x;
+          x.resize(1);
+          x(0) = 0.0;
+          one_icp.icp_run(x);
+          pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
+          
+          
+          pose.composePoint(transPoint, resultPoint);
+          publish(transPoint, pub_data_pointcloud_);
+          publish(resultPoint, pub_result_);
           continue;
         }
 
@@ -134,9 +163,31 @@ int main(int argc, char *argv[])
       std::cout<<x<<std::endl;
 }
 
-void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes, int chain_number)
+pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z_io)
 {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
+  if (1)
+  {
+    srand(0);
+    data = loadPlyFile("/home/xiongyi/repo/bun000.ply");
+    pcl::PointCloud<PointT>::Ptr data_tmp(new pcl::PointCloud<PointT>);
+    {
+        const int& size = data->size();
+        for (int ii = 0; ii < 2000; ++ii)
+        {
+            const int ramdon_idx = rand() % size;
+            data_tmp->push_back((*data)[ramdon_idx]);
+            if ((*data)[ramdon_idx].z > Z_io)
+            {
+              Z_io = (*data)[ramdon_idx].z;
+            }
+        }
+    }
+    data = data_tmp;
+  }
+  else
+  {
     const int pointSize = 200;
     const float delta_X = 0.05;
     const float delta_Y = 0.025;
@@ -155,6 +206,15 @@ void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>
             X = 0.0;
         }
     }
+    Z_io = Z;
+  }
+  return data;
+}
+void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes, int chain_number)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
+  float Z = 0.0;
+  data = getPointCloud(Z);  
     for (int ii = 0; ii < chain_number; ++ii)
     {
         cxy_lmicp_lib::cxy_icp_kinematic_node<float> kcTmp;
@@ -184,6 +244,49 @@ void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub
         }
 
 
+pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name)
+{
+
+
+    pcl::PointCloud<PointT>::Ptr pointcloud(new pcl::PointCloud<PointT>);
+    std::ifstream fin(name);
+    ROS_INFO_STREAM(fin.is_open());
+    std::string line;
+    long int count(0);
+    while (std::getline(fin, line))
+    {
+        //std::getline(fin, line, '\n');
+        std::size_t pos(line.find("element vertex"));
+//        ROS_INFO_STREAM(line);
+        if ( std::string::npos != pos)
+        {
+            std::string tmp(line.begin()+pos+14, line.end());
+            count = atol(tmp.c_str());
+            //ROS_INFO_STREAM("read count  "<< "  "<<tmp << ".");
+            ROS_INFO_STREAM(line <<std::endl);
+            continue;
+        }
+        pos = line.find("end_header");
+        if ( std::string::npos != pos)
+        {
+            //ROS_INFO("read end");
+            break;
+        }
+
+    }
+    std::cout<<"PointCloud Num   "<< count<<std::endl;
+    pointcloud->reserve(count);
+    for (int i = 0; i < count; ++i)
+    {
+        /* code */
+        PointT p;
+        fin >> p.x >> p.y >> p.z;
+        pointcloud->push_back(p);
+        //ROS_INFO_STREAM("points  "<< "  "<<p.x);
+
+    }
+    return pointcloud;
+}
 
 // test rotateByAxis
 /*
