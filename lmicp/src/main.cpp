@@ -195,8 +195,8 @@ int main(int argc, char *argv[])
           x(0) = 0.0;
           
           /// draw convergence map
-          /*std::ofstream fout("/home/xiongyi/repo/one-para-manifold-convergence.txt");
-          theta_tmp = -180;
+          std::ofstream fout("/home/xiongyi/repo/one-para-manifold-convergence.txt");
+          float theta_tmp = -180;
           while (1)
           {
             const float delta = 6.0;
@@ -209,23 +209,31 @@ int main(int argc, char *argv[])
               {
 
                   x(0) = counter1;
-                  fout<<x(0)<<"  "<<theta_tmp<<"  "<<one_icp.icp_run(x)<<std::endl;
+                  float res2 = one_icp.icp_run(x);
+                  fout<<counter1<<"  "<<theta_tmp<<"  "<<res2<<std::endl;
                   if (counter1 >= 174)
                       break;
                   counter1 += delta;
+                  std::cout<<counter1<<"  "<<theta_tmp<<"  "<<res2<<std::endl;
+                  //std::cout<<x(0)<<"  "<<theta_tmp<<"  "<<one_icp.icp_run(x)<<std::endl;
 
+                  cxy_transform::Pose<float> pose;
+                  pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
+                  pose.composePoint(data, resultPoint);
+
+                  publish(transPoint, pub_data_pointcloud_);
+                  publish(resultPoint, pub_result_);
               } 
               theta_tmp += delta;
               if (theta_tmp >= 174)
                 return 1;
-          }    */      
-          one_icp.icp_run(x);
+          }         
+          //one_icp.icp_run(x);
           //pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
           
           
           //pose.composePoint(transPoint, resultPoint);
-          publish(transPoint, pub_data_pointcloud_);
-          publish(resultPoint, pub_result_);
+          
           continue;
         }
 

@@ -28,18 +28,17 @@ namespace cxy
     _Scalar cxy_icp_arti_func<_Scalar>::operator()(ParaType & x, ResidualType& fvec) const
     {
         /// test manifold start
-        if (1)
+        if (0)
         {
             this->manifold();
         }
         /// test manifold end
         _Scalar res(0.0);
-        int counter = 0;
         x_full_(joint_) = x(0);
         
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
-        transCloud = kc_->getOneModelCloud_World(x, joint_, pose);
+        transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose);
         fvec.resize(transCloud->size(), 1);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
@@ -48,11 +47,10 @@ namespace cxy
             Eigen::Matrix< _Scalar, 3, 1> r3;
             fvec[jj] = matchPointCloud((*transCloud)[jj], r3);
             res += fvec[jj];
-            ++counter;
 
         }
         
-        res = res / counter;
+        res = res / transCloud->size();
         static int ac = 0;
         //ROS_INFO_STREAM("Call f the 1   "<<++ac);
 
@@ -97,7 +95,7 @@ namespace cxy
             //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
             //ROS_INFO_STREAM("r3 = "<<r3);
             Matrix jac31(calculateJacobianKernel(x
-                                                , (*kc_->getModelCloud(joint_))[jj]
+                                                , (*transCloud)[jj]
                                                 , pose
                                                 , para_pose_parent)); //(*dataCloud_)[ii]));
             if (jj == 700)
@@ -302,13 +300,18 @@ namespace cxy
                 //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
                 //ROS_INFO_STREAM("r3 = "<<r3);
                 Matrix jac31(calculateJacobianKernel(x
-                                                    , (*transCloud)[jj]
-                                                    , pose
-                                                    , para_pose_parent)); //(*dataCloud_)[ii]));
-                
+                                                , (*transCloud)[jj]
+                                                , pose
+                                                , para_pose_parent)); //(*dataCloud_)[ii]));
+                if (jj == 700)
+                {
+                    //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
+                    //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+                    //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
+                }
+
                 //ROS_INFO_STREAM("jac34 = "<<jac34);
                 //ROS_INFO(" ");
-
                 Matrix header(2,1);
                 header<<r3(1), r3(2);
                 Matrix jq(-jac31.transpose()*header);

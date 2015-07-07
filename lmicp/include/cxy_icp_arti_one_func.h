@@ -92,7 +92,7 @@ namespace cxy
                     vPara[4] = pose.q().x();
                     vPara[5] = .0;
                     vPara[6] = .0;
-
+                    fvec.resize(dataCloud_->size(), 1);
                     for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                     {
                         pcl::PointXYZ transPoint;
@@ -103,10 +103,10 @@ namespace cxy
 
                     }
                     res = res / this->values();
-                    ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
+                    //ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
 
                     
-                    ROS_INFO_STREAM("theta =  "<<x(0));
+                    //ROS_INFO_STREAM("theta =  "<<x(0)<<"  Residual = "<< res);
                     if (0)
                     {
                         static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
@@ -118,6 +118,7 @@ namespace cxy
                 _Scalar df(ParaType & x, JacobianType& fjac) const
                 {
                     cxy_transform::Pose<_Scalar> pose;
+                    fjac.resize(dataCloud_->size(),1);
                     pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
                     pose.normalize();
                     std::vector<_Scalar> vPara(7);
@@ -128,7 +129,7 @@ namespace cxy
                     vPara[4] = pose.q().x();
                     vPara[5] = .0;
                     vPara[6] = .0;
-                    ROS_INFO_STREAM("w = "<< pose.q().w()<<"  x = "<< pose.q().x());
+                    //ROS_INFO_STREAM("w = "<< pose.q().w()<<"  x = "<< pose.q().x());
                     for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                     {
                         pcl::PointXYZ transPoint;
@@ -140,7 +141,8 @@ namespace cxy
                         //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
                         //ROS_INFO_STREAM("r3 = "<<r3);
                         Matrix jac34(calculateJacobianKernel(vPara
-                                                            , transPoint)); //(*dataCloud_)[ii]));
+                                                            , transPoint));//transPoint)); //(*dataCloud_)[ii]));
+                                                            //, (*dataCloud_)[ii]));//transPoint)); //(*dataCloud_)[ii]));
                         if (ii == 700)
                         {
                             //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
@@ -279,16 +281,26 @@ namespace cxy
                                 pose.composePoint((*dataCloud_)[ii], transPoint);
                                 Eigen::Matrix< _Scalar, 3, 1> r3;
                                 res += matchPointCloud(transPoint, r3);
+
+
+                                //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
+                                //ROS_INFO_STREAM("r3 = "<<r3);
                                 Matrix jac34(calculateJacobianKernel(vPara
-                                                            , (*dataCloud_)[ii]));//transPoint)); //(*dataCloud_)[ii]));
-                                
-                                Matrix header(1,2);
+                                                                    , transPoint)); //(*dataCloud_)[ii]));
+                                if (ii == 700)
+                                {
+                                    //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
+                                    //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
+                                    //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
+                                }
+                                Matrix header(2,1);
                                 header<<r3(1), r3(2);
 
                                 //ROS_INFO_STREAM("jac34 = "<<jac34);
                                 //ROS_INFO(" ");
 
-                                Matrix jq(-header*jac34);
+                                Matrix jq(-jac34.transpose()*header);
+                                jq *= 2;
                                 jac += jq(0);
 
                             }
