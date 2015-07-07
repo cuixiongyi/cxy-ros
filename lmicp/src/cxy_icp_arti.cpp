@@ -85,22 +85,24 @@ namespace cxy {
             cxy_optimization::cxy_nonlinear_method state(static_cast<cxy_optimization::cxy_nonlinear_method>(_MinimizerType));
             if ( cxy_optimization::cxy_nonlinear_method::EIGEN_MINPACK == state)
             {
-
+                _Scalar res = 0.0;
                 for (int ii = 0; ii < kc_->size(); ii++)
                 {
                     func_ = std::make_shared<cxy_lmicp_lib::cxy_icp_arti_func<_Scalar>>(1, kc_, this->dataCloud_, this->kdtreeptr_, ii, x);
 
                     Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm2((*std::dynamic_pointer_cast<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>(func_).get()));
                     Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x_joint;
+                    Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> res_tmp;
                     x_joint.resize(1);
                     x_joint(0) = x(ii);
-                    ROS_INFO_STREAM("kc_ "<< ii<<" before  x(ii) = "<< x_joint);
+                    //ROS_INFO_STREAM("kc_ "<< ii<<" before  x(ii) = "<< x_joint);
                     lm2.lmder1(x_joint);
+                    res += (*func_)(x_joint, res_tmp);
                     x(ii) = x_joint(0);
-                    ROS_INFO_STREAM("kc_ "<< ii<<" after  x(ii) = "<< x_joint);
+                    ///ROS_INFO_STREAM("kc_ "<< ii<<" after  x(ii) = "<< x_joint);
 
                 }
-                
+                return res;
             }
             if ( cxy_optimization::cxy_nonlinear_method::CXY_LEVENBERG_MARQUARDT == state)
             {

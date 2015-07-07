@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
             //std::cout<<resultPoint->size()<<std::endl;
           continue;
         }
+        /// articulate parameter optimization using CXY_LevenbergMarquate
         if ('r' == c)
         {
 
@@ -114,6 +115,7 @@ int main(int argc, char *argv[])
           publish(resultPoint, pub_model_pointcloud_);
           continue;
         }
+        /// articulate parameter optimization using Eigen LM
         if ('l' == c)
         {
             pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
@@ -131,17 +133,62 @@ int main(int argc, char *argv[])
           publish(resultPoint, pub_model_pointcloud_);
           continue;
         }
+        /// articulate parameter optimization using Eigen LM
+        /// convergence test
+        if ('k' == c)
+        {
+            pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+            x(0) = 0.1;
+            //x(1) = 0.0;
+
+
+          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
+          arti_icp.setKinematicChain(kc_ptr);
+
+          /// draw convergence map
+          std::ofstream fout("/home/xiongyi/repo/arti-manifold-convergence.txt");
+          float theta_tmp = -180.0;
+          while (1)
+          {
+            const float delta = 6.0;
+            float counter1(-180);
+            x(0) = theta_tmp;
+            transPoint = kc.getFullModelCloud_World(x);
+            arti_icp.setDataCloud(transPoint);
+          
+              while (1)
+              {
+
+                  x(0) = counter1;
+                  fout<<x(0)<<"  "<<theta_tmp<<"  "<<arti_icp.icp_run(x)<<std::endl;
+                  if (counter1 >= 174)
+                      break;
+                  counter1 += delta;
+
+              } 
+            if (theta_tmp >= 174)
+              return 1;
+            theta_tmp += delta;
+          } 
+          resultPoint = kc.getFullModelCloud_World(x);
+          publish(transPoint, pub_data_pointcloud_);
+          publish(resultPoint, pub_model_pointcloud_);
+          continue;
+        }
+        /// one parameter optimization
         if ('o' == c)
         {
           float z = 0.0;
           static pcl::PointCloud<PointT>::Ptr data = getPointCloud(z);
-          pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-          one_icp.setModelCloud(data);
+          /*pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
           cxy_transform::Pose<float> pose;
-          float theta_tmp = -140.0;
+          float theta_tmp = -20.0;
           pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
           pose.composePoint(data, transPoint);
+          */
+          one_icp.setModelCloud(data);
           one_icp.setDataCloud(transPoint);
           Eigen::Matrix< float, Eigen::Dynamic, 1> x;
           x.resize(1);
@@ -172,11 +219,11 @@ int main(int argc, char *argv[])
               if (theta_tmp >= 174)
                 return 1;
           }    */      
-              one_icp.icp_run(x);
-          pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
+          one_icp.icp_run(x);
+          //pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
           
           
-          pose.composePoint(transPoint, resultPoint);
+          //pose.composePoint(transPoint, resultPoint);
           publish(transPoint, pub_data_pointcloud_);
           publish(resultPoint, pub_result_);
           continue;

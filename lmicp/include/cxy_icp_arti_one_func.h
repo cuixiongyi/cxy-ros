@@ -128,7 +128,7 @@ namespace cxy
                     vPara[4] = pose.q().x();
                     vPara[5] = .0;
                     vPara[6] = .0;
-
+                    ROS_INFO_STREAM("w = "<< pose.q().w()<<"  x = "<< pose.q().x());
                     for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
                     {
                         pcl::PointXYZ transPoint;

@@ -58,10 +58,10 @@ namespace cxy
 
 
         
-        ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
+        //ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
 
 
-        //ROS_INFO_STREAM("theta =  "<<x(0));
+        ROS_INFO_STREAM("theta =  "<<x(0)<< "  res = "<<res);
         if (0)
         {
             static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
@@ -76,7 +76,7 @@ namespace cxy
         _Scalar res(0.0);
         int counter = 0;
         x_full_(joint_) = x(0);
-        std::cout<<" x = "<<x(0)<<std::endl;
+        //std::cout<<" x = "<<x(0)<<std::endl;
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
         cxy_transform::Pose<_Scalar> pose;
@@ -109,9 +109,9 @@ namespace cxy
 
             //ROS_INFO_STREAM("jac34 = "<<jac34);
             //ROS_INFO(" ");
-            Matrix header(1,2);
+            Matrix header(2,1);
             header<<r3(1), r3(2);
-            Matrix jq(-header.transpose()*jac31);
+            Matrix jq(-jac31.transpose()*header);
             jq *= 2;
             //ROS_INFO_STREAM("jacobian = "<<jq);
             //ROS_INFO(" ");
@@ -179,7 +179,6 @@ namespace cxy
 
 
     template<typename _Scalar>
-
     const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_func<_Scalar>::calculateJacobianKernel(
                                                 Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
                                             , const pcl::PointXYZ& a
@@ -233,11 +232,11 @@ namespace cxy
     {
 
         Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x(1);
-        std::ofstream fout("/home/atlas/repo/manifold.txt");
-        std::ofstream foutjac("/home/atlas/repo/manifold_jac.txt");
+        std::ofstream fout("/home/xiongyi/repo/manifold.txt");
+        std::ofstream foutjac("/home/xiongyi/repo/manifold_jac.txt");
         //cxy_transform::Pose<_Scalar> pose;
         const int delta = 8.0;
-        int counter1(0.0);
+        int counter1(-180.0);
         while (1)
         {
             /*
@@ -283,8 +282,8 @@ namespace cxy
             if (counter1 >= 361)
                 std::exit(1);
             */
-            counter1 += delta;
             x(0) = counter1;
+            counter1 += delta;
             _Scalar res(0.0);
             _Scalar jac(0.0);
             x_full_(joint_) = x(0);
@@ -310,7 +309,9 @@ namespace cxy
                 //ROS_INFO_STREAM("jac34 = "<<jac34);
                 //ROS_INFO(" ");
 
-                Matrix jq(-r3.transpose()*jac31);
+                Matrix header(2,1);
+                header<<r3(1), r3(2);
+                Matrix jq(-jac31.transpose()*header);
                 jq *= 2;
                 jac += jq(0);
                 foutjac<<jq(0)<<" ";
@@ -325,10 +326,11 @@ namespace cxy
             foutjac<<std::endl;
             res = res / this->values();
             jac = jac / this->values();
-            fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;
+            fout<<counter1<<" "<<res<<" "<<jac<<std::endl;
             std::cout<<counter1<<" "<<std::endl;
-            if (counter1 >= 363)
+            if (counter1 >= 174)
                 std::exit(1);
+
         }
         return ;
 

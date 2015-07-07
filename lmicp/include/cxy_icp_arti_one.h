@@ -37,9 +37,11 @@ namespace cxy {
                         
                         Eigen::LevenbergMarquardt <cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm2(*this->func_);
                         lm2.lmder1(x);
-                        lm2.lmder1(x);
-                        lm2.lmder1(x);
-                        lm2.lmder1(x);
+                        Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> res_tmp;
+                        return (*(this->func_))(x,res_tmp);
+                        //lm2.lmder1(x);
+                        //lm2.lmder1(x);
+                        //lm2.lmder1(x);
                     }
 
 
