@@ -30,7 +30,9 @@ namespace cxy {
                     {
 
                         cxy_optimization::cxy_nonlinear_minimizer_LM<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>, _Scalar > lm(*this->func_);
-                        return lm.minimize(x);
+                        lm.minimize(x);
+                        Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> res_tmp;
+                        return (*(this->func_))(x,res_tmp);
                     }
                     case cxy_optimization::cxy_nonlinear_method::EIGEN_MINPACK :  
                     {

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint = kc.getFullModelCloud_World(x);
 
 //    lmicp.setDataCloud(transPoint);
-    cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
+    cxy_lmicp_lib::cxy_icp_arti_one<float, 1> one_icp;
     while (1)
     {
         std::cin>>c;
