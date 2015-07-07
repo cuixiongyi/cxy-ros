@@ -1,5 +1,9 @@
+#pragma once
 #include "iostream"
-#ifndef NDEBUG
+//#define ENABLE_CXY_ASSERT 
+
+/*
+#ifdef ENABLE_CXY_ASSERT
 #   define CXY_ASSERT(condition, message) \
     do { \
         if (! (condition)) { \
@@ -11,14 +15,14 @@
 #else
 #   define ASSERT(condition, message) do { } while (false)
 #endif
+*/
 
-
-#ifndef NDEBUG
+#ifdef ENABLE_CXY_ASSERT
 #   define CXY_ASSERT(condition) \
     do { \
         if (! (condition)) { \
             std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
-                      << " line " << __LINE__ << ": " << message << std::endl; \
+                      << " line " << __LINE__ << ": " << std::endl; \
             std::exit(EXIT_FAILURE); \
         } \
     } while (false)

@@ -7,11 +7,20 @@ project(project_lmicp)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+
+option(ENABLE_MY_ASSERT "Turn on CXY_ASSERT checks" ON)
+
+if(ENABLE_MY_ASSERT)
+  add_definitions(-DENABLE_CXY_ASSERT)
+else()
+  add_definitions(-DMY_DEBUG=0)
+endif()
+
 find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
-find_package(VXL REQUIRED)
-find_package(Eigen3 REQUIRED)
+#find_package(Eigen3 REQUIRED)
+set(${EIGEN3_INCLUDE_DIRS} "/usr/include/eigen3")
 find_package(PCL 1.7 REQUIRED common io visualization)
 find_package(Boost REQUIRED)
 find_package(catkin REQUIRED COMPONENTS roscpp
@@ -42,20 +51,26 @@ add_library(lmicp_lib
                 include/optimization/cxy_nonlinear_minimizer_LM.h
               include/cxy_icp.h
               include/cxy_icp_rigid.h
-              
+              include/cxy_icp_arti.h  src/cxy_icp_arti.cpp
+              include/cxy_icp_arti_func.h  src/cxy_icp_arti_func.cpp
+              include/cxy_icp_kinematic_node.h  src/cxy_icp_kinematic_node.cpp
+              include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp
+
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES} ${VXL_LIBRARIES} ${EIGEN3_LIBRARIES} )#dlib)
+target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}   )#dlib)
 
 
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES lmicp_lib  
    CATKIN_DEPENDS roscpp std_msgs   
-   DEPENDS opencv eigen3 
+   DEPENDS opencv  
 )
 
+add_executable(icp_main src/icp_main.cpp)
 add_executable(lmicp_exe src/lmicp.cpp)
 add_executable(main_exe src/main.cpp)
 target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
