@@ -52,6 +52,8 @@ add_library(lmicp_lib
               include/cxy_icp.h
               include/cxy_icp_rigid.h
               include/cxy_icp_arti.h  src/cxy_icp_arti.cpp
+              include/cxy_icp_arti_ik.h  src/cxy_icp_arti_ik.cpp
+              include/cxy_icp_arti_ik_func.h  src/cxy_icp_arti_ik_func.cpp
               include/cxy_icp_arti_func.h  src/cxy_icp_arti_func.cpp
               include/cxy_icp_kinematic_node.h  src/cxy_icp_kinematic_node.cpp
               include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp

@@ -5,7 +5,7 @@
 #include "cxy_icp_rigid.h"
 #include "cxy_transform.h"
 #include "cxy_icp_arti.h"
-#include "cxy_icp_arti_one.h"
+#include "cxy_icp_arti_ik.h"
 #include "../../../../../../../usr/include/pcl-1.7/pcl/point_cloud.h"
 #include "../include/cxy_transform.h"
 #include "../include/cxy_icp_kinematic_node.h"
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>> kin_nodes;
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
-    kc_root_list.push_back(0);
-    initKinematicChain(kin_nodes, 2);
+    //kc_root_list.push_back(0);
+    initKinematicChain(kin_nodes, 1);
     cxy_lmicp_lib::cxy_icp_kinematic_chain<float> kc;
     std::shared_ptr<std::vector<cxy_icp_kinematic_node<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_node<float>>>(kin_nodes);
     kc.setKinematicNodes(kc_nodes_ptr);
@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
     
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
 
-    x.resize(2);
+    x.resize(1);
     x.setZero();
-    x(0) = 30.0;
-    x(1) = 20.0;
+    x(0) = Deg2Rad(30.0);
+    //x(1) = 20.0;
 
 
     // do the computation
@@ -79,7 +79,6 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint = kc.getFullModelCloud_World(x);
 
 //    lmicp.setDataCloud(transPoint);
-    cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
     while (1)
     {
         std::cin>>c;
@@ -88,7 +87,7 @@ int main(int argc, char *argv[])
         if ('t' == c)
         {
             std::cin>>x2;
-            x(1) = x2;
+            x(0) = Deg2Rad(x2);
             transPoint = kc.getFullModelCloud_World(x);
 
             publish(transPoint, pub_data_pointcloud_);
@@ -101,11 +100,11 @@ int main(int argc, char *argv[])
         {
 
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-            x(0) = 0.1;
-            x(1) = 0.0;
+            x(0) = 0.0;
+            //x(1) = 0.0;
 
 
-          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 1> arti_icp;
           std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
           arti_icp.setKinematicChain(kc_ptr);
           arti_icp.setDataCloud(transPoint);
@@ -119,11 +118,11 @@ int main(int argc, char *argv[])
         if ('l' == c)
         {
             pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
-            x(0) = 0.1;
-            x(1) = 0.0;
+            x(0) = 0.0;
+            //x(1) = 0.0;
 
 
-          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 2> arti_icp;
           std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
           arti_icp.setKinematicChain(kc_ptr);
           arti_icp.setDataCloud(transPoint);
