@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>> kin_nodes;
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
-    kc_root_list.push_back(0);
-    initKinematicChain(kin_nodes, 2);
+    //kc_root_list.push_back(0);
+    initKinematicChain(kin_nodes, 1);
     cxy_lmicp_lib::cxy_icp_kinematic_chain<float> kc;
     std::shared_ptr<std::vector<cxy_icp_kinematic_node<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_node<float>>>(kin_nodes);
     kc.setKinematicNodes(kc_nodes_ptr);
@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
     
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
 
-    x.resize(2);
+    x.resize(1);
     x.setZero();
-    x(0) = 30.0;
-    x(1) = 20.0;
+    x(0) = 20.0;
+    //x(1) = 40.0;
 
 
     // do the computation
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     pcl::PointCloud<PointT>::Ptr transPoint = kc.getFullModelCloud_World(x);
 
 //    lmicp.setDataCloud(transPoint);
-    cxy_lmicp_lib::cxy_icp_arti_one<float, 2> one_icp;
+    cxy_lmicp_lib::cxy_icp_arti_one<float, 1> one_icp;
     while (1)
     {
         std::cin>>c;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
         if ('t' == c)
         {
             std::cin>>x2;
-            x(1) = x2;
+            x(0) = x2;
             transPoint = kc.getFullModelCloud_World(x);
 
             publish(transPoint, pub_data_pointcloud_);
@@ -102,17 +102,17 @@ int main(int argc, char *argv[])
 
           pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
             x(0) = 0.1;
-            x(1) = 0.0;
+            //x(1) = 0.0;
 
 
-          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
+          cxy::cxy_lmicp_lib::cxy_icp_arti<float, 1> arti_icp;
           std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
           arti_icp.setKinematicChain(kc_ptr);
           arti_icp.setDataCloud(transPoint);
           arti_icp.icp_run(x);
           resultPoint = kc.getFullModelCloud_World(x);
           publish(transPoint, pub_data_pointcloud_);
-          publish(resultPoint, pub_result_);
+          publish(resultPoint, pub_model_pointcloud_);
           continue;
         }
         /// articulate parameter optimization using Eigen LM
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         {
             pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
             x(0) = 0.1;
-            x(1) = 0.0;
+            //x(1) = 0.0;
 
 
           cxy::cxy_lmicp_lib::cxy_icp_arti<float, 2> arti_icp;
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
           arti_icp.icp_run(x);
           resultPoint = kc.getFullModelCloud_World(x);
           publish(transPoint, pub_data_pointcloud_);
-          publish(resultPoint, pub_result_);
+          publish(resultPoint, pub_model_pointcloud_);
           continue;
         }
         /// articulate parameter optimization using Eigen LM
@@ -173,10 +173,70 @@ int main(int argc, char *argv[])
           } 
           resultPoint = kc.getFullModelCloud_World(x);
           publish(transPoint, pub_data_pointcloud_);
-          publish(resultPoint, pub_result_);
+          publish(resultPoint, pub_model_pointcloud_);
           continue;
         }
-        
+        /// one parameter optimization
+        if ('o' == c)
+        {
+          float z = 0.0;
+          static pcl::PointCloud<PointT>::Ptr data = getPointCloud(z);
+          pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+          /*pcl::PointCloud<PointT>::Ptr transPoint(new pcl::PointCloud<PointT>);
+          cxy_transform::Pose<float> pose;
+          float theta_tmp = -20.0;
+          pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
+          pose.composePoint(data, transPoint);
+          */
+          one_icp.setModelCloud(data);
+          one_icp.setDataCloud(transPoint);
+          Eigen::Matrix< float, Eigen::Dynamic, 1> x;
+          x.resize(1);
+          x(0) = 0.0;
+          
+          /// draw convergence map
+          std::ofstream fout("/home/xiongyi/repo/one-para-manifold-convergence.txt");
+          float theta_tmp = -180;
+          while (1)
+          {
+            const float delta = 6.0;
+            float counter1(-180);
+            cxy_transform::Pose<float> pose;
+            pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, theta_tmp);
+            pose.composePoint(data, transPoint);
+            one_icp.setDataCloud(transPoint);
+              while (1)
+              {
+
+                  x(0) = counter1;
+                  float res2 = one_icp.icp_run(x);
+                  fout<<counter1<<"  "<<theta_tmp<<"  "<<res2<<std::endl;
+                  if (counter1 >= 174)
+                      break;
+                  counter1 += delta;
+                  std::cout<<counter1<<"  "<<theta_tmp<<"  "<<res2<<std::endl;
+                  //std::cout<<x(0)<<"  "<<theta_tmp<<"  "<<one_icp.icp_run(x)<<std::endl;
+
+                  cxy_transform::Pose<float> pose;
+                  pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, x(0));
+                  pose.composePoint(data, resultPoint);
+
+                  publish(transPoint, pub_data_pointcloud_);
+                  publish(resultPoint, pub_result_);
+              } 
+              theta_tmp += delta;
+              if (theta_tmp >= 174)
+                return 1;
+          }         
+          //one_icp.icp_run(x);
+          //pose = cxy_transform::Pose<float>::rotateByAxis_fromIdentity(cxy_transform::Axis::X_axis_rotation, x(0));
+          
+          
+          //pose.composePoint(transPoint, resultPoint);
+          
+          continue;
+        }
+
 
     }
 
@@ -200,9 +260,9 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z_io)
         {
             const int ramdon_idx = rand() % size;
             data_tmp->push_back((*data)[ramdon_idx]);
-            if ((*data)[ramdon_idx].y > Z_io)
+            if ((*data)[ramdon_idx].z > Z_io)
             {
-              Z_io = (*data)[ramdon_idx].y;
+              Z_io = (*data)[ramdon_idx].z;
             }
         }
     }
@@ -240,18 +300,10 @@ void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>
     for (int ii = 0; ii < chain_number; ++ii)
     {
         cxy_lmicp_lib::cxy_icp_kinematic_node<float> kcTmp;
-        if ( ii == 0)
+        if ( ii != 0)
         {
-
-            ROS_INFO_STREAM("Z0 test = "<<kcTmp.pose_.t()(2));
-            kcTmp.pose_.t()(1) = 0.0;
-            
+            kcTmp.pose_.t()(2) = Z;
             /* code */
-        }
-        else
-        {
-          kcTmp.pose_.t()(1) = Z;
-            ROS_INFO_STREAM("Z = "<<Z);
         }
         kcTmp.setRotateAxis(cxy_transform::Axis::X_axis_rotation);
         kcTmp.setModelCloud(data);
