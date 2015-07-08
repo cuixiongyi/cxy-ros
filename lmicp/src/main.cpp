@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     x.resize(2);
     x.setZero();
-    x(0) = 0.0;
+    x(0) = 30.0;
     x(1) = 20.0;
 
 
@@ -200,9 +200,9 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z_io)
         {
             const int ramdon_idx = rand() % size;
             data_tmp->push_back((*data)[ramdon_idx]);
-            if ((*data)[ramdon_idx].z > Z_io)
+            if ((*data)[ramdon_idx].y > Z_io)
             {
-              Z_io = (*data)[ramdon_idx].z;
+              Z_io = (*data)[ramdon_idx].y;
             }
         }
     }
@@ -240,11 +240,18 @@ void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>
     for (int ii = 0; ii < chain_number; ++ii)
     {
         cxy_lmicp_lib::cxy_icp_kinematic_node<float> kcTmp;
-        if ( ii != 0)
+        if ( ii == 0)
         {
-            kcTmp.pose_.t()(2) = Z;
-            ROS_INFO_STREAM("Z = "<<Z);
+
+            ROS_INFO_STREAM("Z0 test = "<<kcTmp.pose_.t()(2));
+            kcTmp.pose_.t()(1) = 0.0;
+            
             /* code */
+        }
+        else
+        {
+          kcTmp.pose_.t()(1) = Z;
+            ROS_INFO_STREAM("Z = "<<Z);
         }
         kcTmp.setRotateAxis(cxy_transform::Axis::X_axis_rotation);
         kcTmp.setModelCloud(data);

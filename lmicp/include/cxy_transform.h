@@ -113,6 +113,9 @@ enum Axis : uint8_t
 			}
 			q1.normalize();
 			q2.normalize();
+			//Eigen::Matrix<_Scalar, 3, 1>  t_tmp(0.0,0.0,0.0);
+			//p_org.composePoint(t_tmp, pose.t_);
+
 			pose.q().w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
 			pose.q().x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 			pose.q().y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
