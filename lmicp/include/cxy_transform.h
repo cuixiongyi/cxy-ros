@@ -196,7 +196,17 @@ enum Axis : uint8_t
 
 			return;
 		}
-
+		void composeDirectionVector(const Vector& in_p, Vector &out_p) const
+				{
+					if ( ! bhasNormalized_)
+					{
+						normalize();
+					}
+					out_p(0) = in_p(0) + 2*(-(q_.y()*q_.y()+q_.z()*q_.z())*in_p(0) + (q_.x()*q_.y()-q_.w()*q_.z())*in_p(1) + (q_.w()*q_.y()+q_.x()*q_.z())*in_p(2));
+					out_p(1) = in_p(1) + 2*((q_.w()*q_.z()+q_.x()*q_.y())*in_p(0) - (q_.x()*q_.x()+q_.z()*q_.z())*in_p(1) + (q_.y()*q_.z()-q_.w()*q_.x())*in_p(2));
+					out_p(2) = in_p(2) + 2*((q_.x()*q_.z()-q_.w()*q_.y())*in_p(0) + (q_.w()*q_.x()+q_.y()*q_.z())*in_p(1) - (q_.x()*q_.x()+q_.y()*q_.y())*in_p(2));
+					
+				}
 		void inverseComposePoint(const Vector& in_p, Vector &out_p) const
 		{
 			if ( ! bhasNormalized_)

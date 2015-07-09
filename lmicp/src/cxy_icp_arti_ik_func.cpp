@@ -84,7 +84,9 @@ namespace cxy
         //ROS_INFO_STREAM(para_pose_parent.q().w()<<" "<<para_pose_parent.q().x()<<" "<<para_pose_parent.q().y()<<" "<<para_pose_parent.q().z());
         fjac.resize(transCloud->size(), 1);
         //std::cout<<"df()"<<std::endl;
+        Eigen::Matrix< _Scalar, 3, 1> rotation_axis_in(1.0, 0.0, 0.0);
         Eigen::Matrix< _Scalar, 3, 1> rotation_axis(1.0, 0.0, 0.0);
+        pose.composeDirectionVector(rotation_axis_in, rotation_axis);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
@@ -226,8 +228,8 @@ namespace cxy
         std::ofstream fout("/home/xiongyi/repo/manifold.txt");
         std::ofstream foutjac("/home/xiongyi/repo/manifold_jac.txt");
         //cxy_transform::Pose<_Scalar> pose;
-        const int delta = 8.0;
-        int counter1(-180.0);
+        const _Scalar delta = Deg2Rad(8.0);
+        _Scalar counter1(Deg2Rad(-180.0));
         while (1)
         {
             /*
@@ -276,13 +278,13 @@ namespace cxy
             x(0) = counter1;
             counter1 += delta;
             _Scalar res(0.0);
-            _Scalar jac(0.0);
+            _Scalar jacS(0.0);
             x_full_(joint_) = x(0);
-            
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud;
             cxy_transform::Pose<_Scalar> pose;
             cxy_transform::Pose<_Scalar> para_pose_parent;
             transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose, para_pose_parent);
+            Eigen::Matrix< _Scalar, 3, 1> rotation_axis(1.0, 0.0, 0.0);
             for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
             {
                 pcl::PointXYZ transPoint;
@@ -290,41 +292,23 @@ namespace cxy
                 Eigen::Matrix< _Scalar, 3, 1> r3;
                 res += matchPointCloud((*transCloud)[jj], r3);
                 
-                //Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> r3;
-                //ROS_INFO_STREAM("r3 = "<<r3);
-                Matrix jac31(calculateJacobianKernel(x
-                                                , (*transCloud)[jj]
-                                                , pose
-                                                , para_pose_parent)); //(*dataCloud_)[ii]));
-                if (jj == 700)
-                {
-                    //std::cout<<ii<<" = "<<(*dataCloud_)[ii].x<<"  "<<(*dataCloud_)[ii].y<<"  "<<(*dataCloud_)[ii].z<<std::endl;
-                    //std::cout<<ii<<" = "<<jac34(0)<<"  "<<jac34(1)<<"  "<<jac34(2)<<std::endl;
-                    //std::cout<<ii<<" = "<<vPara[0]<<"  "<<vPara[1]<<"  "<<vPara[2]<<"  "<<vPara[3]<<"  "<<vPara[4]<<"  "<<vPara[5]<<"  "<<vPara[6]<<std::endl;
-                }
-
+            
+                Eigen::Matrix< _Scalar, 3, 1> jac;
                 //ROS_INFO_STREAM("jac34 = "<<jac34);
                 //ROS_INFO(" ");
-                Matrix header(2,1);
-                header<<r3(1), r3(2);
-                Matrix jq(-jac31.transpose()*header);
-                jq *= 2;
-                jac += jq(0);
-                foutjac<<jq(0)<<" ";
-                //ROS_INFO_STREAM("jacobian = "<<jq);
-                //ROS_INFO(" ");
 
-                //fjac(ii, 1) = jq(1);
-
-
-                
+                //Matrix jq(-jac34.transpose()*header);
+                //jq *= 2;
+                Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
+                //fjac(jj, 0) = _Scalar(r3.transpose()*cross);
+                jacS += cross(0) + cross(1) + cross(2);
             }
             foutjac<<std::endl;
             res = res / this->values();
-            jac = jac / this->values();
-            fout<<counter1<<" "<<res<<" "<<jac<<std::endl;
+            jacS = jacS / this->values();
+            fout<<counter1<<" "<<res<<" "<<jacS<<std::endl;
             std::cout<<counter1<<" "<<std::endl;
-            if (counter1 >= 174)
+            if (counter1 >= Deg2Rad(174))
                 std::exit(1);
 
         }

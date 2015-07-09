@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>> kin_nodes;
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
-    //kc_root_list.push_back(0);
-    initKinematicChain(kin_nodes, 1);
+    kc_root_list.push_back(0);
+    initKinematicChain(kin_nodes, 2);
     cxy_lmicp_lib::cxy_icp_kinematic_chain<float> kc;
     std::shared_ptr<std::vector<cxy_icp_kinematic_node<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_node<float>>>(kin_nodes);
     kc.setKinematicNodes(kc_nodes_ptr);
@@ -63,10 +63,10 @@ int main(int argc, char *argv[])
     
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
 
-    x.resize(1);
+    x.resize(2);
     x.setZero();
     x(0) = Deg2Rad(30.0);
-    //x(1) = 20.0;
+    x(1) = Deg2Rad(20.0);
 
 
     // do the computation
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
         if ('t' == c)
         {
             std::cin>>x2;
-            x(0) = Deg2Rad(x2);
+            x(1) = Deg2Rad(x2);
             transPoint = kc.getFullModelCloud_World(x);
 
             publish(transPoint, pub_data_pointcloud_);
@@ -120,8 +120,17 @@ int main(int argc, char *argv[])
             pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
             x(0) = 0.0;
             //x(1) = 0.0;
-
-
+            /*
+          Eigen::Matrix< float, 3, 1> rotation_axis(1.0, 0.0, 0.0);
+          Eigen::Matrix< float, 3, 1> axis_out(1.0, 0.0, 0.0);
+          cxy_transform::Pose<float> pose;
+          float degtmp = Deg2Rad(90.0);
+          pose.rotateByAxis(cxy_transform::Axis::Y_axis_rotation, degtmp);
+          pose.composeDirectionVector(rotation_axis, axis_out);
+          ROS_INFO_STREAM("q "<<pose.q().w()<<"  "<<pose.q().x()<<"  "<<pose.q().y()<<"  "<<pose.q().z()<<"  ");
+          ROS_INFO_STREAM("inpute "<<rotation_axis);
+          ROS_INFO_STREAM("output "<<axis_out);
+          */
           cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 2> arti_icp;
           std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
           arti_icp.setKinematicChain(kc_ptr);
