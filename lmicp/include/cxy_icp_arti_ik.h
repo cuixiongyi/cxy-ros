@@ -33,6 +33,7 @@ namespace cxy {
             //: This function belong to 2nd layer, initialize specific cost function
             int icp_prepare_cost_function();
 
+            int icp_manifold();
             //: This function belong to 3rd layer, using optimization interface
             _Scalar icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x);
 

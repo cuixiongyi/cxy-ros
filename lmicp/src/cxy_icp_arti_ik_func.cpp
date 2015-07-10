@@ -21,18 +21,13 @@ namespace cxy
         kc_ = kc;
         joint_ = joint;
         x_full_ = x_full; 
-        ROS_INFO_STREAM("fcun_init size =  "<<kc->getModelCloud(joint)->size());
+        //ROS_INFO_STREAM("fcun_init size =  "<<kc->getModelCloud(joint)->size());
     }
 
     template<typename _Scalar>
     _Scalar cxy_icp_arti_ik_func<_Scalar>::operator()(ParaType & x, ResidualType& fvec) const
     {
-        /// test manifold start
-        if (0)
-        {
-            this->manifold();
-        }
-        /// test manifold end
+        
         _Scalar res(0.0);
         x_full_(joint_) = x(0);
         
@@ -56,7 +51,7 @@ namespace cxy
 
 
         
-        //ROS_INFO_STREAM("Call f the 3    "<<ac++<<" time. Residual =  "<< res);
+        //ROS_INFO_STREAM("Call f the  "<<ac++<<"  time. Residual =  "<< res);
 
 
         ROS_INFO_STREAM("theta =  "<<Rad2Deg(x(0))<< "  res = "<<res);
@@ -87,6 +82,7 @@ namespace cxy
         Eigen::Matrix< _Scalar, 3, 1> rotation_axis_in(1.0, 0.0, 0.0);
         Eigen::Matrix< _Scalar, 3, 1> rotation_axis(1.0, 0.0, 0.0);
         pose.composeDirectionVector(rotation_axis_in, rotation_axis);
+        //ROS_INFO_STREAM("rotation_axis = "<<rotation_axis);
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
@@ -111,10 +107,10 @@ namespace cxy
 
             //Matrix jq(-jac34.transpose()*header);
             //jq *= 2;
-            fjac.resize(dataCloud_->size(), 1);
             Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
             //fjac(jj, 0) = _Scalar(r3.transpose()*cross);
-            fjac(jj, 0) = cross(0) + cross(1) + cross(2);
+            fjac(jj, 0) = 2*(cross(0) + cross(1) + cross(2));
+            //fjac(jj, 0) = 2*(r3(0)*cross(0) + r3(1)*cross(1) + r3(2)*cross(2));
             //ROS_INFO_STREAM("cross = "<<cross<< " res = "<<r3);
             //ROS_INFO_STREAM("jac = "<<fjac(jj, 0));
             
@@ -228,55 +224,11 @@ namespace cxy
         std::ofstream fout("/home/xiongyi/repo/manifold.txt");
         std::ofstream foutjac("/home/xiongyi/repo/manifold_jac.txt");
         //cxy_transform::Pose<_Scalar> pose;
-        const _Scalar delta = Deg2Rad(8.0);
-        _Scalar counter1(Deg2Rad(-180.0));
+        const _Scalar delta = Deg2Rad(5.0);
+        _Scalar counter1(Deg2Rad(-0.0));
         while (1)
         {
-            /*
-            cxy_transform::Pose<_Scalar> pose;
-
-            counter1 += delta;
-            pose.rotateByAxis(cxy_transform::Axis::X_axis_rotation, counter1);
-            std::vector<_Scalar> vPara(7);
-            _Scalar res(0.0);
-            _Scalar jac(0.0);
-            vPara[0] = 0.0;
-            vPara[1] = .0;
-            vPara[2] = .0;
-            vPara[3] = pose.q().w();
-            vPara[4] = pose.q().x();
-            vPara[5] = .0;
-            vPara[6] = .0;
-            pose.normalize();
-
-            for (unsigned int ii = 0; ii < dataCloud_->size(); ++ii)
-            {
-                pcl::PointXYZ transPoint;
-                pose.composePoint((*dataCloud_)[ii], transPoint);
-                Eigen::Matrix< _Scalar, 3, 1> r3;
-                res += matchPointCloud(transPoint, r3);
-                Matrix jac34(calculateJacobianKernel(vPara
-                        , (*dataCloud_)[ii]));//transPoint)); //(*dataCloud_)[ii]));
-
-                Matrix header(1,2);
-                header<<r3(1), r3(2);
-
-                //ROS_INFO_STREAM("jac34 = "<<jac34);
-                //ROS_INFO(" ");
-
-                Matrix jq(-header*jac34);
-                jac += jq(0);
-
-            }
-            res = res / this->values();
-            jac = jac / this->values();
-            std::cout<<counter1<<" "<<pose.q().w()<<" "<<pose.q().x()<<std::endl;
-            fout<<counter1<<"  "<<pose.q().w()<<" "<<pose.q().x()<<" "<<res<<" "<<jac<<std::endl;
-            if (counter1 >= 361)
-                std::exit(1);
-            */
             x(0) = counter1;
-            counter1 += delta;
             _Scalar res(0.0);
             _Scalar jacS(0.0);
             x_full_(joint_) = x(0);
@@ -302,13 +254,15 @@ namespace cxy
                 Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
                 //fjac(jj, 0) = _Scalar(r3.transpose()*cross);
                 jacS += cross(0) + cross(1) + cross(2);
+                //foutjac<<cross(0) + cross(1) + cross(2)<<" ";
             }
             foutjac<<std::endl;
             res = res / this->values();
             jacS = jacS / this->values();
             fout<<counter1<<" "<<res<<" "<<jacS<<std::endl;
             std::cout<<counter1<<" "<<std::endl;
-            if (counter1 >= Deg2Rad(174))
+            counter1 += delta;
+            if (counter1 >= Deg2Rad(360))
                 std::exit(1);
 
         }

@@ -29,14 +29,14 @@ namespace cxy
                 pcl::PointCloud<pcl::PointXYZ>::Ptr tmpCloud (new pcl::PointCloud<pcl::PointXYZ>);
                 cxy_transform::Pose<_Scalar> pose;
                 tmpCloud = getOneModelCloud_World(x, ii, pose);
-                ROS_INFO_STREAM("w = "<<pose.q().w()<<" z = "<<pose.t()(2));
+                //ROS_INFO_STREAM("w = "<<pose.q().w()<<" z = "<<pose.t()(2));
                 for (int jj = 0; jj < tmpCloud->size(); ++jj)
                 {
                     transCloud->push_back((*tmpCloud)[jj]);
                     //ROS_INFO_STREAM((*kc_nodes_)[joint].modelCloud_[ii].x<<" "<<(*kc_nodes_)[joint].modelCloud_[ii].y<<"  "<<[ii].z);
                     /* code */
                 }
-                ROS_INFO_STREAM(" ");
+                //ROS_INFO_STREAM(" ");
             }
             return transCloud;
 

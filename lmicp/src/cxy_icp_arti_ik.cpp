@@ -80,6 +80,18 @@ namespace cxy {
         }
 
     template<typename _Scalar, int _MinimizerType>
+        int cxy_icp_arti_ik<_Scalar, _MinimizerType>::icp_manifold()
+        {
+            //func_ = std::make_shared<cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>>(kc_->size(), kc_, this->dataCloud_, this->kdtreeptr_);
+            Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> x;
+            x.resize(1);
+            x(0) = 0.0;
+            func_ = std::make_shared<cxy_lmicp_lib::cxy_icp_arti_ik_func<_Scalar>>(1, kc_, this->dataCloud_, this->kdtreeptr_, 0, x);
+            func_->manifold();
+            return 1;
+        }
+
+    template<typename _Scalar, int _MinimizerType>
         _Scalar cxy_icp_arti_ik<_Scalar, _MinimizerType>::icp_minimization(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> &x)
         {
             cxy_optimization::cxy_nonlinear_method state(static_cast<cxy_optimization::cxy_nonlinear_method>(_MinimizerType));
