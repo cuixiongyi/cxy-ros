@@ -83,6 +83,7 @@ namespace cxy
         Eigen::Matrix< _Scalar, 3, 1> rotation_axis(1.0, 0.0, 0.0);
         pose.composeDirectionVector(rotation_axis_in, rotation_axis);
         //ROS_INFO_STREAM("rotation_axis = "<<rotation_axis);
+        float jacS = 0.0;
         for (unsigned int jj = 0; jj < transCloud->size(); ++jj)
         {
             pcl::PointXYZ transPoint;
@@ -107,9 +108,20 @@ namespace cxy
 
             //Matrix jq(-jac34.transpose()*header);
             //jq *= 2;
-            Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
             //fjac(jj, 0) = _Scalar(r3.transpose()*cross);
+            
+            r3 = -r3;
+            /*
+            for (int ii = 0; ii < 3; ++ii)
+            {
+                if (r3(ii) < 0)
+                    r3(ii) = - r3(ii);
+            }
+            */
+            
+            Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
             fjac(jj, 0) = 2*(cross(0) + cross(1) + cross(2));
+            jacS += fjac(jj, 0);
             //fjac(jj, 0) = 2*(r3(0)*cross(0) + r3(1)*cross(1) + r3(2)*cross(2));
             //ROS_INFO_STREAM("cross = "<<cross<< " res = "<<r3);
             //ROS_INFO_STREAM("jac = "<<fjac(jj, 0));
@@ -123,6 +135,8 @@ namespace cxy
             //std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
 
         }
+        jacS = jacS / transCloud->size();
+        ROS_INFO_STREAM("jac Sum = " << jacS);
         //std::exit(0);
 
         //x(0) = pose.q().w();
@@ -248,7 +262,14 @@ namespace cxy
                 Eigen::Matrix< _Scalar, 3, 1> jac;
                 //ROS_INFO_STREAM("jac34 = "<<jac34);
                 //ROS_INFO(" ");
-
+            r3 = -r3;
+            /*
+            for (int ii = 0; ii < 3; ++ii)
+            {
+                if (r3(ii) > 0)
+                    r3(ii) = - r3(ii);
+            }   
+            */
                 //Matrix jq(-jac34.transpose()*header);
                 //jq *= 2;
                 Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
