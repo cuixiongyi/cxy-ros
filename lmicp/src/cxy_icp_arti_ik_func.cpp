@@ -54,7 +54,7 @@ namespace cxy
         //ROS_INFO_STREAM("Call f the  "<<ac++<<"  time. Residual =  "<< res);
 
 
-        ROS_INFO_STREAM("theta =  "<<Rad2Deg(x(0))<< "  res = "<<res);
+        //ROS_INFO_STREAM("theta =  "<<Rad2Deg(x(0))<< "  res = "<<res);
         if (0)
         {
             static std::ofstream fout("/home/xiongyi/repo/gradiant.txt");
@@ -136,7 +136,7 @@ namespace cxy
 
         }
         jacS = jacS / transCloud->size();
-        ROS_INFO_STREAM("jac Sum = " << jacS);
+        //ROS_INFO_STREAM("jac Sum = " << jacS);
         //std::exit(0);
 
         //x(0) = pose.q().w();

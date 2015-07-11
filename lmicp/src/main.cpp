@@ -208,7 +208,55 @@ int main(int argc, char *argv[])
           publish(resultPoint, pub_result_);
           continue;
         }
-        
+        if ('d' == c)
+        {
+            pcl::PointCloud<PointT>::Ptr resultPoint(new pcl::PointCloud<PointT>);
+
+          cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 2> arti_icp;
+          std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> kc_ptr = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic_chain<float>> (kc);
+          arti_icp.setKinematicChain(kc_ptr);
+          Eigen::Matrix< float, Eigen::Dynamic, 1> x_true;
+
+          x_true.resize(2);
+          x_true.setZero();
+          
+          
+          /// draw convergence map
+          //std::ofstream fout("/home/xiongyi/repo/arti-manifold-convergence.txt");
+          const float delta = Deg2Rad(8.0);
+          const float start_angle = Deg2Rad(-120.0);
+          x_true(0) = start_angle;
+          x_true(1) = Deg2Rad(120.0);
+          x(0) = start_angle + Deg2Rad(0.0);
+          x(1) = Deg2Rad(120.0) + Deg2Rad(-10.0);
+          while (1)
+          {
+            x_true(0) = x_true(0) + delta;
+            x_true(1) = x_true(1) - delta;
+            if (x_true(1) <= Deg2Rad(-40))
+              return 1;
+            transPoint = kc.getFullModelCloud_World(x_true);
+            arti_icp.setDataCloud(transPoint);
+            float res = arti_icp.icp_run(x);
+            //x(0) = counter1;
+            //fout<<counter1<<"  "<<theta_tmp<<"  "<<arti_icp.icp_run(x)<<" "<<x(0)<<std::endl;
+            std::cout<<res<<"  "<<Rad2Deg(x(0)-x_true(0))<<" "<<Rad2Deg(x(1)-x_true(1))<<std::endl;
+
+            
+            resultPoint = kc.getFullModelCloud_World(x);
+            for (int ii = 0; ii <resultPoint->size(); ++ii)
+            {
+              (*resultPoint)[ii].y += 0.25;
+            }
+            publish(transPoint, pub_data_pointcloud_);
+            publish(resultPoint, pub_result_);
+            ros::Duration d = ros::Duration(0.5);
+            d.sleep();
+
+          } 
+          
+          continue;
+        }
 
     }
 
