@@ -24,7 +24,7 @@ namespace cxy_transform
 	{
 		int n(0);
 		_Scalar theta(Rad2Deg(degree));
-		/*
+		
 		if (degree > _Scalar(180))
 		{
 			n = (degree-180) / _Scalar(360);
@@ -35,7 +35,7 @@ namespace cxy_transform
 			n = std::abs( (degree+180) / _Scalar(360));
 			theta = degree + (n+1)*_Scalar(360);
 		}
-		*/
+		
         //degree = Deg2Rad(theta);
 		//std::cout<<theta<<std::endl;
 		_Scalar radian = Deg2Rad(theta);
@@ -64,7 +64,7 @@ namespace cxy_transform
 
         int n(0);
 		_Scalar theta(Rad2Deg(degree));
-        /*if (degree > _Scalar(180))
+        if (degree > _Scalar(180))
         {
             n = (degree-180) / _Scalar(360);
             theta = degree - (n+1)*_Scalar(360);
@@ -73,7 +73,7 @@ namespace cxy_transform
         {
             n = std::abs( (degree+180) / _Scalar(360));
             theta = degree + (n+1)*_Scalar(360);
-        }*/
+        }
         //degree = Deg2Rad(theta);
         //std::cout<<theta<<std::endl;
         _Scalar radian = Deg2Rad(theta);
