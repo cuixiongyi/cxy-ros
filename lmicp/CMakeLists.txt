@@ -44,7 +44,7 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #add_definitions(${PCL_DEFINITIONS})
 #
 add_library(lmicp_lib 
-                include/cxy_transform.h
+                include/cxy_transform.h src/cxy_transform.cpp
                 include/lmicp.h
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
@@ -52,6 +52,8 @@ add_library(lmicp_lib
               include/cxy_icp.h
               include/cxy_icp_rigid.h
               include/cxy_icp_arti.h  src/cxy_icp_arti.cpp
+              include/cxy_icp_arti_ik.h  src/cxy_icp_arti_ik.cpp
+              include/cxy_icp_arti_ik_func.h  src/cxy_icp_arti_ik_func.cpp
               include/cxy_icp_arti_func.h  src/cxy_icp_arti_func.cpp
               include/cxy_icp_kinematic_node.h  src/cxy_icp_kinematic_node.cpp
               include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp
