@@ -5,8 +5,9 @@ endif()
 
 project(project_lmicp)
 
-set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+
+set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall ")
 
 option(ENABLE_MY_ASSERT "Turn on CXY_ASSERT checks" ON)
 
@@ -32,17 +33,22 @@ find_package(catkin REQUIRED COMPONENTS roscpp
                                         pcl_ros
                                         )
 
+
+
+
 #include(/home/xiongyi/Downloads/lib/dlib-18.16/dlib/cmake)
 
 # CMakeList for dlib
 # ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
 # TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
-include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS})
+include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
+
 
 #link_directories(${PCL_LIBRARY_DIRS})
 #add_definitions(${PCL_DEFINITIONS})
 #
+
 add_library(lmicp_lib 
                 include/cxy_transform.h src/cxy_transform.cpp
                 include/lmicp.h
@@ -59,6 +65,7 @@ add_library(lmicp_lib
               include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp
 
               src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
+
 
 target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}   )#dlib)
 
@@ -78,3 +85,41 @@ target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(convergence_test_main_exe ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
+
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+# Qt5
+set (CMAKE_PREFIX_PATH "/opt/Qt/5.5/gcc_64")
+# Find the QtWidgets library
+find_package(Qt5Widgets REQUIRED)
+
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed.
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+#add_definitions(${Qt5Widgets_DEFINITIONS})
+
+set (MyProjectLib_src ${PROJECT_SOURCE_DIR}/src/gui/mainwindow.cpp)
+set (MyProjectLib_hdr ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.h)
+set (MyProjectLib_ui  ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.ui)
+set (MyProjectBin_src ${PROJECT_SOURCE_DIR}/src/gui/main.cpp)
+
+qt5_wrap_cpp(MyProjectLib_hdr_moc ${MyProjectLib_hdr})
+qt5_wrap_ui (MyProjectLib_ui_moc  ${MyProjectLib_ui})
+
+include_directories (${PROJECT_SOURCE_DIR})
+include_directories (${PROJECT_BINARY_DIR})
+
+add_library (ygui_lib SHARED 
+            ${MyProjectLib_src}
+            ${MyProjectLib_hdr_moc}
+            ${MyProjectLib_ui_moc}
+)
+target_link_libraries(ygui_lib Qt5::Widgets) #${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}  
+
+
+add_executable(ygui ${MyProjectBin_src} )
+target_link_libraries(ygui ygui_lib  )
+qt5_use_modules(ygui_lib Core Gui Widgets)
