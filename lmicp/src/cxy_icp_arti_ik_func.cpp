@@ -103,6 +103,7 @@ namespace cxy
             */
             
             Eigen::Matrix< _Scalar, 3, 1> jac;
+            Eigen::Matrix< _Scalar, 3, 1> tmp((*transCloud)[jj].x - pose.t()(0), (*transCloud)[jj].y - pose.t()(1), (*transCloud)[jj].z - pose.t()(2));
             //ROS_INFO_STREAM("jac34 = "<<jac34);
             //ROS_INFO(" ");
 
@@ -110,7 +111,7 @@ namespace cxy
             //jq *= 2;
             //fjac(jj, 0) = _Scalar(r3.transpose()*cross);
             
-            r3 = -r3;
+            //r3 = -r3;
             /*
             for (int ii = 0; ii < 3; ++ii)
             {
@@ -119,8 +120,31 @@ namespace cxy
             }
             */
             
-            Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(r3);
-            fjac(jj, 0) = 2*(cross(0) + cross(1) + cross(2));
+            Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(tmp);
+            Eigen::Matrix< _Scalar, 3, 1> cross_norm = cross / (std::sqrt(cross(0)*cross(0)+cross(1)*cross(1)+cross(2)*cross(2)));
+            const float jac_step_scale = 0.3;
+            const float r3_length = std::sqrt(r3(0)*r3(0)+r3(1)*r3(1)+r3(2)*r3(2));
+            float scale0 = r3_length * jac_step_scale * cross_norm(0);
+            float scale1 = r3_length * jac_step_scale * cross_norm(1);
+            float scale2 = r3_length * jac_step_scale * cross_norm(2);
+            if (std::isnan(scale0))
+                scale0 = 0.0;
+            if (std::isnan(scale1))
+                scale1 = 0.0;
+            if (std::isnan(scale2))
+                scale2 = 0.0;
+            if (std::abs(r3(0)+scale0) + std::abs(r3(1)+scale1) + std::abs(r3(2)+scale2) > std::abs(r3(0)) + std::abs(r3(1)) + std::abs(r3(2)))
+            {
+                fjac(jj, 0) =  -std::abs(cross(2) + cross(1) + cross(0));
+                if (jj == 20)
+                   ROS_INFO_STREAM("reversed");
+            }
+            else
+            {
+                fjac(jj, 0) =  std::abs(cross(2) + cross(1) + cross(0));
+                //fjac(jj, 0) = -fjac(jj, 0);
+            }
+
             jacS += fjac(jj, 0);
             //fjac(jj, 0) = 2*(r3(0)*cross(0) + r3(1)*cross(1) + r3(2)*cross(2));
             //ROS_INFO_STREAM("cross = "<<cross<< " res = "<<r3);
@@ -130,13 +154,20 @@ namespace cxy
             //fjac(ii, 1) = jq(1);
 
 
-            //if (jj == 20)
+            if (jj == 20)
+            {
+                ROS_INFO_STREAM("r3 = "<<r3);
+                ROS_INFO_STREAM("cross = "<<cross_norm);
+                ROS_INFO_STREAM("cross scaled = "<<scale0<<"  "<<scale1<<"  "<<scale2<<"  ");
+                ROS_INFO_STREAM("res+jac = "<<std::abs(r3(0)+scale0) + std::abs(r3(1)+scale1) + std::abs(r3(2)+scale2)<< " abs(res) =  "<< std::abs(r3(0)) + std::abs(r3(1)) + std::abs(r3(2)));
+                ROS_INFO_STREAM("fjac(jj, 0) = "<<fjac(jj, 0));
+            }
             //    std::cout<<" cols = "<<jq.cols()<<" rows = "<<jq.rows()<<"  j = "<<jq<<std::endl;
             //std::cout<<"dev = "<<jq(0, 0)<<"  "<<jq(0,1)<<"  "<<jq(0,2)<<"  "<<jq(0,3)<<std::endl;
 
         }
         jacS = jacS / transCloud->size();
-        ROS_INFO_STREAM("jac Sum = " << jacS);
+        //ROS_INFO_STREAM("jac Sum = " << jacS);
         //std::exit(0);
 
         //x(0) = pose.q().w();
