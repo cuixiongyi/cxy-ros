@@ -232,8 +232,8 @@ int main(int argc, char *argv[])
           while (1)
           {
             x_true(0) = x_true(0) + delta;
-            x_true(1) = x_true(1) - delta;
-            if (x_true(1) <= Deg2Rad(-40))
+            x_true(1) = x_true(1) + 1.3*delta;
+            if (x_true(1) >= Deg2Rad(120))
               return 1;
             transPoint = kc.getFullModelCloud_World(x_true);
             arti_icp.setDataCloud(transPoint);
