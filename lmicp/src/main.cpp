@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
     kc_root_list.push_back(0);
-    initKinematicChain(kin_nodes, 2);
+    kc_root_list.push_back(1);
+    initKinematicChain(kin_nodes, 3);
     cxy_lmicp_lib::cxy_icp_kinematic_chain<float> kc;
     std::shared_ptr<std::vector<cxy_icp_kinematic_node<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_node<float>>>(kin_nodes);
     kc.setKinematicNodes(kc_nodes_ptr);
@@ -63,9 +64,10 @@ int main(int argc, char *argv[])
     
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
 
-    x.resize(2);
+    x.resize(3);
     x.setZero();
     x(0) = Deg2Rad(20.0);
+    x(1) = Deg2Rad(10.0);
     x(1) = Deg2Rad(10.0);
 
 
@@ -179,7 +181,7 @@ int main(int argc, char *argv[])
 
           /// draw convergence map
           std::ofstream fout("/home/xiongyi/repo/arti-manifold-convergence.txt");
-          const float delta = Deg2Rad(8.0);
+          const float delta = Deg2Rad(10.0);
           float theta_tmp = Deg2Rad(0.0);
           while (1)
           {
@@ -217,22 +219,25 @@ int main(int argc, char *argv[])
           arti_icp.setKinematicChain(kc_ptr);
           Eigen::Matrix< float, Eigen::Dynamic, 1> x_true;
 
-          x_true.resize(2);
+          x_true.resize(3);
           x_true.setZero();
           
           
           /// draw convergence map
           //std::ofstream fout("/home/xiongyi/repo/arti-manifold-convergence.txt");
-          const float delta = Deg2Rad(8.0);
+          const float delta = Deg2Rad(10.0);
           const float start_angle = Deg2Rad(-120.0);
           x_true(0) = start_angle;
           x_true(1) = Deg2Rad(-120.0);
+          x_true(2) = Deg2Rad(10.0);
           x(0) = start_angle + Deg2Rad(0.0);
           x(1) = start_angle + Deg2Rad(0.0) + Deg2Rad(-10.0);
+          x(2) = Deg2Rad(10.0) + Deg2Rad(0.0);
           while (1)
           {
-            x_true(0) = x_true(0) + delta;
-            x_true(1) = x_true(1) + 0.6*delta;
+            x_true(0) += delta;
+            x_true(1) += 0.7*delta;
+            x_true(2) += 0.5*delta;
             //if (x_true(1) <= Deg2Rad(120))
             if (0)
               return 1;
