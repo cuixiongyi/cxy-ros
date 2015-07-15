@@ -226,14 +226,15 @@ int main(int argc, char *argv[])
           const float delta = Deg2Rad(8.0);
           const float start_angle = Deg2Rad(-120.0);
           x_true(0) = start_angle;
-          x_true(1) = Deg2Rad(120.0);
+          x_true(1) = Deg2Rad(-120.0);
           x(0) = start_angle + Deg2Rad(0.0);
-          x(1) = Deg2Rad(120.0) + Deg2Rad(-10.0);
+          x(1) = start_angle + Deg2Rad(0.0) + Deg2Rad(-10.0);
           while (1)
           {
             x_true(0) = x_true(0) + delta;
-            x_true(1) = x_true(1) + 1.3*delta;
-            if (x_true(1) >= Deg2Rad(120))
+            x_true(1) = x_true(1) + 0.6*delta;
+            //if (x_true(1) <= Deg2Rad(120))
+            if (0)
               return 1;
             transPoint = kc.getFullModelCloud_World(x_true);
             arti_icp.setDataCloud(transPoint);
