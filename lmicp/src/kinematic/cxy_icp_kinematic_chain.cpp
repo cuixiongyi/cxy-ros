@@ -113,19 +113,19 @@ namespace cxy
 
         /*
         template<typename _Scalar>
-        std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes()
+        std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes()
         {
             return kc_nodes_;
         }*/
 
         template<typename _Scalar>
-        const std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes() const
+        const std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes() const
         {
             return kc_nodes_;
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes)
+        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kin_nodes)
         {
             CXY_ASSERT(nullptr != kin_nodes );
             kc_nodes_ = kin_nodes;

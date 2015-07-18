@@ -6,7 +6,7 @@
 
 #include "optimization/cxy_cost_func_example.h"
 #include "utility/cxy_transform.h"
-#include "kinematic/cxy_icp_kinematic_node.h"
+#include "kinematic/cxy_icp_kinematic_joint.h"
 #include "kinematic/cxy_icp_kinematic_chain.h"
 #include "energy/cxy_icp_rigid.h"
 #include "energy/cxy_icp_arti_ik.h"
@@ -28,7 +28,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 
 void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub);
 
-void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes, int chain_number);
+void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_joint<float> >& kin_nodes, int chain_number);
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z);
 
@@ -51,14 +51,14 @@ int main(int argc, char *argv[])
             pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 
 
-    std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float>> kin_nodes;
+    std::vector<cxy_lmicp_lib::cxy_icp_kinematic_joint<float>> kin_nodes;
     std::vector<int> kc_root_list;
     kc_root_list.push_back(-1);
     kc_root_list.push_back(0);
     kc_root_list.push_back(1);
     initKinematicChain(kin_nodes, 3);
     cxy_lmicp_lib::cxy_icp_kinematic_chain<float> kc;
-    std::shared_ptr<std::vector<cxy_icp_kinematic_node<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_node<float>>>(kin_nodes);
+    std::shared_ptr<std::vector<cxy_icp_kinematic_joint<float>>> kc_nodes_ptr = std::make_shared<std::vector<cxy_icp_kinematic_joint<float>>>(kin_nodes);
     kc.setKinematicNodes(kc_nodes_ptr);
     kc.setKinematicRootList(kc_root_list);
 
@@ -319,14 +319,14 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z_io)
   }
   return data;
 }
-void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_node<float> >& kin_nodes, int chain_number)
+void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_joint<float> >& kin_nodes, int chain_number)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
   float Z = 0.0;
   data = getPointCloud(Z);  
     for (int ii = 0; ii < chain_number; ++ii)
     {
-        cxy_lmicp_lib::cxy_icp_kinematic_node<float> kcTmp;
+        cxy_lmicp_lib::cxy_icp_kinematic_joint<float> kcTmp;
         if ( ii == 0)
         {
 

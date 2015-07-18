@@ -1,8 +1,4 @@
 #pragma once
-#include "utility/cxy_transform.h"
-#include "common/cxy_debug.h"
-#include "kinematic/cxy_icp_kinematic_node.h"
-#include "common/cxy_common.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -14,6 +10,11 @@
 #include "pcl/point_types.h"
 #include <memory>
 
+#include "utility/cxy_transform.h"
+#include "common/cxy_debug.h"
+#include "common/cxy_common.h"
+#include "kinematic/cxy_icp_kinematic_joint.h"
+
 namespace cxy
 {
     namespace cxy_lmicp_lib
@@ -24,7 +25,7 @@ namespace cxy
 
         private:
 
-            std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kc_nodes_;
+            std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kc_nodes_;
             std::vector<int> kc_root_list_;
 
 
@@ -36,9 +37,9 @@ namespace cxy
                 return (*kc_nodes_)[joint].modelCloud_;
                 };
 
-            //std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes();
-            const std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>>& getKinematicChainNodes() const;
-            void setKinematicNodes( std::shared_ptr<std::vector<cxy_icp_kinematic_node<_Scalar>>> kin_nodes);
+            //std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& getKinematicChainNodes();
+            const std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& getKinematicChainNodes() const;
+            void setKinematicNodes( std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kin_nodes);
             void setKinematicRootList( std::vector<int>& list);
 
 

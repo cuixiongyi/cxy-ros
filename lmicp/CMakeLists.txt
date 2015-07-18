@@ -51,6 +51,8 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 
 add_library(lmicp_lib 
                 include/utility/cxy_transform.h src/utility/cxy_transform.cpp
+                include/utility/cxy_sync.h src/utility/cxy_sync.cpp
+                include/common/config.h src/common/config.cpp
 
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
@@ -61,7 +63,7 @@ add_library(lmicp_lib
               include/energy/cxy_icp_rigid_func.h 		src/energy/cxy_icp_rigid_func.cpp 
               include/energy/cxy_icp_arti_ik.h  	src/energy/cxy_icp_arti_ik.cpp
               include/energy/cxy_icp_arti_ik_func.h  	src/energy/cxy_icp_arti_ik_func.cpp
-              include/kinematic/cxy_icp_kinematic_node.h  src/kinematic/cxy_icp_kinematic_node.cpp
+              include/kinematic/cxy_icp_kinematic_joint.h  src/kinematic/cxy_icp_kinematic_joint.cpp
               include/kinematic/cxy_icp_kinematic_chain.h  src/kinematic/cxy_icp_kinematic_chain.cpp
 
 )
@@ -86,6 +88,7 @@ target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
 #target_link_libraries(convergence_test_main_exe ${catkin_LIBRARIES} lmicp_lib)
 target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
 add_executable(main_new src/app/main_new.cpp)
+target_link_libraries(main_new ${catkin_LIBRARIES} lmicp_lib)
 
 
 
