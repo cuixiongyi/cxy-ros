@@ -142,6 +142,11 @@ namespace cxy
 
         }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::constructKinematicChain()
+        {
+
+        }
 
     }
 }

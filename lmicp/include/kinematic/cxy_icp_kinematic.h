@@ -25,13 +25,15 @@ namespace cxy
 		public:
 			cxy_icp_kinematic(std::shared_ptr<cxy_config>);
 			~cxy_icp_kinematic();
+			std::shared_ptr<cxy_config> config_;
 
 		private:
-			std::shared_ptr<cxy_config> config_;
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
             std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
 
             Eigen::Matrix< float, Eigen::Dynamic, 1> x_;
+
+
 		};
 	}
 }

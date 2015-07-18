@@ -24,18 +24,6 @@ namespace cxy
             return pose_;
         }
 */
-        template<typename _Scalar>
-        void cxy_icp_kinematic_joint<_Scalar>::setRotateAxis(cxy_transform::Axis axis)
-        {
-            rotateAxis_ = axis;
-        }
-
-        template<typename _Scalar>
-        void cxy_icp_kinematic_joint<_Scalar>::setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model)
-        {
-            modelCloud_ = model;
-        }
-
 
 
 

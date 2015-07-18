@@ -7,20 +7,11 @@
 #include "utility/cxy_transform.h"
 #include "common/serialization.h"
 #include "common/cxy_debug.h"
+#include "common/joint_info.h"
 
 namespace cxy
 {
-    struct cxy_config_joint
-    {
-        int joint_idx = {-1};
-        int joint_parent = {-1};
 
-        cxy_transform::Axis jointType;
-        std::string model_filename;
-        float t[3];
-        float r[3];
-
-    };
 	class cxy_config : public serialization
 	{
 	public:
@@ -44,8 +35,14 @@ namespace cxy
 				
 	private:
 		std::string filename_;
-
+		bool isOpen_ = {false};
 		int joint_number_ = {0};
-		std::vector<cxy_config_joint> kinematic_config_;
+		std::vector<joint_info> joint_config_;
+
+	public:
+		inline const bool& isOpen()
+		{
+			return isOpen_;
+		}
 	};
 }

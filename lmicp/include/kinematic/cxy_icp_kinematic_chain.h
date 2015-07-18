@@ -10,10 +10,13 @@
 #include "pcl/point_types.h"
 #include <memory>
 
+// hack.hpp should not appear at last
+#include "common/hack.hpp"
 #include "utility/cxy_transform.h"
 #include "common/cxy_debug.h"
 #include "common/cxy_common.h"
 #include "common/cxy_config.h"
+
 #include "kinematic/cxy_icp_kinematic_joint.h"
 #include "kinematic/cxy_icp_kinematic_point.h"
 
@@ -35,6 +38,9 @@ namespace cxy
         public:
             cxy_icp_kinematic_chain(const std::shared_ptr<cxy_config>&);
             cxy_icp_kinematic_chain(){};
+
+            void constructKinematicChain();
+
 
             inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr getModelCloud(int joint)
             {

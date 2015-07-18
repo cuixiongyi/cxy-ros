@@ -14,6 +14,8 @@ namespace cxy
 			{}
 	void cxy_config::unserialize()
 	{
+        if (isOpen_)
+            return;
 		if (fin_.is_open())
 			fin_.close();
 		fin_.open(filename_);
@@ -40,14 +42,15 @@ namespace cxy
 				iss >> joint_number_;
                 parseJoints();
 			}
-		}		
+		}
+        isOpen_ = true;
 	}
 
     void cxy_config::parseJoints()
     {
         std::string line;
         int8_t lineStatus = 0;
-        kinematic_config_.reserve(joint_number_);
+        joint_config_.reserve(joint_number_);
 
         for (int ii = 0; ii < joint_number_; ++ii)
         {
@@ -60,7 +63,7 @@ namespace cxy
             }
 
             std::stringstream iss(line);
-            cxy_config_joint kj;
+            joint_info kj;
 
             // joint index
             iss>>kj.joint_idx;
@@ -99,7 +102,7 @@ namespace cxy
             //std::cout<<"iss: "<<line<<std::endl;
             iss>>kj.t[0]>>kj.t[1]>>kj.t[2]>>kj.r[0]>>kj.r[1]>>kj.r[2];
 
-            kinematic_config_.push_back(kj);
+            joint_config_.push_back(kj);
         }
     }
     cxy_transform::Axis cxy_config::parseJointType(const std::string& str)
