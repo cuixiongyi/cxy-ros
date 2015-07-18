@@ -1,12 +1,14 @@
 #pragma once
 
-#include "cxy_transform.h"
-#include "cxy_icp_kinematic_chain.h"
-#include "cxy_icp_arti_ik_func.h"
-#include <unsupported/Eigen/NonLinearOptimization>
-#include "optimization/cxy_nonlinear_minimizer_LM.h"
 #include <memory>
-#include "cxy_debug.h"
+#include <unsupported/Eigen/NonLinearOptimization>
+
+#include "common/cxy_debug.h"
+
+#include "utility/cxy_transform.h"
+#include "kinematic/cxy_icp_kinematic_chain.h"
+#include "energy/cxy_icp_arti_ik_func.h"
+#include "optimization/cxy_nonlinear_minimizer_LM.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {

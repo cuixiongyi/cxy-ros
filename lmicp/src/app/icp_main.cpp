@@ -1,10 +1,10 @@
-#include "optimization/cxy_cost_func_example.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
-#include "cxy_icp_rigid.h"
-#include "cxy_transform.h"
-#include "cxy_icp_arti.h"
+
+#include "energy/cxy_icp_rigid.h"
+#include "utility/cxy_transform.h"
+#include "optimization/cxy_cost_func_example.h"
 //#include "main.h"
 
 using namespace  cxy;

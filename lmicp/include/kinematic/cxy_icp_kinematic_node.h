@@ -1,6 +1,6 @@
 #pragma once
-#include "cxy_transform.h"
-#include "cxy_debug.h"
+#include "utility/cxy_transform.h"
+#include "common/cxy_debug.h"
 #include "common/cxy_common.h"
 
 #include <cstdlib>

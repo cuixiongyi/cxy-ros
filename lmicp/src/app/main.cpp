@@ -1,15 +1,16 @@
-#include "optimization/cxy_cost_func_example.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
-#include "cxy_icp_rigid.h"
-#include "cxy_transform.h"
-#include "cxy_icp_arti.h"
-#include "cxy_icp_arti_ik.h"
+
 #include "../../../../../../../usr/include/pcl-1.7/pcl/point_cloud.h"
-#include "include/cxy_transform.h"
-#include "include/cxy_icp_kinematic_node.h"
-#include "include/cxy_icp_kinematic_chain.h"
+
+#include "optimization/cxy_cost_func_example.h"
+#include "utility/cxy_transform.h"
+#include "kinematic/cxy_icp_kinematic_node.h"
+#include "kinematic/cxy_icp_kinematic_chain.h"
+#include "energy/cxy_icp_rigid.h"
+#include "energy/cxy_icp_arti_ik.h"
+#include "utility/cxy_transform.h"
 //#include "../../../../../../../usr/include/c++/4.8/bits/stl_bvector.h"
 //#include "main.h"
 

@@ -1,5 +1,5 @@
 
-#include "cxy_icp_arti_ik.h"
+#include "energy/cxy_icp_arti_ik.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {

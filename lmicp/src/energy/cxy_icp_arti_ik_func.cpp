@@ -1,4 +1,4 @@
-#include "cxy_icp_arti_ik_func.h"
+#include "energy/cxy_icp_arti_ik_func.h"
 
 namespace cxy
 {

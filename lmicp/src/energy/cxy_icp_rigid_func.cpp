@@ -1,4 +1,4 @@
-#include "cxy_icp_rigid_func.h"
+#include "energy/cxy_icp_rigid_func.h"
 
 namespace cxy
 {

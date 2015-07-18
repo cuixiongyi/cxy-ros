@@ -1,5 +1,5 @@
 
-#include "cxy_icp_kinematic_node.h"
+#include "kinematic/cxy_icp_kinematic_node.h"
 
 namespace cxy
 {

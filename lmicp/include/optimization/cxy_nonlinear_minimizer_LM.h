@@ -1,7 +1,7 @@
 #pragma once
 #include "Eigen/Core"
 #include "cxy_nonlinear_minimizer.h"
-#include "cxy_debug.h"
+#include "common/cxy_debug.h"
 
 namespace cxy {
     namespace cxy_optimization {

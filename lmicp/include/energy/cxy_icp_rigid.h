@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cxy_icp.h"
-#include "cxy_transform.h"
-#include "cxy_icp_rigid_func.h"
+#include "energy/cxy_icp.h"
+#include "utility/cxy_transform.h"
+#include "energy/cxy_icp_rigid_func.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "optimization/cxy_nonlinear_minimizer_LM.h"
 

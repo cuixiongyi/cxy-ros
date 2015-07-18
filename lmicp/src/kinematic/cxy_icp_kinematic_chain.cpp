@@ -1,4 +1,4 @@
-#include "cxy_icp_kinematic_chain.h"
+#include "kinematic/cxy_icp_kinematic_chain.h"
 
 namespace cxy
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include "optimization/cxy_cost_func_abstract.h"
-#include "cxy_transform.h"
-#include "cxy_debug.h"
+#include "utility/cxy_transform.h"
+#include "common/cxy_debug.h"
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

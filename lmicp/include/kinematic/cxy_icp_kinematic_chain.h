@@ -1,7 +1,7 @@
 #pragma once
-#include "cxy_transform.h"
-#include "cxy_debug.h"
-#include "cxy_icp_kinematic_node.h"
+#include "utility/cxy_transform.h"
+#include "common/cxy_debug.h"
+#include "kinematic/cxy_icp_kinematic_node.h"
 #include "common/cxy_common.h"
 
 #include <cstdlib>
