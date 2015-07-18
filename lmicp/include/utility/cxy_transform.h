@@ -18,12 +18,14 @@ namespace cxy_transform
 
 enum Axis : uint8_t
 		{
+            error_code      = 0,
 			X_axis_rotation = 1,
 			Y_axis_rotation = 2,
 			Z_axis_rotation = 3,
-			x_axis_translation = 4,
+			X_axis_translation = 4,
 			Y_axis_translation = 5,
 			Z_axis_translation = 6,
+	        Six_DoF            = 7,
 		};
 		
     template <typename _Scalar>

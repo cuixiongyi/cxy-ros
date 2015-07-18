@@ -5,9 +5,9 @@ namespace cxy
     namespace cxy_lmicp_lib
     {
         template<typename _Scalar>
-        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain()
+        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const std::shared_ptr<cxy_config>& config)
         {
-
+            config_ = config;
         }
 
         template<typename _Scalar>

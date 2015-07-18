@@ -39,7 +39,7 @@ namespace cxy
                 void setRotateAxis(cxy_transform::Axis axis);
 
                 void setModelCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr model);
-			
+
 		};
 		
 

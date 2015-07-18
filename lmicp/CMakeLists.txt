@@ -52,7 +52,7 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 add_library(lmicp_lib 
                 include/utility/cxy_transform.h src/utility/cxy_transform.cpp
                 include/utility/cxy_sync.h src/utility/cxy_sync.cpp
-                include/common/config.h src/common/config.cpp
+                include/common/cxy_config.h src/common/cxy_config.cpp
 
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
