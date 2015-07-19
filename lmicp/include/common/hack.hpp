@@ -1,26 +1,17 @@
+#pragma once
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
+#include "ros/ros.h"
+#include "visualization_msgs/MarkerArray.h"
+#include "sensor_msgs/PointCloud2.h"
+#include "pcl_conversions/pcl_conversions.h"
 
-#include "../../../../../../../usr/include/pcl-1.7/pcl/point_cloud.h"
-
-#include "optimization/cxy_cost_func_example.h"
 #include "utility/cxy_transform.h"
-#include "kinematic/cxy_icp_kinematic_joint.h"
-#include "kinematic/cxy_icp_kinematic_chain.h"
-#include "energy/cxy_icp_rigid.h"
-#include "energy/cxy_icp_arti_ik.h"
-#include "utility/cxy_transform.h"
-//#include "../../../../../../../usr/include/c++/4.8/bits/stl_bvector.h"
-//#include "main.h"
 
 using namespace  cxy;
 
-
-
-using namespace cxy_optimization;
 using namespace Eigen;
-using namespace cxy_lmicp_lib;
 
 typedef pcl::PointXYZ PointT;
 
@@ -31,7 +22,13 @@ void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z);
 
-pcl::PointCloud<PointT>::Ptr loadPlyFile(std::string name);
+//ros::Publisher pub_model_, pub_model_pointcloud_, pub_data_pointcloud_, pub_result_;
+ros::NodeHandle nh_, pnh_;
+
+ros::Publisher pub_model_ = nh_.advertise<visualization_msgs::MarkerArray>("model", 5);
+ros::Publisher pub_data_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("data_pointcloud", 5);
+ros::Publisher pub_model_pointcloud_ = nh_.advertise<sensor_msgs::PointCloud2>("model_pointcloud", 5);
+ros::Publisher pub_result_ = nh_.advertise<sensor_msgs::PointCloud2>("data_result", 5);
 
 
 

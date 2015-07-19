@@ -213,55 +213,6 @@ namespace cxy
 
 
     template<typename _Scalar>
-    const Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> cxy_icp_arti_ik_func<_Scalar>::calculateJacobianKernel(
-                                                Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>& x
-                                            , const pcl::PointXYZ& a
-                                            , const cxy_transform::Pose<_Scalar> &para_pose
-                                            , const cxy_transform::Pose<_Scalar> &para_pose_parent
-                                            ) const
-    {
-        
-
-        cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_->getKinematicChainNodes())[joint_].rotateAxis_, x(0), cxy_transform::Pose<_Scalar>());
-        const Eigen::Quaternion<_Scalar>& q_theta(poseTmp.q());
-        // compute jacobian including kinematic chain
-        const Eigen::Quaternion<_Scalar>& q_w_norm(para_pose.q());
-
-        const int n(2);
-        Eigen::Quaternionf q(para_pose.q());
-                    Matrix jacQuat;
-                    jacQuat.resize(2, n);
-                    jacQuat.setZero();
-                    const _Scalar Y_Qw_QxAz = -q.x()*a.z;
-                    const _Scalar Y_Qx_QxAy_QwAz = -2*q.x()*a.y-q.w()*a.z;
-                    const _Scalar Z_Qw_QxAy = q.x()*a.y;
-                    const _Scalar Z_Qx_QwAy_QxAz = -2*q.x()*a.z+q.w()*a.y;
-                    jacQuat << Y_Qw_QxAz, Y_Qx_QxAy_QwAz,
-                               Z_Qw_QxAy, Z_Qx_QwAy_QxAz;
-                    Matrix normalJaco44;
-                    normalJaco44.resize(n, n);
-                    normalJaco44.setZero();
-                    normalJaco44 << q.x()*q.x(), -q.w()*q.x(), 
-                            -q.x()*q.w(), q.w()*q.w();
-                            
-                    normalJaco44 = normalJaco44 / std::pow(q.w()*q.w()+q.x()*q.x(), 1.5);
-                    Matrix JacTheata(2,1);
-                    JacTheata<< -std::sin(Deg2Rad(x(0)/2)), std::cos(Deg2Rad(x(0)/2));
-
-                    /*
-                     [ 2*a.z*q.y() - 2*a.y*q.z(),             2*a.y*q.y() + 2*a.z*q.z(), 2*a.z*q.w() - 4*a.x*q.y() + 2*a.y*q.x(), 2*a.z*q.x() - 4*a.x*q.z() - 2*a.y*q.w();
-                     [ 2*a.x*q.z() - 2*a.z*q.x(), 2*a.x*q.y() - 2*a.z*q.w() - 4*a.y*q.x(),             2*a.x*q.x() + 2*a.z*q.z(), 2*a.x*q.w() - 4*a.y*q.z() + 2*a.z*q.y()]
-                     [ 2*a.y*q.x() - 2*a.x*q.y(), 2*a.y*q.w() + 2*a.x*q.z() - 4*a.z*q.x(), 2*a.y*q.z() - 2*a.x*q.w() - 4*a.z*q.y(),             2*a.x*q.x() + 2*a.y*q.y()]
-                     */
-                     assert(jacQuat.cols() == normalJaco44.rows() && normalJaco44.cols() == JacTheata.rows());
-                    return jacQuat*JacTheata;
-
-        //return jac_dqwX_dqw*jac_dqw_unnorm_dqtheta*JacTheata;
-        //return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
-        //return jac_dqwX_dqw*jac_dqw_norm_dqw_unnorm*jac_dqw_unnorm_dqtheta*JacTheata;
-    }
-
-    template<typename _Scalar>
     void cxy_icp_arti_ik_func<_Scalar>::manifold() const
     {
 
@@ -326,4 +277,4 @@ namespace cxy
 
 }
 template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik_func<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik_func<double>;
+//template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik_func<double>;

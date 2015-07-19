@@ -14,7 +14,7 @@
 #include "common/cxy_common.h"
 #include "common/cxy_joint_info.h"
 #include "common/cxy_config.h"
-
+#include "common/hack.hpp"
 namespace cxy
 {
     namespace cxy_lmicp_lib

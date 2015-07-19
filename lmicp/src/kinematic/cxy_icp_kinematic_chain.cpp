@@ -56,7 +56,7 @@ namespace cxy
             //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
-            pose.composePoint(joints_[ii]->getModelCloud(), transCloud);
+            pose.composePoint(joints_[joint]->getModelCloud(), transCloud);
             return transCloud;
         }
 
@@ -108,14 +108,15 @@ namespace cxy
             return;
         }
 
-        /*
         template<typename _Scalar>
-        std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes()
+        void cxy_icp_kinematic_chain<_Scalar>::setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
         {
-            return kc_nodes_;
-        }*/
-
-
+            dataTime = cxy_sync();
+            hasSetDataCloud_ = true;
+            dataCloud_ = data;
+            kdtreeptr_ = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
+            kdtreeptr_->setInputCloud(dataCloud_);
+        }
 
 
         template<typename _Scalar>
@@ -135,4 +136,4 @@ namespace cxy
 
 
 template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<double>;
+//template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<double>;

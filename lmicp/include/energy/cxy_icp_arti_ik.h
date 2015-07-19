@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <unsupported/Eigen/NonLinearOptimization>
+#include <pcl/kdtree/kdtree_flann.h>
 
 #include "common/cxy_debug.h"
 
@@ -63,8 +64,7 @@ namespace cxy {
             std::shared_ptr<cxy_lmicp_lib::cxy_icp_arti_ik_func<_Scalar>>  func_;
 
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
-            pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
+
             std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 
 
