@@ -5,12 +5,22 @@ namespace cxy
 {
 	namespace cxy_lmicp_lib
 	{
-		template<typename _Scalar>
-		cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint()
+
+        template<typename _Scalar>
+        cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint(const std::shared_ptr<cxy_config>& config_ptr, const int& joint_idx)
+        : joint_info_(config_->joint_config_[joint_idx])
         {
+            config_ = config_ptr;
+
         }
 
-        
+        template<typename _Scalar>
+        void cxy_icp_kinematic_joint<_Scalar>::init()
+        {
+
+        }
+
+
 /*
         template<typename _Scalar>
         cxy_transform::Pose& cxy_icp_kinematic_joint<_Scalar>::getPose()

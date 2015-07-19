@@ -30,8 +30,7 @@ namespace cxy
 
         private:
 
-            std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kc_nodes_;
-            std::vector<int> kc_root_list_;
+            std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
             std::shared_ptr<cxy_config> config_;
             std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
 
@@ -42,17 +41,7 @@ namespace cxy
             void constructKinematicChain();
 
 
-            inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr getModelCloud(int joint)
-            {
-                CXY_ASSERT(joint >= 0 && joint < kc_nodes_->size());
-                return (*kc_nodes_)[joint].modelCloud_;
-            };
 
-            const std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& getKinematicChainNodes() const;
-
-            void setKinematicNodes( std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kin_nodes);
-
-            void setKinematicRootList( std::vector<int>& list);
 
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
@@ -72,8 +61,7 @@ namespace cxy
                                       , cxy_transform::Pose<_Scalar>& pose
                                       , cxy_transform::Pose<_Scalar>& pose_parent);
 
-            inline const int size() {CXY_ASSERT( kc_root_list_.size() == kc_nodes_->size());
-                                    return kc_root_list_.size();};
+            inline const int size() { return config_->joint_number_; }
         };
 
 

@@ -14,12 +14,11 @@ namespace cxy
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud_World(Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x)
         {
             CXY_ASSERT(1);
-            CXY_ASSERT(x.rows() == kc_nodes_->size());
-            CXY_ASSERT(x.rows() == kc_root_list_.size());
+            CXY_ASSERT(x.rows() == config_->joint_number_);
             unsigned int pointCloudSize = 0;
             for (int ii = 0; ii < x.rows(); ++ii)
             {
-                pointCloudSize += (*kc_nodes_)[ii].modelCloud_->size();
+                pointCloudSize += joints_[ii]->getModelCloud()->size();
 
             }
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -49,8 +48,7 @@ namespace cxy
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent )
         {
-            CXY_ASSERT(x.rows() == kc_nodes_->size());
-            CXY_ASSERT(x.rows() == kc_root_list_.size());
+            CXY_ASSERT(x.rows() == config_->joint_number_);
             CXY_ASSERT(x.rows() >= joint);
 
             //cxy_transform::Pose<_Scalar> pose_world;
@@ -58,7 +56,7 @@ namespace cxy
             //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
-            pose.composePoint((*kc_nodes_)[joint].modelCloud_, transCloud);
+            pose.composePoint(joints_[ii]->getModelCloud(), transCloud);
             return transCloud;
         }
 
@@ -82,24 +80,23 @@ namespace cxy
                                             , cxy_transform::Pose<_Scalar>& pose
                                             , cxy_transform::Pose<_Scalar>& pose_parent)
         {
-            CXY_ASSERT(x.rows() == kc_nodes_->size());
-            CXY_ASSERT(x.rows() == kc_root_list_.size());
+            CXY_ASSERT(x.rows() == config_->joint_number_);
             CXY_ASSERT(x.rows() >= joint);
 
-            if ( -1 == kc_root_list_[joint])
+            if ( -1 == joints_[joint]->getParent())
             {
                 //pose = cxy_transform::Pose<_Scalar>();
-                pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+                pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(joints_[joint]->getJointType(), x(joint), joints_[joint]->getPose());
                 //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
                 pose_parent = cxy_transform::Pose<_Scalar>();
                 return;
             }
             else
             {
-                getKinematicPose2World(x, kc_root_list_[joint], pose, pose_parent);
+                getKinematicPose2World(x, joints_[joint]->getParent(), pose, pose_parent);
             }
 
-            cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity((*kc_nodes_)[joint].rotateAxis_, x(joint), (*kc_nodes_)[joint].pose_);
+            cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(joints_[joint]->getJointType(), x(joint), joints_[joint]->getPose());
             cxy_transform::Pose<_Scalar> pose_out;
 
             /// Problem
@@ -118,34 +115,19 @@ namespace cxy
             return kc_nodes_;
         }*/
 
-        template<typename _Scalar>
-        const std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>>& cxy_icp_kinematic_chain<_Scalar>::getKinematicChainNodes() const
-        {
-            return kc_nodes_;
-        }
 
-        template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicNodes(std::shared_ptr<std::vector<cxy_icp_kinematic_joint<_Scalar>>> kin_nodes)
-        {
-            CXY_ASSERT(nullptr != kin_nodes );
-            kc_nodes_ = kin_nodes;
-            return;
-        }
 
-        template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setKinematicRootList(std::vector<int> &list)
-        {
-            CXY_ASSERT( 0 != list.size() );
-
-            kc_root_list_ = list;
-            return;
-
-        }
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::constructKinematicChain()
         {
+            joints_.reserve(config_->joint_number_);
 
+            for (int ii = 0; ii < config_->joint_number_; ++ii)
+            {
+                joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii));
+                joints_[ii]->init();
+            }
         }
 
     }

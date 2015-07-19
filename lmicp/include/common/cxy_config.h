@@ -7,7 +7,7 @@
 #include "utility/cxy_transform.h"
 #include "common/serialization.h"
 #include "common/cxy_debug.h"
-#include "common/joint_info.h"
+#include "common/cxy_joint_info.h"
 
 namespace cxy
 {
@@ -33,11 +33,10 @@ namespace cxy
 
 
 				
-	private:
 		std::string filename_;
 		bool isOpen_ = {false};
 		int joint_number_ = {0};
-		std::vector<joint_info> joint_config_;
+		std::vector<cxy_joint_info> joint_config_;
 
 	public:
 		inline const bool& isOpen()

@@ -28,7 +28,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 
 void publish(const pcl::PointCloud<PointT>::Ptr& data, const ros::Publisher& pub);
 
-void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_joint<float> >& kin_nodes, int chain_number);
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z);
 
@@ -82,32 +81,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr getPointCloud(float& Z_io)
         Z_io = Z;
     }
     return data;
-}
-void initKinematicChain(std::vector<cxy_lmicp_lib::cxy_icp_kinematic_joint<float> >& kin_nodes, int chain_number)
-{
-pcl::PointCloud<pcl::PointXYZ>::Ptr data(new pcl::PointCloud<pcl::PointXYZ>);
-float Z = 0.0;
-data = getPointCloud(Z);
-for (int ii = 0; ii < chain_number; ++ii)
-{
-cxy_lmicp_lib::cxy_icp_kinematic_joint<float> kcTmp;
-if ( ii == 0)
-{
-
-ROS_INFO_STREAM("Z0 test = "<<kcTmp.pose_.t()(2));
-kcTmp.pose_.t()(1) = 0.0;
-
-/* code */
-}
-else
-{
-kcTmp.pose_.t()(2) = Z;
-ROS_INFO_STREAM("Z = "<<Z);
-}
-kcTmp.setRotateAxis(cxy_transform::Axis::X_axis_rotation);
-kcTmp.setModelCloud(data);
-kin_nodes.push_back(kcTmp);
-}
 }
 
 

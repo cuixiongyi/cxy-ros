@@ -63,7 +63,7 @@ namespace cxy
             }
 
             std::stringstream iss(line);
-            joint_info kj;
+            cxy_joint_info kj;
 
             // joint index
             iss>>kj.joint_idx;

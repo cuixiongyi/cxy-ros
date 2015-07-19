@@ -29,7 +29,7 @@ namespace cxy
 
 		private:
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
-            std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
+			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
 
             Eigen::Matrix< float, Eigen::Dynamic, 1> x_;
 
