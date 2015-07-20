@@ -7,7 +7,7 @@ namespace cxy
 	{
 
         template<typename _Scalar>
-        cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint(const std::shared_ptr<cxy_config>& config_ptr, const int& joint_idx)
+        cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint(const std::shared_ptr<const cxy_config>& config_ptr, const int& joint_idx)
         : joint_info_(config_->joint_config_[joint_idx])
         {
             config_ = config_ptr;
@@ -41,5 +41,5 @@ namespace cxy
 }
 
 template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_joint<float>;
-//template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_joint<double>;
+template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_joint<double>;
 

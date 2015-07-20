@@ -20,16 +20,17 @@ namespace cxy
 {
 	namespace cxy_lmicp_lib
 	{
-		class cxy_icp_kinematic
+        template<typename _Scalar>
+        class cxy_icp_kinematic
 		{
 		public:
-			cxy_icp_kinematic(std::shared_ptr<cxy_config>);
+			cxy_icp_kinematic(std::shared_ptr<const cxy_config>);
 			~cxy_icp_kinematic();
-			std::shared_ptr<cxy_config> config_;
+			const std::shared_ptr<const cxy_config> config_;
 
-			void computeJacobian(Eigen::Matrix< float, Eigen::Dynamic, Eigen::Dynamic>&);
+			void computeJacobian(Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic>&);
 
-            void computeResidual(Eigen::Matrix< float, Eigen::Dynamic, 1>&);
+            void computeResidual(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>&);
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
 
@@ -38,7 +39,7 @@ namespace cxy
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
 			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
 
-            Eigen::Matrix< float, Eigen::Dynamic, 1> x_;
+            Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
 
             int matrix_rows_ = {0};
             int matrix_rows_J_ = {0};

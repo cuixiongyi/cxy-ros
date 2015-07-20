@@ -12,7 +12,14 @@ namespace cxy
 	
 	void cxy_config::serialize()
 			{}
-	void cxy_config::unserialize()
+
+    std::shared_ptr<const cxy_config> cxy_config::getConfig()
+    {
+        unserialize();
+        return std::make_shared<const cxy_config>((*this));
+    }
+
+    void cxy_config::unserialize()
 	{
         if (isOpen_)
             return;

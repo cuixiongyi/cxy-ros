@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Eigen/Core>
+#include <vector>
+
 #include "utility/cxy_transform.h"
 #include "common/cxy_debug.h"
 #include "common/cxy_common.h"
 
-#include <Eigen/Core>
 
 namespace cxy
 {
@@ -16,11 +18,15 @@ namespace cxy
 
         cxy_transform::Axis jointType;
         std::string model_filename;
-        float t[3];
-        float r[3];
+        std::vector<double> t = {0.0, 0.0, 0.0};
+        std::vector<double> r = {0.0, 0.0, 0.0};
+
+    };
+
+    struct cxy_joint_data
+    {
 
         cxy_transform::Pose<float> pose_;
         pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
     };
-
 }

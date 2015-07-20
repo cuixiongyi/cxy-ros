@@ -37,7 +37,7 @@ namespace cxy
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
             cxy_sync jointTime;
 
-            std::shared_ptr<cxy_config> config_;
+            const std::shared_ptr<const cxy_config>& config_;
             std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
@@ -45,8 +45,8 @@ namespace cxy
             bool hasSetDataCloud_;
             cxy_sync dataTime;
         public:
-            cxy_icp_kinematic_chain(const std::shared_ptr<cxy_config>&);
-            cxy_icp_kinematic_chain(){};
+            cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>&);
+            ~cxy_icp_kinematic_chain();
 
             void constructKinematicChain();
 

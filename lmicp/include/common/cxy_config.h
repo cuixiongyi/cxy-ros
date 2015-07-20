@@ -26,10 +26,12 @@ namespace cxy
 
         cxy_transform::Axis parseJointType(const std::string&);
 
+        std::shared_ptr<const cxy_config> getConfig();
 
 		virtual void serialize();
 
 		virtual void unserialize();
+
 
 
 				

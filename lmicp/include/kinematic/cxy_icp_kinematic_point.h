@@ -20,19 +20,25 @@ namespace cxy
 {
     namespace cxy_lmicp_lib
     {
+
+        template<typename _Scalar>
         class cxy_icp_kinematic_point
         {
         public:
-            cxy_icp_kinematic_point();
+            cxy_icp_kinematic_point(const std::shared_ptr<const cxy_config>&);
             ~cxy_icp_kinematic_point();
+
+            void computePointResidual();
+            void computePointJacobian();
 
         private:
 
-            std::shared_ptr<cxy_config> config_;
-            Eigen::Matrix<float, 3, 1> modelPoint_local_;
-            Eigen::Matrix<float, 3, 1> dataPoint_;
-            int joint_idx = {0};
-            Eigen::Matrix< float, Eigen::Dynamic, Eigen::Dynamic> jacobian;
+            const std::shared_ptr<const cxy_config>& config_;
+            Eigen::Matrix<_Scalar, 3, 1> modelPoint_local_;
+            Eigen::Matrix<_Scalar, 3, 1> dataPoint_;
+            const int& joint_idx = {0};
+            Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> point_resdual;
+            Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> jacobian;
 
         };
     }

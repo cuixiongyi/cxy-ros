@@ -5,10 +5,16 @@ namespace cxy
     namespace cxy_lmicp_lib
     {
         template<typename _Scalar>
-        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const std::shared_ptr<cxy_config>& config)
+        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>& config)
+        : config_(config)
         {
-            config_ = config;
             constructKinematicChain();
+        }
+
+        template<typename _Scalar>
+        cxy_icp_kinematic_chain<_Scalar>::~cxy_icp_kinematic_chain()
+        {
+
         }
 
         template<typename _Scalar>
@@ -137,4 +143,4 @@ namespace cxy
 
 
 template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<float>;
-//template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<double>;
+template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<double>;
