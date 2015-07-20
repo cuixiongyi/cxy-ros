@@ -50,7 +50,7 @@ enum Axis : uint8_t
 
 		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
 		//
-		void rotateByAxis(Axis axis, _Scalar & degree);
+		void rotateByAxis(Axis axis, const _Scalar & degree);
 		
 		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
         static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org = Pose());
