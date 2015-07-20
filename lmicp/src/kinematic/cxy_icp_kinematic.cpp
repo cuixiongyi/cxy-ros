@@ -17,11 +17,15 @@ namespace cxy_lmicp_lib
     void cxy_icp_kinematic<_Scalar>::computeResidual(const MatrixX1& x, MatrixX1& res)
     {
 
+        updateJointModel(x);
+
     }
 
     template<typename _Scalar>
     void cxy_icp_kinematic<_Scalar>::computeJacobian(const MatrixX1& x, MatrixXX& jac)
     {
+
+        updateJointModel(x);
 
     }
 
@@ -44,7 +48,7 @@ namespace cxy_lmicp_lib
     }
 
     template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::updateModel()
+    void cxy_icp_kinematic<_Scalar>::updateModel(const MatrixX1&)
     {
 
     }

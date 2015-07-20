@@ -19,7 +19,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud_World(const MatrixX1& x)
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud_World()
         {
             CXY_ASSERT(1);
             CXY_ASSERT(x.rows() == config_->joint_number_);
@@ -51,8 +51,7 @@ namespace cxy
 
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
-                                            const MatrixX1& x
-                                          , const int& joint
+                                           const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent )
         {
@@ -71,8 +70,7 @@ namespace cxy
 
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
-                                            const MatrixX1& x
-                                          , const int& joint
+                                          const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose)
                                         
         {
@@ -83,8 +81,7 @@ namespace cxy
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
-                                                const MatrixX1& x
-                                            , const int& joint
+                                            const int& joint
                                             , cxy_transform::Pose<_Scalar>& pose
                                             , cxy_transform::Pose<_Scalar>& pose_parent)
         {

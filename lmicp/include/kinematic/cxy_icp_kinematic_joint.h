@@ -23,9 +23,10 @@ namespace cxy
         class cxy_icp_kinematic_joint 
         {
 
+
+
 		public:
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
 			
 			public:
@@ -37,7 +38,9 @@ namespace cxy
 		private:
 			std::shared_ptr<const cxy_config> config_;
             cxy_joint_info joint_info_;
-            float theta_;
+            _Scalar theta_;
+            cxy_transform::Pose<_Scalar> pose_;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
 
         /// inline function
@@ -46,8 +49,8 @@ namespace cxy
             inline cxy_transform::Axis&         getJointType()  {return joint_info_.jointType;}
             inline std::string&                 getModelFileName() {return joint_info_.model_filename;}
             inline const int&                   numDoF() {return joint_info_.DoF;}
-            //inline const cxy_transform::Pose<float>&  getPose() { return joint_info_.pose_;}
-            //inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return joint_info_.modelCloud_;}
+            inline const cxy_transform::Pose<float>&  getPose() { return pose_;}
+            inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return modelCloud_;}
         };
 		
 

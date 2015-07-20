@@ -43,21 +43,19 @@ namespace cxy
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World();
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                             const MatrixX1& x
-                                             , const int& joint
+                                             const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent );
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                            const MatrixX1& x
-                                          , const int& joint
+                                          const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose);
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World( const MatrixX1& x);
-            void getKinematicPose2World( const MatrixX1& x
-                                          , const int& joint
+
+            void getKinematicPose2World( const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent);
 

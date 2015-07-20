@@ -23,10 +23,4 @@ namespace cxy
 
     };
 
-    struct cxy_joint_data
-    {
-
-        cxy_transform::Pose<float> pose_;
-        pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
-    };
 }
