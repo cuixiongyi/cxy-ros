@@ -23,14 +23,17 @@ namespace cxy
         template<typename _Scalar>
         class cxy_icp_kinematic
 		{
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
 		public:
-			cxy_icp_kinematic(std::shared_ptr<const cxy_config>);
+			cxy_icp_kinematic(const std::shared_ptr<const cxy_config>&);
 			~cxy_icp_kinematic();
 			const std::shared_ptr<const cxy_config> config_;
 
-			void computeJacobian(Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic>&);
+            void computeResidual(const MatrixX1&, MatrixX1&);
 
-            void computeResidual(Eigen::Matrix< _Scalar, Eigen::Dynamic, 1>&);
+            void computeJacobian(const MatrixX1&, MatrixXX&);
+
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
 
@@ -42,8 +45,8 @@ namespace cxy
             Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
 
             int matrix_rows_ = {0};
-            int matrix_rows_J_ = {0};
-            int matrix_cols_J_ = {0};
+            int matrix_rows_Jac_ = {0};
+            int matrix_cols_Jac_ = {0};
 
             void setMatrixSize(const int&);
 

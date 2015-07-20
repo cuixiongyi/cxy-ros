@@ -115,6 +115,11 @@ namespace cxy
             kj.jointType = parseJointType(jointType);
             CXY_ASSERT(kj.jointType != cxy_transform::Axis::error_code);
 
+            if (cxy_transform::Axis::Six_DoF == jointType)
+                kj.DoF = 6;
+            else
+                kj.DoF = 1;
+
             // joint model file name
             iss>>kj.model_filename;
 

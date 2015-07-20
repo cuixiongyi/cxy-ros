@@ -50,9 +50,9 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #
 
 add_library(cxy_tracking_lib
-                include/utility/cxy_transform.h src/utility/cxy_transform.cpp
-                include/utility/cxy_sync.h src/utility/cxy_sync.cpp
-                include/common/cxy_config.h src/common/cxy_config.cpp
+                include/utility/cxy_transform.h                 src/utility/cxy_transform.cpp
+                include/utility/cxy_sync.h                      src/utility/cxy_sync.cpp
+                include/common/cxy_config.h                     src/common/cxy_config.cpp
                 include/common/hack.hpp
 
                 include/optimization/cxy_cost_func_abstract.h
@@ -61,14 +61,14 @@ add_library(cxy_tracking_lib
 
               include/energy/cxy_icp.h
               include/energy/cxy_icp_rigid.h
-              include/energy/cxy_icp_rigid_func.h 		src/energy/cxy_icp_rigid_func.cpp 
-              include/energy/cxy_icp_arti_ik.h  	src/energy/cxy_icp_arti_ik.cpp
-              include/energy/cxy_icp_arti_ik_func.h  	src/energy/cxy_icp_arti_ik_func.cpp
-
-              include/kinematic/cxy_icp_kinematic.h  src/kinematic/cxy_icp_kinematic.cpp
-              include/kinematic/cxy_icp_kinematic_joint.h  src/kinematic/cxy_icp_kinematic_joint.cpp
-              include/kinematic/cxy_icp_kinematic_chain.h  src/kinematic/cxy_icp_kinematic_chain.cpp
-              include/kinematic/cxy_icp_kinematic_point.h  src/kinematic/cxy_icp_kinematic_point.cpp
+              include/energy/cxy_icp_rigid_func.h 		        src/energy/cxy_icp_rigid_func.cpp
+              include/energy/cxy_icp_arti_ik.h  	            src/energy/cxy_icp_arti_ik.cpp
+              include/energy/cxy_icp_arti_ik_func.h  	        src/energy/cxy_icp_arti_ik_func.cpp
+              include/energy/cxy_energy_fitting.h               src/energy/cxy_energy_fitting.cpp
+              include/kinematic/cxy_icp_kinematic.h             src/kinematic/cxy_icp_kinematic.cpp
+              include/kinematic/cxy_icp_kinematic_joint.h       src/kinematic/cxy_icp_kinematic_joint.cpp
+              include/kinematic/cxy_icp_kinematic_chain.h       src/kinematic/cxy_icp_kinematic_chain.cpp
+              include/kinematic/cxy_icp_kinematic_point.h       src/kinematic/cxy_icp_kinematic_point.cpp
 )
 
 

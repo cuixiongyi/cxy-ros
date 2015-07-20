@@ -32,6 +32,38 @@ namespace cxy
         class cxy_icp_kinematic_chain
         {
 
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
+        public:
+            cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>&);
+            ~cxy_icp_kinematic_chain();
+
+            void constructKinematicChain();
+
+
+            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr);
+
+
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
+                                             const MatrixX1& x
+                                             , const int& joint
+                                          , cxy_transform::Pose<_Scalar>& pose
+                                          , cxy_transform::Pose<_Scalar>& pose_parent );
+
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
+                                            const MatrixX1& x
+                                          , const int& joint
+                                          , cxy_transform::Pose<_Scalar>& pose);
+
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World( const MatrixX1& x);
+            void getKinematicPose2World( const MatrixX1& x
+                                          , const int& joint
+                                          , cxy_transform::Pose<_Scalar>& pose
+                                          , cxy_transform::Pose<_Scalar>& pose_parent);
+
+            inline const int size() { return config_->joint_number_; }
+
+
         private:
 
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
@@ -44,34 +76,6 @@ namespace cxy
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
             bool hasSetDataCloud_;
             cxy_sync dataTime;
-        public:
-            cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>&);
-            ~cxy_icp_kinematic_chain();
-
-            void constructKinematicChain();
-
-
-            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr);
-
-
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                             Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
-                                          , const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent );
-
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                             Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
-                                          , const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose);
-
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World( Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x);
-            void getKinematicPose2World( Eigen::Matrix<_Scalar, Eigen::Dynamic, 1>& x
-                                          , const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent);
-
-            inline const int size() { return config_->joint_number_; }
         };
 
 

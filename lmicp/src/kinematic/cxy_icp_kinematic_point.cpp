@@ -8,9 +8,9 @@ namespace cxy
 
         template<typename _Scalar>
         cxy_icp_kinematic_point<_Scalar>::cxy_icp_kinematic_point(const std::shared_ptr<const cxy_config>& config_ptr, const int& joint_idx)
-                : joint_info_(config_->joint_config_[joint_idx])
+                : config_(config_ptr)
+                , joint_idx_(joint_idx)
         {
-            config_ = config_ptr;
 
         }
 
