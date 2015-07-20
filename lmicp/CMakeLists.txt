@@ -3,7 +3,7 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.1")
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(project_lmicp)
+project(project_lmicp C CXX)
 
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -49,10 +49,11 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 #add_definitions(${PCL_DEFINITIONS})
 #
 
-add_library(lmicp_lib 
+add_library(cxy_tracking_lib
                 include/utility/cxy_transform.h src/utility/cxy_transform.cpp
                 include/utility/cxy_sync.h src/utility/cxy_sync.cpp
                 include/common/cxy_config.h src/common/cxy_config.cpp
+                include/common/hack.hpp
 
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
@@ -63,18 +64,20 @@ add_library(lmicp_lib
               include/energy/cxy_icp_rigid_func.h 		src/energy/cxy_icp_rigid_func.cpp 
               include/energy/cxy_icp_arti_ik.h  	src/energy/cxy_icp_arti_ik.cpp
               include/energy/cxy_icp_arti_ik_func.h  	src/energy/cxy_icp_arti_ik_func.cpp
+
+              include/kinematic/cxy_icp_kinematic.h  src/kinematic/cxy_icp_kinematic.cpp
               include/kinematic/cxy_icp_kinematic_joint.h  src/kinematic/cxy_icp_kinematic_joint.cpp
               include/kinematic/cxy_icp_kinematic_chain.h  src/kinematic/cxy_icp_kinematic_chain.cpp
-
+              include/kinematic/cxy_icp_kinematic_point.h  src/kinematic/cxy_icp_kinematic_point.cpp
 )
 
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}   )#dlib)
+target_link_libraries(cxy_tracking_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
 
 catkin_package(
    INCLUDE_DIRS include
-   LIBRARIES lmicp_lib  
+   LIBRARIES cxy_tracking_lib
    CATKIN_DEPENDS roscpp std_msgs   
    DEPENDS opencv  
 )
@@ -83,12 +86,12 @@ add_executable(icp_main src/app/icp_main.cpp)
 add_executable(lmicp_exe src/app/lmicp.cpp)
 #add_executable(convergence_test_main_exe src/app/convergence_test_main.cpp)
 add_executable(main_exe src/app/main.cpp)
-target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
-target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
-#target_link_libraries(convergence_test_main_exe ${catkin_LIBRARIES} lmicp_lib)
-target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(lmicp_exe ${catkin_LIBRARIES} cxy_tracking_lib)
+target_link_libraries(icp_main ${catkin_LIBRARIES} cxy_tracking_lib)
+#target_link_libraries(convergence_test_main_exe ${catkin_LIBRARIES} cxy_tracking_lib)
+target_link_libraries(main_exe ${catkin_LIBRARIES} cxy_tracking_lib)
 add_executable(main_new src/app/main_new.cpp)
-target_link_libraries(main_new ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(main_new ${catkin_LIBRARIES} cxy_tracking_lib)
 
 
 
