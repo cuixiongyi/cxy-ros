@@ -27,13 +27,25 @@ namespace cxy
 			~cxy_icp_kinematic();
 			std::shared_ptr<cxy_config> config_;
 
-		private:
+			void computeJacobian(Eigen::Matrix< float, Eigen::Dynamic, Eigen::Dynamic>&);
+
+            void computeResidual(Eigen::Matrix< float, Eigen::Dynamic, 1>&);
+
+            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
+
+            void updateModel();
+        private:
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
 			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
 
             Eigen::Matrix< float, Eigen::Dynamic, 1> x_;
 
+            int matrix_rows_ = {0};
+            int matrix_rows_J_ = {0};
+            int matrix_cols_J_ = {0};
 
-		};
+            void setMatrixSize(const int&);
+
+        };
 	}
 }

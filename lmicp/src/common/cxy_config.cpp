@@ -40,10 +40,37 @@ namespace cxy
             if ( "joint_number" == var_name)
 			{
 				iss >> joint_number_;
+                joint_DoFs = 0;
                 parseJoints();
 			}
+            if ( "with_icp_jacobian" == var_name)
+            {
+                iss >> with_icp_jacobian>>icp_jaclbian_weight;
+            }
+            if ( "with_collision_jacobian" == var_name)
+            {
+                iss >> with_collision_jacobian>>collision_jacobian_weight;
+            }
+            if ( "with_silhouette_jacobian" == var_name)
+            {
+                iss >> with_silhouette_jacobian>>silhouette_jacobian_weight;
+            }
+            if ( "with_push_jacobian" == var_name)
+            {
+                iss >> with_push_jacobian>>push_jacobian_weight;
+            }
+
 		}
         isOpen_ = true;
+        std::cout<<"config test"<<with_collision_jacobian<<"  "<<collision_jacobian_weight;
+        if (with_icp_jacobian)
+            n_num_ = 1;
+        if (with_collision_jacobian)
+            ++n_num_;
+        if (with_silhouette_jacobian)
+            ++n_num_;
+        if (with_push_jacobian)
+            ++n_num_;
 	}
 
     void cxy_config::parseJoints()
@@ -107,20 +134,43 @@ namespace cxy
     }
     cxy_transform::Axis cxy_config::parseJointType(const std::string& str)
     {
+
         if ("X_axis_rotation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::X_axis_rotation;
+        }
         if ("Y_axis_rotation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::Y_axis_rotation;
+
+        }
         if ("Z_axis_rotation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::Z_axis_rotation;
+        }
         if ("X_axis_translation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::X_axis_translation;
+        }
         if ("Y_axis_translation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::Y_axis_translation;
+        }
         if ("Z_axis_translation" == str)
+        {
+            ++joint_DoFs;
             return cxy_transform::Axis::Z_axis_translation;
+        }
         if ("Six_DoF" == str)
+        {
+            joint_DoFs += 6;
             return cxy_transform::Axis::Six_DoF;
+        }
 
         return cxy_transform::Axis::error_code;
     }

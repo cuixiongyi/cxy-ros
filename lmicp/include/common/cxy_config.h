@@ -38,6 +38,23 @@ namespace cxy
 		int joint_number_ = {0};
 		std::vector<cxy_joint_info> joint_config_;
 
+        int joint_DoFs = {0};
+
+        // this is the number of jacobian type used
+        int n_num_ = {1};
+
+        bool with_icp_jacobian = {true};
+        float icp_jaclbian_weight = {10};
+
+        bool with_collision_jacobian = {false};
+        float collision_jacobian_weight = {10};
+
+        bool with_silhouette_jacobian = {false};
+        float silhouette_jacobian_weight = {10};
+
+        bool with_push_jacobian = {false};
+        float push_jacobian_weight = {10};
+
 	public:
 		inline const bool& isOpen()
 		{

@@ -31,6 +31,8 @@ namespace cxy
             std::shared_ptr<cxy_config> config_;
             Eigen::Matrix<float, 3, 1> modelPoint_local_;
             Eigen::Matrix<float, 3, 1> dataPoint_;
+            int joint_idx = {0};
+            Eigen::Matrix< float, Eigen::Dynamic, Eigen::Dynamic> jacobian;
 
         };
     }

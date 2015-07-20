@@ -27,15 +27,6 @@ namespace cxy {
 
         }
 
-        template<typename _Scalar, int _MinimizerType>
-        bool cxy_icp_arti_ik<_Scalar, _MinimizerType>::setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
-        {
-            hasSetDataCloud_ = true;
-            dataCloud_ = data;
-            kdtreeptr_ = pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr(new pcl::KdTreeFLANN<pcl::PointXYZ>);
-            kdtreeptr_->setInputCloud(dataCloud_);
-            
-        }
 
 
         // There are 3 layers of minimization class
@@ -146,5 +137,5 @@ namespace cxy {
 
 template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 1>;
 template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<float, 2>;
-template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<double, 1>;
-template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<double, 2>;
+//template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<double, 1>;
+//template class cxy::cxy_lmicp_lib::cxy_icp_arti_ik<double, 2>;

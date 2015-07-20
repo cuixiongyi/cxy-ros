@@ -2,13 +2,12 @@ joint_number 2
 # config joint info has: 
 # 1.joint index(start from 0)  2. joint parent(-1 as root) 3. joint type 	4. model file name
 # the second line is the translation and roatation parameter
+#joint 0
 0 -1	Six_DoF        model/0.cad
 10 0 10	9999		1.0		5351.1854
-
-
-
-
-
-
+# joint 1
 1 	0  	X_axis_rotation  model/1.cad
 10 0 10	1.315684		1.0		1.0
+
+with_icp_jacobian 1 10
+with_collision_jacobian 1 -1

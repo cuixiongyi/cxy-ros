@@ -8,6 +8,7 @@ namespace cxy
         cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const std::shared_ptr<cxy_config>& config)
         {
             config_ = config;
+            constructKinematicChain();
         }
 
         template<typename _Scalar>
