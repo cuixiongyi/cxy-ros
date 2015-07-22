@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <memory>
+#include <mutex>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -28,6 +29,7 @@ namespace cxy
 {
     namespace cxy_lmicp_lib
     {
+
         template<typename _Scalar>
         class cxy_icp_kinematic_chain
         {
@@ -37,6 +39,10 @@ namespace cxy
         public:
             cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>&);
             ~cxy_icp_kinematic_chain();
+
+            void updateJoints();
+
+            void setJointPara(const MatrixX1&);
 
             void constructKinematicChain();
 
@@ -64,8 +70,10 @@ namespace cxy
 
         private:
 
+            std::mutex kinematic_chain_lock;
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
             cxy_sync jointTime;
+            MatrixX1 x_;
 
             const std::shared_ptr<const cxy_config>& config_;
             std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
@@ -74,6 +82,16 @@ namespace cxy
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
             bool hasSetDataCloud_;
             cxy_sync dataTime;
+
+
+            /// this is the list to synchronize multithreading, do not access directly
+            /// 0 means not up-to-date
+            /// 1 means
+            std::vector<Update_Status> joint_sync_list;
+            void syc_resetSyncList();
+            bool syc_tryUpdateJointList(const int &);
+            bool syc_isJointUptoDate(const int &);
+            bool syc_setJointUptoDate(const int &, const cxy_transform::Pose<_Scalar>&);
         };
 
 

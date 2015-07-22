@@ -50,13 +50,19 @@ enum Axis : uint8_t
 
 		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
 		//
-		void rotateByAxis(Axis axis, const _Scalar & degree);
-		
-		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
-        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org = Pose());
-        
+		void rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in = Eigen::Matrix<float, 3, 1>(0.0,0.0,0.0));
 
-		static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<_Scalar> & para);
+		static void rotateByAxis(Axis axis, const _Scalar & degree, Quaternoin& q_out);
+
+        Pose<_Scalar> rotatefromFix(const Axis & axis, _Scalar & degree, const Pose& p_parent);
+
+
+        //: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
+        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org = Pose());
+
+
+
+        static void composePoint(const pcl::PointXYZ& in_p, pcl::PointXYZ& out_p, std::vector<_Scalar> & para);
 
 		void composePoint(const Vector& in_p, Vector &out_p) const;
 
@@ -71,13 +77,16 @@ enum Axis : uint8_t
 		void inverseComposePoint(const Vector& in_p, Vector &out_p) const;
 
 		// p = p1*p2 == p1.composePose(p2, p)
-		void composePose(const Pose& in_pose, Pose &out_p) const;
+		void composePose(const Pose&p2, Pose &out_p) const;
 		
 		inline void normalize() const { bhasNormalized_ = true; q_.normalize(); return;}
-		inline const Vector& t() const {return t_;};
-		inline Vector& t() {return t_;};
-		inline const Quaternoin& q() const {return q_;};
-		inline Quaternoin& q() { bhasNormalized_ = false; return q_;};
+		inline const Vector& t() const {return t_;}
+		inline Vector& t() {return t_;}
+		inline const Quaternoin& q() const {return q_;}
+		inline Quaternoin& q() { bhasNormalized_ = false; return q_;}
+
+
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	};
 }
 }

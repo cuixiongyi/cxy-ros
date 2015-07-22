@@ -40,6 +40,14 @@ namespace cxy_lmicp_lib
 
     }
 
+
+    void cxy_icp_kinematic<_Scalar>::updateJointModel(const MatrixX1& joint_para)
+    {
+        kc_->setJointPara(joint_para);
+        kc_->updateJoints();
+    }
+
+
     template<typename _Scalar>
     void cxy_icp_kinematic<_Scalar>::setMatrixSize(const int& point_size)
     {
@@ -47,8 +55,9 @@ namespace cxy_lmicp_lib
         matrix_rows_Jac_ = point_size * config_->n_num_;
     }
 
+
     template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::updateModel(const MatrixX1&)
+    cxy_icp_kinematic<_Scalar>::~cxy_icp_kinematic()
     {
 
     }

@@ -38,6 +38,8 @@ namespace cxy
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
 
             void updateJointModel(const MatrixX1&);
+
+
         private:
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
 			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;

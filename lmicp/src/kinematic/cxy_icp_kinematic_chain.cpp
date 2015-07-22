@@ -17,7 +17,43 @@ namespace cxy
 
         }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::setJointPara(const MatrixX1& x)
+        {
+            x_ = x;
+        }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::updateJoints()
+        {
+            for (int ii = 0; ii < config_->joint_number_; ++ii)
+            {
+
+                if (syc_tryUpdateJointList(ii))
+                {
+                    cxy_transform::Pose<_Scalar> tmp;
+                    cxy_transform::Pose<_Scalar> tmp_parent;
+                    getKinematicPose2World(ii, tmp, tmp_parent);
+
+                    syc_setJointUptoDate(ii, tmp);
+                }
+
+            }
+        }
+
+        template<typename _Scalar>
+        bool cxy_icp_kinematic_chain<_Scalar>::syc_tryUpdateJointList(const int &joint)
+        {
+            std::lock_guard<std::mutex> lock(kinematic_chain_lock);
+            if ( Update_Status::NotUptoDate == joint_sync_list[joint])
+            {
+                joint_sync_list[joint] = Update_Status::BeingProcessed;
+                return true;
+            }
+            return false;
+        }
+
+        /*
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud_World()
         {
@@ -55,11 +91,9 @@ namespace cxy
                                           , cxy_transform::Pose<_Scalar>& pose
                                           , cxy_transform::Pose<_Scalar>& pose_parent )
         {
-            CXY_ASSERT(x.rows() == config_->joint_number_);
-            CXY_ASSERT(x.rows() >= joint);
 
             //cxy_transform::Pose<_Scalar> pose_world;
-            getKinematicPose2World(x, joint, pose, pose_parent);
+            getKinematicPose2World(joint, pose, pose_parent);
             //ROS_INFO_STREAM("pose World: "<<joint<<" "<<pose_world.t()(0)<<" "<<pose_world.t()(1)<<" "<<pose_world.t()(2)<<" "<<pose_world.q().x()<<" "<<pose_world.q().y()<<" "<<pose_world.q().z()<<" "<<pose_world.q().w());
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud (new pcl::PointCloud<pcl::PointXYZ>);
@@ -78,6 +112,8 @@ namespace cxy
             return getOneModelCloud_World(x, joint, pose, pose_parent);
         }
 
+        */
+
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
@@ -85,30 +121,36 @@ namespace cxy
                                             , cxy_transform::Pose<_Scalar>& pose
                                             , cxy_transform::Pose<_Scalar>& pose_parent)
         {
-            CXY_ASSERT(x.rows() == config_->joint_number_);
-            CXY_ASSERT(x.rows() >= joint);
+
+            if (syc_isJointUptoDate(joint))
+            {
+                pose = joints_[joint]->getPose();
+                pose_parent = cxy_transform::Pose<_Scalar>();
+            }
 
             if ( -1 == joints_[joint]->getParent())
             {
-                //pose = cxy_transform::Pose<_Scalar>();
-                pose = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(joints_[joint]->getJointType(), x(joint), joints_[joint]->getPose());
-                //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
+                cxy_transform::Pose<_Scalar> ptmp;
+                if (cxy_transform::Axis::Six_DoF == joints_[joint]->getJointType())
+                {
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x_(3)));
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x_(4)));
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x_(5)));
+                    pose.t()(0) = x_(0);
+                    pose.t()(1) = x_(1);
+                    pose.t()(2) = x_(2);
+                }
                 pose_parent = cxy_transform::Pose<_Scalar>();
                 return;
             }
             else
             {
-                getKinematicPose2World(x, joints_[joint]->getParent(), pose, pose_parent);
+
+                getKinematicPose2World(joints_[joint]->getParent(), pose, pose_parent);
             }
 
-            cxy_transform::Pose<_Scalar> poseTmp = cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(joints_[joint]->getJointType(), x(joint), joints_[joint]->getPose());
-            cxy_transform::Pose<_Scalar> pose_out;
-
-            /// Problem
-            pose.composePose(poseTmp, pose_out);
-            pose_parent = pose;
-            pose = pose_out;
-            //ROS_INFO_STREAM("getKinematicPose2World: "<<joint<<" "<<pose.t()(0)<<" "<<pose.t()(1)<<" "<<pose.t()(2)<<" "<<pose.q().x()<<" "<<pose.q().y()<<" "<<pose.q().z()<<" "<<pose.q().w());
+            cxy_transform::Pose<_Scalar> pose_fix = joints_[joint]->getOriginPose();
+            pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(joint), pose);
 
             return;
         }
@@ -128,13 +170,56 @@ namespace cxy
         void cxy_icp_kinematic_chain<_Scalar>::constructKinematicChain()
         {
             joints_.reserve(config_->joint_number_);
-
+            joint_sync_list.reserve(config_->joint_number_);
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
                 joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii));
                 joints_[ii]->init();
+                joint_sync_list.push_back(Update_Status::NotUptoDate);
             }
         }
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::syc_resetSyncList()
+        {
+            std::lock_guard<std::mutex> lock(kinematic_chain_lock);
+            for (int ii = 0; ii < joint_sync_list.size(); ++ii)
+            {
+                joint_sync_list[ii] = Update_Status::NotUptoDate;
+            }
+        }
+
+        template<typename _Scalar>
+        bool cxy_icp_kinematic_chain<_Scalar>::syc_isJointUptoDate(const int &joint)
+        {
+            std::lock_guard<std::mutex> lock(kinematic_chain_lock);
+            if (Update_Status::UptoDate == joint_sync_list[joint])
+            {
+                return true;
+
+            }
+            return false;
+        }
+
+        template<typename _Scalar>
+        bool cxy_icp_kinematic_chain<_Scalar>::syc_setJointUptoDate(const int & joint, const cxy_transform::Pose<_Scalar>& pose)
+        {
+            std::lock_guard<std::mutex> lock(kinematic_chain_lock);
+            if (Update_Status::BeingProcessed != joint_sync_list[joint])
+            {
+                /// before syc_setJointUptoDate, the joint has to be marked as BeingProcessed,
+                // with try syc_tryUpdateJointList()
+                throw std::runtime_error("set sync to non registered process");
+                return false;
+            }
+
+            joint_sync_list[joint] = Update_Status::UptoDate;
+            joints_[joint]->setPose(pose);
+            return true;
+        }
+
+
+
 
     }
 }

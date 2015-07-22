@@ -17,11 +17,15 @@ namespace cxy_transform
     template <typename _Scalar>
 	Pose<_Scalar>:: ~Pose() {};
 
-	//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
-	//
+
+
+
     template <typename _Scalar>
-	void Pose<_Scalar>:: rotateByAxis(Axis axis, const _Scalar & degree)
+	void Pose<_Scalar>::rotateByAxis(Axis axis, const _Scalar & degree, Quaternoin& q_out)
 	{
+		q_out.x() = 0.0;
+		q_out.y() = 0.0;
+		q_out.z() = 0.0;
 		int n(0);
 		_Scalar theta(Rad2Deg(degree));
 	/*
@@ -40,56 +44,73 @@ namespace cxy_transform
 		//std::cout<<theta<<std::endl;
 		_Scalar radian = Deg2Rad(theta);
 		_Scalar x = std::sin( radian / _Scalar(2.0) );
-		_Scalar w = std::cos( radian / _Scalar(2.0) );
-		Quaternoin q1(q_);
-		Quaternoin q2(w, 0, 0, 0);
+		q_out.w() = std::cos( radian / _Scalar(2.0) );
+
 		switch (axis)
 		{
-			case X_axis_rotation : q2.x() = x; break;
-			case Y_axis_rotation : q2.y() = x; break;
-			case Z_axis_rotation : q2.z() = x; break;
+			case X_axis_rotation : q_out.x() = x; break;
+			case Y_axis_rotation : q_out.y() = x; break;
+			case Z_axis_rotation : q_out.z() = x; break;
 		}
-		q1.normalize();
-		q2.normalize();
+		q_out.normalize();
+	}
+	//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
+	//
+
+
+    template <typename _Scalar>
+	void Pose<_Scalar>:: rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in)
+	{
+		
+		Quaternoin q1(q_);
+		Quaternoin q2;
+		
+		rotateByAxis(axis, degree, q2);
 		q_.w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
 		q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 		q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
 		q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
-
+		q_.normalize();
+        Vector tmp;
+        composePoint(t_in, tmp);
+        this->t() = tmp;
 	}
-	//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
+
+    // the pose call this function must be the fix transformtion in the model
+    template <typename _Scalar>
+    Pose<_Scalar> Pose<_Scalar>::rotatefromFix(const Axis & axis, _Scalar & degree, const Pose& p_parent)
+    {
+
+        Pose<_Scalar> parent_fix;
+        Pose<_Scalar> theta;
+        Pose<_Scalar> parent_fix_theta;
+
+        // parent*fix
+        p_parent.composePose(*this, parent_fix);
+
+        // rotate theta pose
+        theta = rotateByAxis_fromIdentity(axis, degree);
+
+        // (parent*fix) * theta
+        parent_fix.composePose(theta, parent_fix_theta);
+
+        return  parent_fix_theta;
+
+    }
+
+
+    //: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
     template <typename _Scalar>
     Pose<_Scalar> Pose<_Scalar>::rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org)
     {
+        Pose pose;
 
-        int n(0);
-		_Scalar theta(Rad2Deg(degree));
-        if (degree > _Scalar(180))
-        {
-            n = (degree-180) / _Scalar(360);
-            theta = degree - (n+1)*_Scalar(360);
-        }
-        else if (degree < _Scalar(-180))
-        {
-            n = std::abs( (degree+180) / _Scalar(360));
-            theta = degree + (n+1)*_Scalar(360);
-        }
-        //degree = Deg2Rad(theta);
-        //std::cout<<theta<<std::endl;
-        _Scalar radian = Deg2Rad(theta);
-        _Scalar x = std::sin( radian / _Scalar(2.0) );
-        _Scalar w = std::cos( radian / _Scalar(2.0) );
         Quaternoin q1(p_org.q());
-        Quaternoin q2(w, 0, 0, 0);
-        Pose pose(p_org);
-		switch (axis)
-		{
-			case X_axis_rotation : q2.x() = x; break;
-			case Y_axis_rotation : q2.y() = x; break;
-			case Z_axis_rotation : q2.z() = x; break;
-		}
+        Quaternoin q2;
+
+		rotateByAxis(axis, degree, q2);
+
 		q1.normalize();
-		q2.normalize();
 		//Eigen::Matrix<_Scalar, 3, 1>  t_tmp(0.0,0.0,0.0);
 		//p_org.composePoint(t_tmp, pose.t_);
 
@@ -97,6 +118,7 @@ namespace cxy_transform
 		pose.q().x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 		pose.q().y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
 		pose.q().z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
+		pose.q().normalize();
 		return pose;
 
     }
@@ -211,19 +233,19 @@ namespace cxy_transform
 
 	// p = p1*p2 == p1.composePose(p2, p)
     template <typename _Scalar>
-	void Pose<_Scalar>:: composePose(const Pose& in_pose, Pose &out_p) const
+	void Pose<_Scalar>:: composePose(const Pose&p2, Pose &out_p) const
 	{
-		if ( ! in_pose.bhasNormalized_)
+		if ( ! p2.bhasNormalized_)
 		{
-			in_pose.normalize();
+			p2.normalize();
 		}
 		if ( ! bhasNormalized_)
 		{
 			normalize();
 		}
-		composePoint(in_pose.t_, out_p.t_);
+		composePoint(p2.t_, out_p.t_);
 		const Quaternoin& q1(q_);
-		const Quaternoin& q2(in_pose.q_);
+		const Quaternoin& q2(p2.q_);
 		out_p.q_.w() = q1.w()*q2.w() - q1.x()*q2.x() - q1.y()*q2.y() - q1.z()*q2.z();
 		out_p.q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 		out_p.q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
