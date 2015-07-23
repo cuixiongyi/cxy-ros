@@ -8,6 +8,7 @@
 #include "common/serialization.h"
 #include "common/cxy_debug.h"
 #include "common/cxy_joint_info.h"
+#include "cxy_tracker_forward_declaration.h"
 
 namespace cxy
 {
@@ -26,39 +27,40 @@ namespace cxy
 
         cxy_transform::Axis parseJointType(const std::string&);
 
-        std::shared_ptr<const cxy_config> getConfig();
+        static std::shared_ptr<const cxy_config> getConfig();
 
 		virtual void serialize();
 
 		virtual void unserialize();
 
 
+        std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic> kinematic_ptr_;
 
-				
-		std::string filename_;
-		bool isOpen_ = {false};
-		int joint_number_ = {0};
-		std::vector<cxy_joint_info> joint_config_;
 
-        int joint_DoFs = {0};
+        static std::string filename_;
+        static bool isOpen_ = {false};
+        static int joint_number_ = {0};
+        static std::vector<cxy_joint_info> joint_config_;
+
+        static int joint_DoFs = {0};
 
         // this is the number of jacobian type used
-        int n_num_ = {1};
+        static int n_num_ = {1};
 
-        bool with_icp_jacobian = {true};
-        float icp_jaclbian_weight = {10};
+        static bool with_icp_jacobian = {true};
+        static float icp_jaclbian_weight = {10};
 
-        bool with_collision_jacobian = {false};
-        float collision_jacobian_weight = {10};
+        static bool with_collision_jacobian = {false};
+        static float collision_jacobian_weight = {10};
 
-        bool with_silhouette_jacobian = {false};
-        float silhouette_jacobian_weight = {10};
+        static bool with_silhouette_jacobian = {false};
+        static float silhouette_jacobian_weight = {10};
 
-        bool with_push_jacobian = {false};
-        float push_jacobian_weight = {10};
+        static bool with_push_jacobian = {false};
+        static float push_jacobian_weight = {10};
 
 	public:
-		inline const bool& isOpen()
+        static inline const bool& isOpen()
 		{
 			return isOpen_;
 		}

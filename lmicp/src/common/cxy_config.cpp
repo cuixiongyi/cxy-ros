@@ -7,7 +7,10 @@ namespace cxy
 	cxy_config::cxy_config(std::string filename) : 
 					serialization(filename)
 					, filename_{filename}
-		{};
+		{
+            unserialize();
+            kinematic_ptr_ = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic>(this);
+        };
 	cxy_config::~cxy_config() {};
 	
 	void cxy_config::serialize()
@@ -15,8 +18,7 @@ namespace cxy
 
     std::shared_ptr<const cxy_config> cxy_config::getConfig()
     {
-        unserialize();
-        return std::make_shared<const cxy_config>((*this));
+        return std::make_shared<const cxy_config>();
     }
 
     void cxy_config::unserialize()

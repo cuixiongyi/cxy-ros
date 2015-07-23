@@ -5,7 +5,7 @@ namespace cxy
     namespace cxy_lmicp_lib
     {
         template<typename _Scalar>
-        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>& config)
+        cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const cxy_config* const config)
         : config_(config)
         {
             constructKinematicChain();
@@ -26,6 +26,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::updateJoints()
         {
+            // assuming x_ has been updated
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
 
@@ -38,6 +39,31 @@ namespace cxy
                     syc_setJointUptoDate(ii, tmp);
                 }
 
+            }
+        }
+
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
+        {
+            points_ = std::make_shared<std::vector<cxy_icp_kinematic_point>>(modelCloud_->size());
+
+            for (int ii = 0; ii < modelCloud_->size(); ++ii)
+            {
+
+                /*
+                 * TODO pointJointIdx_ need to be assigned when modelCloud generation
+                 */
+                points_->push_back(cxy_icp_kinematic_point(config_, pointJointIdx_[ii]));
+                (*points_)[ii].modelPoint_global_ = (*modelCloud_)[ii];
+                (*points_)[ii].dataPoint_ = (*dataCloud_)[ii];
+
+
+                (*points_)[ii].point_resdual1_ = cxy_icp_kinematic_point::matchPointCloud((*points_)[ii].modelPoint_global_
+                                                        , kdtreeptr_
+                                                        , (*points_)[ii].dataPoint_
+                                                        , (*points_)[ii].point_resdual3_);
+                (*points_)[ii].jacobian_.resize(config_->kinematic_ptr_->)
             }
         }
 
@@ -77,7 +103,7 @@ namespace cxy
                 {
                     transCloud->push_back((*tmpCloud)[jj]);
                     //ROS_INFO_STREAM((*kc_nodes_)[joint].modelCloud_[ii].x<<" "<<(*kc_nodes_)[joint].modelCloud_[ii].y<<"  "<<[ii].z);
-                    /* code */
+
                 }
                 //ROS_INFO_STREAM(" ");
             }
@@ -126,6 +152,7 @@ namespace cxy
             {
                 pose = joints_[joint]->getPose();
                 pose_parent = cxy_transform::Pose<_Scalar>();
+                return ;
             }
 
             if ( -1 == joints_[joint]->getParent())

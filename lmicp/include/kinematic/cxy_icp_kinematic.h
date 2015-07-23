@@ -8,6 +8,7 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include <memory>
+#include <boost/pool/poolfwd.hpp>
 
 #include "utility/cxy_transform.h"
 #include "common/cxy_debug.h"
@@ -26,9 +27,9 @@ namespace cxy
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
 		public:
-			cxy_icp_kinematic(const std::shared_ptr<const cxy_config>&);
+			cxy_icp_kinematic(const cxy_config* const );
 			~cxy_icp_kinematic();
-			const std::shared_ptr<const cxy_config> config_;
+            const cxy_config* const config_;
 
             void computeResidual(const MatrixX1&, MatrixX1&);
 
@@ -37,6 +38,9 @@ namespace cxy
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
 
+            /**
+             * This function update joint model with joint angle(1 or 6 DoF) of x_
+             */
             void updateJointModel(const MatrixX1&);
 
 
@@ -46,10 +50,11 @@ namespace cxy
 
             Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
 
-            int matrix_rows_ = {0};
+            int matrix_model_point_size_ = {0};
             int matrix_rows_Jac_ = {0};
             int matrix_cols_Jac_ = {0};
-
+            const int& getJacobianRows() {return matrix_rows_Jac_;}
+            const int& getJacobianCols() {return matrix_cols_Jac_;}
             void setMatrixSize(const int&);
 
         };

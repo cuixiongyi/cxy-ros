@@ -37,10 +37,12 @@ namespace cxy
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
         public:
-            cxy_icp_kinematic_chain(const std::shared_ptr<const cxy_config>&);
+            cxy_icp_kinematic_chain(const cxy_config* const);
             ~cxy_icp_kinematic_chain();
 
             void updateJoints();
+
+            void updateModelPoints();
 
             void setJointPara(const MatrixX1&);
 
@@ -75,8 +77,12 @@ namespace cxy
             cxy_sync jointTime;
             MatrixX1 x_;
 
-            const std::shared_ptr<const cxy_config>& config_;
+            const cxy_config* const config_;
             std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
+
+            std::vector<int> pointJointIdx_;
+
+            pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
