@@ -44,18 +44,15 @@ namespace cxy
             void updateJointModel(const MatrixX1&);
 
 
+
+
         private:
             std::shared_ptr<cxy_icp_kinematic_chain> kc_;
 			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
 
             Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
 
-            int matrix_model_point_size_ = {0};
-            int matrix_rows_Jac_ = {0};
-            int matrix_cols_Jac_ = {0};
-            const int& getJacobianRows() {return matrix_rows_Jac_;}
-            const int& getJacobianCols() {return matrix_cols_Jac_;}
-            void setMatrixSize(const int&);
+
 
         };
 	}

@@ -3,12 +3,43 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <boost/preprocessor/arithmetic/inc.hpp>
 
 #include "utility/cxy_transform.h"
 #include "common/serialization.h"
 #include "common/cxy_debug.h"
 #include "common/cxy_joint_info.h"
 #include "cxy_tracker_forward_declaration.h"
+
+/*
+ * determine n_num_ (the jacobian types) used, at compile time
+ */
+#ifdef CXY_JACO_TYPE_FITTING
+    #define CXY_JACO_TYPE_COUNTING_1    1
+#else
+    #define CXY_JACO_TYPE_COUNTING_1    0
+#endif
+
+#ifdef CXY_JACO_TYPE_COLLISION
+    #define CXY_JACO_TYPE_COUNTING_2    BOOST_PP_INC(CXY_JACO_TYPE_COUNTING_1)
+#else
+    #define CXY_JACO_TYPE_COUNTING_2    CXY_JACO_TYPE_COUNTING_1
+#endif
+
+#ifdef CXY_JACO_TYPE_PUSH
+    #define CXY_JACO_TYPE_COUNTING_3    BOOST_PP_INC(CXY_JACO_TYPE_COUNTING_2)
+#else
+    #define CXY_JACO_TYPE_COUNTING_3    CXY_JACO_TYPE_COUNTING_2
+#endif
+
+#ifdef CXY_JACO_TYPE_SILHOUETTE
+    #define CXY_JACO_TYPE_COUNTING_4    BOOST_PP_INC(CXY_JACO_TYPE_COUNTING_3)
+#else
+    #define CXY_JACO_TYPE_COUNTING_4    CXY_JACO_TYPE_COUNTING_3
+#endif
+
+#define CXY_JACO_TYPE_COUNT_FINAL       CXY_JACO_TYPE_COUNTING_4
+
 
 namespace cxy
 {
@@ -45,7 +76,7 @@ namespace cxy
         static int joint_DoFs = {0};
 
         // this is the number of jacobian type used
-        static int n_num_ = {1};
+        static constexpr int n_num_ = {CXY_JACO_TYPE_COUNT_FINAL};
 
         static bool with_icp_jacobian = {true};
         static float icp_jaclbian_weight = {10};
@@ -64,5 +95,19 @@ namespace cxy
 		{
 			return isOpen_;
 		}
-	};
+
+        inline const int& getModelPointNum() const { return model_Point_num;}
+        inline void setModelPointNum(const int& num) const { model_Point_num = num;}
+
+        inline void getJacobianSize(int& rows, int& cols) const
+        {
+            rows = model_Point_num * n_num_;
+            cols = joint_DoFs;
+        }
+
+    private:
+        mutable int model_Point_num = {0};
+
+
+    };
 }

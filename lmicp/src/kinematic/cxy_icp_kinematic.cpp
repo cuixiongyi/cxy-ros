@@ -8,8 +8,8 @@ namespace cxy_lmicp_lib
     cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config* const config_ptr)
     : config_(config_ptr)
     {
-        kc_ = std::make_shared<cxy_icp_kinematic_chain>(config_);
-        matrix_cols_Jac_ = config_->joint_DoFs;
+        kc_ = std::make_shared<cxy_icp_kinematic_chain>(config_ptr);
+
 
     }
 
@@ -22,6 +22,7 @@ namespace cxy_lmicp_lib
 
         kc_->updateModelPoints();
 
+        kc_->getResidual();
     }
 
     template<typename _Scalar>
@@ -30,6 +31,10 @@ namespace cxy_lmicp_lib
 
         updateJointModel(x);
 
+        kc_->updateModelPoints();
+        int rows, cols;
+        config_->getJacobianSize(rows, cols);
+        (*points_)[ii]->jacobian_.resize(config_->n_num_, cols);
     }
 
 
@@ -39,7 +44,7 @@ namespace cxy_lmicp_lib
     {
         kc_->setDataCloud(data);
 
-        setMatrixSize(data->points.size());
+
 
     }
 
@@ -54,7 +59,7 @@ namespace cxy_lmicp_lib
          * TODO pointJointIdx_ also need to be assigned
 
          */
-        matrix_model_point_size_ = ;
+        config_->setModelPointNum();
         kc_->getFullModelCloud_World();
 
         /*
@@ -64,12 +69,6 @@ namespace cxy_lmicp_lib
     }
 
 
-    template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::setMatrixSize(const int& point_size)
-    {
-        matrix_model_point_size_ = point_size;
-        matrix_rows_Jac_ = point_size * config_->n_num_;
-    }
 
 
     template<typename _Scalar>

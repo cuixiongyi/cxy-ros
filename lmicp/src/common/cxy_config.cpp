@@ -52,34 +52,35 @@ namespace cxy
                 joint_DoFs = 0;
                 parseJoints();
 			}
-            if ( "with_icp_jacobian" == var_name)
-            {
-                iss >> with_icp_jacobian>>icp_jaclbian_weight;
-            }
-            if ( "with_collision_jacobian" == var_name)
-            {
-                iss >> with_collision_jacobian>>collision_jacobian_weight;
-            }
-            if ( "with_silhouette_jacobian" == var_name)
-            {
-                iss >> with_silhouette_jacobian>>silhouette_jacobian_weight;
-            }
-            if ( "with_push_jacobian" == var_name)
-            {
-                iss >> with_push_jacobian>>push_jacobian_weight;
-            }
 
 		}
+#ifdef CXY_JACO_TYPE_FITTING
+    with_icp_jacobian = true;
+    icp_jaclbian_weight = 1.0;
+#else
+        with_icp_jacobian = false;
+#endif
+#ifdef CXY_JACO_TYPE_COLLISION
+    with_collision_jacobian = true;
+    collision_jacobian_weight = 1.0;
+#else
+        with_collision_jacobian = false;
+#endif
+#ifdef CXY_JACO_TYPE_PUSH
+    with_push_jacobian = true;
+    push_jacobian_weight = 1.0;
+#else
+        with_push_jacobian = false;
+#endif
+#ifdef CXY_JACO_TYPE_SILHOUETTE
+    with_silhouette_jacobian = true;
+    silhouette_jacobian_weight = 1.0;
+#else
+        with_silhouette_jacobian = false;
+#endif
         isOpen_ = true;
         std::cout<<"config test"<<with_collision_jacobian<<"  "<<collision_jacobian_weight;
-        if (with_icp_jacobian)
-            n_num_ = 1;
-        if (with_collision_jacobian)
-            ++n_num_;
-        if (with_silhouette_jacobian)
-            ++n_num_;
-        if (with_push_jacobian)
-            ++n_num_;
+
 	}
 
     void cxy_config::parseJoints()

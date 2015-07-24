@@ -53,18 +53,56 @@ namespace cxy
 
                 /*
                  * TODO pointJointIdx_ need to be assigned when modelCloud generation
+                 * TODO use object_pool to allocate memory
                  */
-                points_->push_back(cxy_icp_kinematic_point(config_, pointJointIdx_[ii]));
-                (*points_)[ii].modelPoint_global_ = (*modelCloud_)[ii];
-                (*points_)[ii].dataPoint_ = (*dataCloud_)[ii];
+                points_->push_back(new cxy_icp_kinematic_point(config_, pointJointIdx_[ii], kdtreeptr_, dataCloud_));
+                (*points_)[ii]->modelPoint_global_ = (*modelCloud_)[ii];
 
 
-                (*points_)[ii].point_resdual1_ = cxy_icp_kinematic_point::matchPointCloud((*points_)[ii].modelPoint_global_
-                                                        , kdtreeptr_
-                                                        , (*points_)[ii].dataPoint_
-                                                        , (*points_)[ii].point_resdual3_);
-                (*points_)[ii].jacobian_.resize(config_->kinematic_ptr_->)
+
             }
+        }
+
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::getResidual(MatrixX1& residual)
+        {
+            int rows, cols;
+            config_->getJacobianSize(rows, cols);
+            if (rows != residual.rows())
+            {
+                residual.resize(rows, 1);
+            }
+
+            for (int ii = 0; ii < config_->getModelPointNum(); ++ii)
+            {
+                /*
+                 * TODO add other jacobian residual
+                 */
+
+                (*points_)[ii]->computePointResidual();
+                residual(ii) = (*points_)[ii]->point_resdual1_;
+            }
+
+        }
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::getJacobian(MatrixXX& jacobian)
+        {
+            int rows, cols;
+            config_->getJacobianSize(rows, cols);
+            if (rows != jacobian.rows()
+                    || cols != jacobian.cols())
+            {
+                jacobian.resize(rows, cols);
+            }
+
+            for (int ii = 0; ii < points_->size(); ++ii)
+            {
+
+                jacobian(ii) = (*points_)[ii]->point_resdual1_;
+            }
+
         }
 
         template<typename _Scalar>

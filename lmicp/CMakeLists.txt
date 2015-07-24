@@ -16,6 +16,7 @@ if(ENABLE_MY_ASSERT)
 else()
   add_definitions(-DMY_DEBUG=0)
 endif()
+add_definitions(-DCXY_JACO_TYPE_FITTING)
 
 find_package(OpenCV REQUIRED)
 

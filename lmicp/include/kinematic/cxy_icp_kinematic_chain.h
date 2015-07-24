@@ -69,6 +69,9 @@ namespace cxy
 
             inline const int size() { return config_->joint_number_; }
 
+            void getResidual(MatrixX1&);
+
+            void getJacobian(MatrixXX&);
 
         private:
 
@@ -78,7 +81,7 @@ namespace cxy
             MatrixX1 x_;
 
             const cxy_config* const config_;
-            std::shared_ptr<std::vector<cxy_icp_kinematic_point>> points_;
+            std::shared_ptr<std::vector<cxy_icp_kinematic_point*>> points_;
 
             std::vector<int> pointJointIdx_;
 
