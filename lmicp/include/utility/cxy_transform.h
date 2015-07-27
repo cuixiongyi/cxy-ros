@@ -50,7 +50,7 @@ enum Axis : uint8_t
 
 		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
 		//
-		void rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in = Eigen::Matrix<float, 3, 1>(0.0,0.0,0.0));
+		void rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in = Eigen::Matrix<_Scalar, 3, 1>(0.0,0.0,0.0));
 
 		static void rotateByAxis(Axis axis, const _Scalar & degree, Quaternoin& q_out);
 

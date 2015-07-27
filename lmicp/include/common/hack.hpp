@@ -1,4 +1,5 @@
 #pragma once
+
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "Eigen/Core"
 #include <iostream>
@@ -8,12 +9,11 @@
 #include "pcl_conversions/pcl_conversions.h"
 
 #include "utility/cxy_transform.h"
-
+#include "cxy_tracker_forward_declaration.h"
 using namespace  cxy;
 
 using namespace Eigen;
 
-typedef pcl::PointXYZ PointT;
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr loadPlyFile(std::string name);
 

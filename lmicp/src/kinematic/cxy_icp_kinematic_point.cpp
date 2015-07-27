@@ -168,7 +168,7 @@ namespace cxy
 
                 if (cxy_transform::Axis::Six_DoF == joint.getJointType())
                     continue;
-                
+
                 Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
                 Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint.getPose().t()(0), modelPoint_global_.y - joint.getPose().t()(1), modelPoint_global_.z - joint.getPose().t()(2));
 

@@ -44,6 +44,3 @@ namespace cxy
 	};
 }
 
-	int32_t cxy::cxy_sync::in_sync_inner_loop_thrush_sec_ = 0;
-	int32_t cxy::cxy_sync::in_sync_inner_loop_thrush_nsec_ = 10000000;
-	uint64_t cxy::cxy_sync::in_sync_inner_loop_thrush_nsec_sum_ = 10000000;
