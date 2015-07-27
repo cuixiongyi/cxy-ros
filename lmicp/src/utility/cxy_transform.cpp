@@ -203,7 +203,7 @@ namespace cxy_transform
 	}
 
     template <typename _Scalar>
-	void Pose<_Scalar>:: composeDirectionVector(const Vector& in_p, Vector &out_p) const
+	void Pose<_Scalar>:: composeDirectionVector(const Vector& in_p, Vector& out_p) const
 			{
 				if ( ! bhasNormalized_)
 				{

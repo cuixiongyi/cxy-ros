@@ -7,6 +7,7 @@ namespace cxy
       bool cxy_config::isOpen_ = {false};
       int cxy_config::joint_number_ = {0};
       std::vector<cxy_joint_info> cxy_config::joint_config_;
+     std::vector<int> cxy_config::jointParaIdx_;
 
       int cxy_config::joint_DoFs = {0};
 
@@ -23,12 +24,11 @@ namespace cxy
       float cxy_config::push_jacobian_weight = {10};
 
 
-	cxy_config::cxy_config(std::string filename) : 
-					serialization(filename)
-					, filename_{filename}
+	cxy_config::cxy_config() :
+					serialization(filename_)
 		{
             unserialize();
-            kinematic_ptr_ = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic>(this);
+            //kinematic_ptr_ = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic<float>>(this);
         };
 	cxy_config::~cxy_config()
     {
@@ -74,6 +74,7 @@ namespace cxy
 			{
 				iss >> joint_number_;
                 joint_DoFs = 0;
+                jointParaIdx_.resize(joint_number_);
                 parseJoints();
 			}
 
@@ -112,7 +113,7 @@ namespace cxy
         std::string line;
         int8_t lineStatus = 0;
         joint_config_.reserve(joint_number_);
-
+        int jointParaIdxCount = 0;
         for (int ii = 0; ii < joint_number_; ++ii)
         {
             if ( ! this->getline(fin_, line, lineStatus))
@@ -146,7 +147,8 @@ namespace cxy
                 kj.DoF = 6;
             else
                 kj.DoF = 1;
-
+            jointParaIdx_[ii] = jointParaIdxCount;
+            jointParaIdxCount += kj.DoF;
             // joint model file name
             iss>>kj.model_filename;
 

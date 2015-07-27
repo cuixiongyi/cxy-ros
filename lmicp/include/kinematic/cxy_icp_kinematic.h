@@ -37,7 +37,7 @@ namespace cxy
             void computeJacobian(const MatrixX1&, MatrixXX&);
 
 
-            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data);
+            void setDataCloud(pcl::PointCloud<PointT>::Ptr data);
 
             /**
              * This function update joint model with joint angle(1 or 6 DoF) of x_
@@ -48,8 +48,8 @@ namespace cxy
 
 
         private:
-            std::shared_ptr<cxy_icp_kinematic_chain> kc_;
-			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
+            std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
+			std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>> points_;
 
             Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
             static std::once_flag joint_Parent_init;

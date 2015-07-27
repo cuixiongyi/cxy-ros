@@ -5,21 +5,25 @@
 #include <vector>
 #include <Eigen/Core>
 #include <iostream>
+#include <memory>
+
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
-#include <memory>
+#include <pcl/kdtree/kdtree_flann.h>
 
 #include "utility/cxy_transform.h"
 #include "common/cxy_debug.h"
 #include "common/cxy_common.h"
 #include "common/cxy_config.h"
-#include "kinematic/cxy_icp_kinematic_joint.h"
-#include "kinematic/cxy_icp_kinematic_chain.h"
 
 namespace cxy
 {
     namespace cxy_lmicp_lib
     {
+        template<typename _Scalar>
+        class cxy_icp_kinematic_joint;
+        template<typename _Scalar>
+        class cxy_icp_kinematic_chain;
 
         template<typename _Scalar>
         class cxy_icp_kinematic_point
@@ -44,12 +48,12 @@ namespace cxy
 
             void computePointJacobian(const int& rows, MatrixXX&);
 
-            void compute_icp_jacobian(const int& rows, MatrixXX& jac);
-            void compute_collision_jacobian(const int& rows, MatrixXX& jac);
-            void compute_push_jacobian(const int& rows, MatrixXX& jac);
-            void compute_silhouette_jacobian(const int& rows, MatrixXX& jac);
+            void compute_icp_jacobian(const int& rows, MatrixXX& );
+            void compute_collision_jacobian(const int& rows, MatrixXX& );
+            void compute_push_jacobian(const int& rows, MatrixXX& );
+            void compute_silhouette_jacobian(const int& rows, MatrixXX& );
 
-            _Scalar matchPointCloud(const PointT& model
+            const _Scalar& matchPointCloud(const PointT&
                                         , PointT&
                                         , Eigen::Matrix< _Scalar, 3, 1>& res);
         //private:

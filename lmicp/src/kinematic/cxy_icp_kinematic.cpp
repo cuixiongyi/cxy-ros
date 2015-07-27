@@ -8,8 +8,8 @@ namespace cxy_lmicp_lib
     cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config* const config_ptr)
     : config_(config_ptr)
     {
-        kc_ = std::make_shared<cxy_icp_kinematic_chain>(config_ptr);
-        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint::updateJointRelation);
+        kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
+        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
 
     }
 
@@ -22,7 +22,7 @@ namespace cxy_lmicp_lib
 
         kc_->updateModelPoints();
 
-        kc_->getResidual();
+        kc_->getResidual(res);
     }
 
     template<typename _Scalar>
@@ -32,9 +32,8 @@ namespace cxy_lmicp_lib
         updateJointModel(x);
 
         kc_->updateModelPoints();
-        int rows, cols;
-        config_->getJacobianSize(rows, cols);
-        (*points_)[ii]->jacobian_.resize(config_->n_num_, cols);
+
+        //points_[ii]->jacobian_.resize(config_->n_num_, cols);
 
         kc_->getJacobian(jac);
     }
@@ -50,7 +49,7 @@ namespace cxy_lmicp_lib
 
     }
 
-
+    template<typename _Scalar>
     void cxy_icp_kinematic<_Scalar>::updateJointModel(const MatrixX1& joint_para)
     {
         kc_->setJointPara(joint_para);
@@ -61,7 +60,8 @@ namespace cxy_lmicp_lib
          * TODO pointJointIdx_ also need to be assigned
 
          */
-        config_->setModelPointNum();
+        int point_num = 1;
+        config_->setModelPointNum(point_num);
         kc_->getFullModelCloud_World();
 
         /*

@@ -1,6 +1,8 @@
 
 #include "kinematic/cxy_icp_kinematic_joint.h"
 
+#include "kinematic/cxy_icp_kinematic_chain.h"
+
 namespace cxy
 {
 	namespace cxy_lmicp_lib

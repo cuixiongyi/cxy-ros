@@ -27,6 +27,4 @@ namespace cxy
     };
 }
 
-class pcl::PointXYZ;
-typedef pcl::PointXYZ PointT;
 #endif /* CXY_COMMON */

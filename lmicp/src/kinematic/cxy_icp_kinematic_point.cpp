@@ -1,6 +1,9 @@
 
 #include "kinematic/cxy_icp_kinematic_point.h"
 
+#include "kinematic/cxy_icp_kinematic_joint.h"
+#include "kinematic/cxy_icp_kinematic_chain.h"
+
 namespace cxy
 {
     namespace cxy_lmicp_lib
@@ -8,7 +11,7 @@ namespace cxy
 
         template<typename _Scalar>
         cxy_icp_kinematic_point<_Scalar>::cxy_icp_kinematic_point(const cxy_config* const config_ptr
-                                                                , const pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr& kdtree
+                                                                , const pcl::KdTreeFLANN<PointT>::Ptr& kdtree
                                                                 , const pcl::PointCloud<PointT>::Ptr& dataCloud
                                                                 , const cxy_icp_kinematic_joint<_Scalar>* const joint
                                                                 , const cxy_icp_kinematic_chain<_Scalar>* kc_ptr)
@@ -37,7 +40,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        const _Scalar cxy_icp_kinematic_point<_Scalar>::matchPointCloud(const PointT& model
+        const _Scalar& cxy_icp_kinematic_point<_Scalar>::matchPointCloud(const PointT& model
                                                                         , PointT& data
                                                                         , Eigen::Matrix< _Scalar, 3, 1>& res)
         {
@@ -158,11 +161,14 @@ namespace cxy
             /*
              * the 1st element of jointRelationList_ is it self
              */
-            const std::vector<int>& jointParentList (cxy_icp_kinematic_joint::getJointRelationList(this->joint_idx_));
+            const std::vector<int>& jointParentList (cxy_icp_kinematic_joint<_Scalar>::getJointRelationList(this->joint_idx_));
             for (int ii = 0; ii < jointParentList.size(); ++ii)
             {
-                const cxy_icp_kinematic_joint& joint(kc_ptr_->getJoint(jointParentList[ii]));
+                const cxy_icp_kinematic_joint<_Scalar>& joint(kc_ptr_->getJoint(jointParentList[ii]));
 
+                if (cxy_transform::Axis::Six_DoF == joint.getJointType())
+                    continue;
+                
                 Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
                 Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint.getPose().t()(0), modelPoint_global_.y - joint.getPose().t()(1), modelPoint_global_.z - joint.getPose().t()(2));
 
@@ -199,7 +205,7 @@ namespace cxy
                     scale2 = 0.0;
                 if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2) > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
                 {
-                    jac(rows, ii) =  -std::abs(cross(2) + cross(1) + cross(0));
+                    jac(rows, cxy_config::jointParaIdx_[jointParentList[ii]]) =  -std::abs(cross(2) + cross(1) + cross(0));
                     /*
                     if (jj == 20)
                         ROS_INFO_STREAM("reversed");
@@ -207,7 +213,7 @@ namespace cxy
                 }
                 else
                 {
-                    jac(rows, ii) =  std::abs(cross(2) + cross(1) + cross(0));
+                    jac(rows, cxy_config::jointParaIdx_[jointParentList[ii]]) =  std::abs(cross(2) + cross(1) + cross(0));
                     //fjac(jj, 0) = -fjac(jj, 0);
                 }
             }

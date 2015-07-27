@@ -63,8 +63,8 @@ namespace cxy
 
 		cxy_config& operator=(const cxy_config&) = delete;	// Disallow copying
 		cxy_config(const cxy_config&) = delete;
-		cxy_config() = delete;
-		cxy_config(std::string filename);
+		///cxy_config() = delete;
+		cxy_config();
 		~cxy_config();
 
         void parseJoints();
@@ -78,7 +78,7 @@ namespace cxy
 		virtual void unserialize();
 
 
-        std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic<float>> kinematic_ptr_;
+        //std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic<float>> kinematic_ptr_;
 
 
         static std::string filename_;
@@ -87,7 +87,7 @@ namespace cxy
         static std::vector<cxy_joint_info> joint_config_;
 
         static int joint_DoFs ;
-
+        static std::vector<int> jointParaIdx_;
         // this is the number of jacobian type used
         static constexpr int n_num_ = {CXY_JACO_TYPE_COUNT_FINAL};
 

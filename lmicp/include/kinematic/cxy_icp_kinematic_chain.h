@@ -51,16 +51,16 @@ namespace cxy
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World() {};
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
                                              const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent );
+                                          , cxy_transform::Pose<_Scalar>& pose_parent ) {};
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
                                           const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose);
+                                          , cxy_transform::Pose<_Scalar>& pose) {};
 
 
             void getKinematicPose2World( const int& joint
@@ -82,7 +82,7 @@ namespace cxy
             MatrixX1 x_;
 
             const cxy_config* const config_;
-            std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>*>> points_;
+            std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>> points_;
 
             std::vector<int> pointJointIdx_;
 

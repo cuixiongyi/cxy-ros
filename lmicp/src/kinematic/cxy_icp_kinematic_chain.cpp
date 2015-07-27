@@ -56,7 +56,7 @@ namespace cxy
                  * TODO use object_pool to allocate memory
                  */
                 points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
-                (*points_[ii])->modelPoint_global_ = (*modelCloud_)[ii];
+                points_[ii]->modelPoint_global_ = (*modelCloud_)[ii];
 
 
 
@@ -82,7 +82,7 @@ namespace cxy
                  */
 
                 row = ii*config_->n_num_;
-                (*points_[ii])->computePointResidual(row, residual);
+                points_[ii]->computePointResidual(row, residual);
             }
 
         }
@@ -102,7 +102,7 @@ namespace cxy
             for (int ii = 0; ii < points_.size(); ++ii)
             {
                 row = ii*config_->n_num_;
-                (*points_[ii])->computePointJacobian(row, jacobian);
+                points_[ii]->computePointJacobian(row, jacobian);
 
             }
 
@@ -198,8 +198,8 @@ namespace cxy
 
             if ( -1 == joints_[joint]->getParent())
             {
-                cxy_transform::Pose<_Scalar> ptmp;
-                if (cxy_transform::Axis::Six_DoF == joints_[joint]->getJointType())
+                const cxy_transform::Axis jointType = joints_[joint]->getJointType();
+                if (cxy_transform::Axis::Six_DoF == jointType)
                 {
                     pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x_(3)));
                     pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x_(4)));
@@ -207,6 +207,11 @@ namespace cxy
                     pose.t()(0) = x_(0);
                     pose.t()(1) = x_(1);
                     pose.t()(2) = x_(2);
+                }
+                else if (cxy_transform::Axis::X_axis_rotation == jointType || cxy_transform::Axis::Y_axis_rotation == jointType || cxy_transform::Axis::Z_axis_rotation == jointType )
+                {
+                    pose.rotateByAxis(jointType, Deg2Rad(x_(0)));
+
                 }
                 pose_parent = cxy_transform::Pose<_Scalar>();
                 return;
@@ -218,7 +223,7 @@ namespace cxy
             }
 
             cxy_transform::Pose<_Scalar> pose_fix = joints_[joint]->getOriginPose();
-            pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(joint), pose);
+            pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(cxy_config::jointParaIdx_[joint]), pose);
 
             return;
         }
