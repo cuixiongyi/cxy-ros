@@ -3,6 +3,25 @@
 
 namespace cxy
 {
+     std::string cxy_config::filename_ = {""};
+      bool cxy_config::isOpen_ = {false};
+      int cxy_config::joint_number_ = {0};
+      std::vector<cxy_joint_info> cxy_config::joint_config_;
+
+      int cxy_config::joint_DoFs = {0};
+
+      bool cxy_config::with_icp_jacobian = {true};
+      float cxy_config::icp_jaclbian_weight = {10};
+
+      bool cxy_config::with_collision_jacobian = {false};
+      float cxy_config::collision_jacobian_weight = {10};
+
+      bool cxy_config::with_silhouette_jacobian = {false};
+      float cxy_config::silhouette_jacobian_weight = {10};
+
+      bool cxy_config::with_push_jacobian = {false};
+      float cxy_config::push_jacobian_weight = {10};
+
 
 	cxy_config::cxy_config(std::string filename) : 
 					serialization(filename)
@@ -11,10 +30,15 @@ namespace cxy
             unserialize();
             kinematic_ptr_ = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic>(this);
         };
-	cxy_config::~cxy_config() {};
+	cxy_config::~cxy_config()
+    {
+
+    }
 	
 	void cxy_config::serialize()
-			{}
+    {
+
+    }
 
     std::shared_ptr<const cxy_config> cxy_config::getConfig()
     {
@@ -118,7 +142,7 @@ namespace cxy
             kj.jointType = parseJointType(jointType);
             CXY_ASSERT(kj.jointType != cxy_transform::Axis::error_code);
 
-            if (cxy_transform::Axis::Six_DoF == jointType)
+            if (cxy_transform::Axis::Six_DoF == kj.jointType)
                 kj.DoF = 6;
             else
                 kj.DoF = 1;

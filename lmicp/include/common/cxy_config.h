@@ -38,6 +38,18 @@
     #define CXY_JACO_TYPE_COUNTING_4    CXY_JACO_TYPE_COUNTING_3
 #endif
 
+#ifdef CXY_JACO_TYPE_JOINTLIMIT
+    #define CXY_JACO_TYPE_COUNTING_5    BOOST_PP_INC(CXY_JACO_TYPE_COUNTING_4)
+#else
+#define CXY_JACO_TYPE_COUNTING_5    CXY_JACO_TYPE_COUNTING_4
+#endif
+
+#ifdef CXY_JACO_TYPE_SILHOUETTE
+    #define CXY_JACO_TYPE_COUNTING_4    BOOST_PP_INC(CXY_JACO_TYPE_COUNTING_3)
+#else
+#define CXY_JACO_TYPE_COUNTING_4    CXY_JACO_TYPE_COUNTING_3
+#endif
+
 #define CXY_JACO_TYPE_COUNT_FINAL       CXY_JACO_TYPE_COUNTING_4
 
 
@@ -46,6 +58,7 @@ namespace cxy
 
 	class cxy_config : public serialization
 	{
+
 	public:
 
 		cxy_config& operator=(const cxy_config&) = delete;	// Disallow copying
@@ -65,30 +78,30 @@ namespace cxy
 		virtual void unserialize();
 
 
-        std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic> kinematic_ptr_;
+        std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic<float>> kinematic_ptr_;
 
 
         static std::string filename_;
-        static bool isOpen_ = {false};
-        static int joint_number_ = {0};
+        static bool isOpen_ ;
+        static int joint_number_ ;
         static std::vector<cxy_joint_info> joint_config_;
 
-        static int joint_DoFs = {0};
+        static int joint_DoFs ;
 
         // this is the number of jacobian type used
         static constexpr int n_num_ = {CXY_JACO_TYPE_COUNT_FINAL};
 
-        static bool with_icp_jacobian = {true};
-        static float icp_jaclbian_weight = {10};
+        static bool with_icp_jacobian ;
+        static float icp_jaclbian_weight;
 
-        static bool with_collision_jacobian = {false};
-        static float collision_jacobian_weight = {10};
+        static bool with_collision_jacobian ;
+        static float collision_jacobian_weight ;
 
-        static bool with_silhouette_jacobian = {false};
-        static float silhouette_jacobian_weight = {10};
+        static bool with_silhouette_jacobian;
+        static float silhouette_jacobian_weight;
 
-        static bool with_push_jacobian = {false};
-        static float push_jacobian_weight = {10};
+        static bool with_push_jacobian;
+        static float push_jacobian_weight;
 
 	public:
         static inline const bool& isOpen()

@@ -16,7 +16,8 @@ namespace cxy
         {
         }
 
-        static void cxy_energy_fitting<_Scalar>::computeJacobian(const cxy_icp_kinematic_point*& point_)
+        static void cxy_energy_fitting<_Scalar>::computeJacobian(const cxy_icp_kinematic_point* point_
+                                                                , const int& row)
         {
 
             transCloud = kc_->getOneModelCloud_World(x_full_, joint_, pose, para_pose_parent);

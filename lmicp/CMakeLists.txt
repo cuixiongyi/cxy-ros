@@ -65,7 +65,7 @@ add_library(cxy_tracking_lib
               include/energy/cxy_icp_rigid_func.h 		        src/energy/cxy_icp_rigid_func.cpp
               include/energy/cxy_icp_arti_ik.h  	            src/energy/cxy_icp_arti_ik.cpp
               include/energy/cxy_icp_arti_ik_func.h  	        src/energy/cxy_icp_arti_ik_func.cpp
-              include/energy/cxy_energy_fitting.h               src/energy/cxy_energy_fitting.cpp
+#              include/energy/cxy_energy_fitting.h               src/energy/cxy_energy_fitting.cpp
               include/kinematic/cxy_icp_kinematic.h             src/kinematic/cxy_icp_kinematic.cpp
               include/kinematic/cxy_icp_kinematic_joint.h       src/kinematic/cxy_icp_kinematic_joint.cpp
               include/kinematic/cxy_icp_kinematic_chain.h       src/kinematic/cxy_icp_kinematic_chain.cpp

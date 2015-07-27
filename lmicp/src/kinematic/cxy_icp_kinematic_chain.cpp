@@ -46,7 +46,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
         {
-            points_ = std::make_shared<std::vector<cxy_icp_kinematic_point>>(modelCloud_->size());
+            //points_ = std::make_shared<std::vector<cxy_icp_kinematic_point<_Scalar>*>>(modelCloud_->size());
 
             for (int ii = 0; ii < modelCloud_->size(); ++ii)
             {
@@ -55,8 +55,8 @@ namespace cxy
                  * TODO pointJointIdx_ need to be assigned when modelCloud generation
                  * TODO use object_pool to allocate memory
                  */
-                points_->push_back(new cxy_icp_kinematic_point(config_, pointJointIdx_[ii], kdtreeptr_, dataCloud_));
-                (*points_)[ii]->modelPoint_global_ = (*modelCloud_)[ii];
+                points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
+                (*points_[ii])->modelPoint_global_ = (*modelCloud_)[ii];
 
 
 
@@ -80,8 +80,8 @@ namespace cxy
                  * TODO add other jacobian residual
                  */
 
-                (*points_)[ii]->computePointResidual();
-                residual(ii) = (*points_)[ii]->point_resdual1_;
+                (*points_[ii])->computePointResidual();
+                residual(ii) = (*points_[ii])->point_resdual1_;
             }
 
         }
@@ -100,7 +100,7 @@ namespace cxy
             for (int ii = 0; ii < points_->size(); ++ii)
             {
 
-                jacobian(ii) = (*points_)[ii]->point_resdual1_;
+                jacobian(ii) = (*points_[ii])->point_resdual1_;
             }
 
         }
@@ -238,7 +238,7 @@ namespace cxy
             joint_sync_list.reserve(config_->joint_number_);
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
-                joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii));
+                joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii, this));
                 joints_[ii]->init();
                 joint_sync_list.push_back(Update_Status::NotUptoDate);
             }

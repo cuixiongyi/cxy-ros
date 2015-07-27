@@ -8,6 +8,7 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include <memory>
+#include <mutex>
 #include <boost/pool/poolfwd.hpp>
 
 #include "utility/cxy_transform.h"
@@ -51,7 +52,7 @@ namespace cxy
 			std::vector<std::shared_ptr<cxy_icp_kinematic_point>> points_;
 
             Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> joint_para;
-
+            static std::once_flag joint_Parent_init;
 
 
         };

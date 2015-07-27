@@ -22,7 +22,8 @@ namespace cxy
 		template<typename _Scalar>
         class cxy_icp_kinematic_joint 
         {
-
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
 
 
 		public:
@@ -30,13 +31,14 @@ namespace cxy
 
 			
 			public:
-				cxy_icp_kinematic_joint(const std::shared_ptr<const cxy_config>&, const int&);
+				cxy_icp_kinematic_joint(const cxy_config* const, const int&, const cxy_icp_kinematic_chain<_Scalar>*);
                 void init();
 
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
 		private:
-			std::shared_ptr<const cxy_config> config_;
+			const cxy_config* const config_;
+            const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_;
             cxy_joint_info joint_info_;
             _Scalar theta_;
             cxy_transform::Pose<_Scalar> pose_;
@@ -46,15 +48,31 @@ namespace cxy
 
         /// inline function
         public:
-            inline const int&                   getParent() {return joint_info_.joint_parent;}
-            inline cxy_transform::Axis&         getJointType()  {return joint_info_.jointType;}
+            inline const int&                   getParent() const {return joint_info_.joint_parent;}
+            inline const cxy_transform::Axis&         getJointType() const {return joint_info_.jointType;}
             inline std::string&                 getModelFileName() {return joint_info_.model_filename;}
             inline const int&                   numDoF() {return joint_info_.DoF;}
             inline void setPose(const cxy_transform::Pose<float>& pose) {pose_ = pose;}
             inline void setPose(cxy_transform::Pose<float>&& pose) {pose_ = std::move(pose);}
-            inline const cxy_transform::Pose<float>&  getPose() { return pose_;}
+            inline const cxy_transform::Pose<float>&  getPose() const { return pose_;}
             inline const cxy_transform::Pose<float>&  getOriginPose() { return originPose_;}
             inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return modelCloud_;}
+
+
+            /*
+             * jointRelationList_ recored list of parent
+             * [ii][0] is joint ii's immediate parent
+             */
+            static std::vector<std::vector<int >> jointRelationList_;
+            static Eigen::Matrix< std::int8_t , Eigen::Dynamic, Eigen::Dynamic> jointRelationMatrix_;
+            /*
+             * query about what's relation between joint a and b
+             */
+            static const Joint_Relation&& getJointRelation(const int&, const int&);
+            static void updateJointRelation();
+            static const std::vector<int >& getJointRelationList(const int&);
+
+
         };
 		
 

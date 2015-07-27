@@ -9,7 +9,7 @@ namespace cxy_lmicp_lib
     : config_(config_ptr)
     {
         kc_ = std::make_shared<cxy_icp_kinematic_chain>(config_ptr);
-
+        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint::updateJointRelation);
 
     }
 
@@ -35,6 +35,8 @@ namespace cxy_lmicp_lib
         int rows, cols;
         config_->getJacobianSize(rows, cols);
         (*points_)[ii]->jacobian_.resize(config_->n_num_, cols);
+
+        kc_->getJacobian(jac);
     }
 
 

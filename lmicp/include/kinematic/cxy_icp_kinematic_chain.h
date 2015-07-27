@@ -73,6 +73,7 @@ namespace cxy
 
             void getJacobian(MatrixXX&);
 
+            inline const cxy_icp_kinematic_joint<_Scalar>& getJoint(const int& joint) const {return (*joints_[joint]);}
         private:
 
             std::mutex kinematic_chain_lock;
@@ -81,7 +82,7 @@ namespace cxy
             MatrixX1 x_;
 
             const cxy_config* const config_;
-            std::shared_ptr<std::vector<cxy_icp_kinematic_point*>> points_;
+            std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>*>> points_;
 
             std::vector<int> pointJointIdx_;
 

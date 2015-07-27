@@ -24,11 +24,14 @@ namespace cxy
         template<typename _Scalar>
         class cxy_icp_kinematic_point
         {
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
         public:
             cxy_icp_kinematic_point(const cxy_config* const
-                                    , const int&
                                     , const pcl::KdTreeFLANN<PointT>::Ptr&
-                                    , const pcl::PointCloud<PointT>::Ptr& );
+                                    , const pcl::PointCloud<PointT>::Ptr&
+                                    , const cxy_icp_kinematic_joint<_Scalar>* const
+                                    , const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_);
 
             ~cxy_icp_kinematic_point();
 
@@ -37,9 +40,14 @@ namespace cxy
 
             void init();
 
-            void computePointResidual();
+            void computePointResidual(const int& rows, MatrixX1&);
 
-            void computePointJacobian();
+            void computePointJacobian(const int& rows, MatrixXX&);
+
+            void compute_icp_jacobian(const int& rows, MatrixXX& jac);
+            void compute_collision_jacobian(const int& rows, MatrixXX& jac);
+            void compute_push_jacobian(const int& rows, MatrixXX& jac);
+            void compute_silhouette_jacobian(const int& rows, MatrixXX& jac);
 
             _Scalar matchPointCloud(const PointT& model
                                         , PointT&
@@ -49,6 +57,10 @@ namespace cxy
             const int joint_idx_ = {0};
 
             const cxy_config* const config_;
+            const cxy_icp_kinematic_joint<_Scalar>* const joint_;
+            const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_;
+
+
             Eigen::Matrix<_Scalar, 3, 1> modelPoint_local_;
             PointT modelPoint_global_;
             PointT dataPoint_;

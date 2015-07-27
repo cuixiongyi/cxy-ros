@@ -29,7 +29,8 @@ namespace cxy_lmicp_lib
         cxy_energy_fitting();
         ~cxy_energy_fitting();
 
-        static void computeJacobian(const cxy_icp_kinematic_point* point_);
+        static void computeJacobian(const cxy_icp_kinematic_point* point_
+                                    , const int& row);
 
     };
 
