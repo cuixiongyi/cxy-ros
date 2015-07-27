@@ -74,7 +74,6 @@ namespace cxy
             return std::sqrt(pointNKNSquaredDistance[0]);
         }
 
-
         template<typename _Scalar>
         void cxy_icp_kinematic_point<_Scalar>::computePointResidual(const int& rows, MatrixX1& res)
         {

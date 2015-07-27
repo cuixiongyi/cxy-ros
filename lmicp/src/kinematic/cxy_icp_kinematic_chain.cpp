@@ -74,14 +74,15 @@ namespace cxy
                 residual.resize(rows, 1);
             }
 
-            for (int ii = 0; ii < config_->getModelPointNum(); ++ii)
+            int row = 0;
+            for (int ii = 0; ii < points_.size(); ++ii)
             {
                 /*
                  * TODO add other jacobian residual
                  */
 
-                (*points_[ii])->computePointResidual();
-                residual(ii) = (*points_[ii])->point_resdual1_;
+                row = ii*config_->n_num_;
+                (*points_[ii])->computePointResidual(row, residual);
             }
 
         }
@@ -97,10 +98,12 @@ namespace cxy
                 jacobian.resize(rows, cols);
             }
 
-            for (int ii = 0; ii < points_->size(); ++ii)
+            int row = 0;
+            for (int ii = 0; ii < points_.size(); ++ii)
             {
+                row = ii*config_->n_num_;
+                (*points_[ii])->computePointJacobian(row, jacobian);
 
-                jacobian(ii) = (*points_[ii])->point_resdual1_;
             }
 
         }
