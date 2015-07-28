@@ -56,7 +56,7 @@
 namespace cxy
 {
 
-	class cxy_config : public serialization
+	class cxy_config
 	{
 
 	public:
@@ -67,15 +67,17 @@ namespace cxy
 		cxy_config();
 		~cxy_config();
 
-        void parseJoints();
+        //cxy_config& operator=(const cxy_config&) = delete;
+        //cxy_config(const cxy_config&) = delete;
+        static void parseJoints();
 
-        cxy_transform::Axis parseJointType(const std::string&);
+        static cxy_transform::Axis parseJointType(const std::string&);
 
         static std::shared_ptr<const cxy_config> getConfig();
 
 		virtual void serialize();
 
-		virtual void unserialize();
+		static void unserialize();
 
 
         //std::shared_ptr<cxy_lmicp_lib::cxy_icp_kinematic<float>> kinematic_ptr_;
@@ -120,7 +122,30 @@ namespace cxy
 
     private:
         mutable int model_Point_num = {0};
+        static std::ifstream fin_;
 
 
+        static bool getline(std::istream& is, std::string& line, int8_t& lineStatus)
+        {
+            lineStatus = 0;
+
+            bool result = std::getline(is, line);
+            if (false == result)
+            {
+                lineStatus = -1;
+                return false;
+            }
+            if (line.find("#") != std::string::npos)
+            {
+                lineStatus = -2;
+                return true;
+            }
+            if ("" == line)
+            {
+                lineStatus = -2;
+                return true;
+            }
+            return true;
+        }
     };
 }

@@ -5,13 +5,14 @@ namespace cxy
 namespace cxy_lmicp_lib
 {
     template<typename _Scalar>
-    cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config* const config_ptr)
+    cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config* config_ptr)
     : config_(config_ptr)
     {
         kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
         std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
 
     }
+
 
     template<typename _Scalar>
     void cxy_icp_kinematic<_Scalar>::computeResidual(const MatrixX1& x, MatrixX1& res)

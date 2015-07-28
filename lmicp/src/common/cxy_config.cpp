@@ -3,7 +3,7 @@
 
 namespace cxy
 {
-     std::string cxy_config::filename_ = {""};
+     std::string cxy_config::filename_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/include/common/config"};
       bool cxy_config::isOpen_ = {false};
       int cxy_config::joint_number_ = {0};
       std::vector<cxy_joint_info> cxy_config::joint_config_;
@@ -22,12 +22,11 @@ namespace cxy
 
       bool cxy_config::with_push_jacobian = {false};
       float cxy_config::push_jacobian_weight = {10};
+     std::ifstream cxy_config::fin_;
 
 
-	cxy_config::cxy_config() :
-					serialization(filename_)
+	cxy_config::cxy_config()
 		{
-            unserialize();
             //kinematic_ptr_ = std::make_shared<cxy_lmicp_lib::cxy_icp_kinematic<float>>(this);
         };
 	cxy_config::~cxy_config()
@@ -45,7 +44,7 @@ namespace cxy
         return std::make_shared<const cxy_config>();
     }
 
-    void cxy_config::unserialize()
+    void cxy_config::unserialize() 
 	{
         if (isOpen_)
             return;
@@ -57,7 +56,7 @@ namespace cxy
 			throw std::runtime_error("open file fail");
 		std::string line;
         int8_t lineStatus = 0;
-		while (this->getline(fin_, line, lineStatus))
+		while (getline(fin_, line, lineStatus))
 		{
             if (-2 == lineStatus)
             {
@@ -116,7 +115,7 @@ namespace cxy
         int jointParaIdxCount = 0;
         for (int ii = 0; ii < joint_number_; ++ii)
         {
-            if ( ! this->getline(fin_, line, lineStatus))
+            if ( ! getline(fin_, line, lineStatus))
                 throw std::runtime_error("config file incomplete, no joint info found");
             if ( -2 == lineStatus)
             {
@@ -155,7 +154,7 @@ namespace cxy
             // the second line
             while (1)
             {
-                if (!this->getline(fin_, line, lineStatus))
+                if (!getline(fin_, line, lineStatus))
                     throw std::runtime_error("config file incomplete, no joint info found");
 
                 if (0 == lineStatus)

@@ -89,8 +89,10 @@ catkin_package(
 #target_link_libraries(lmicp_exe ${catkin_LIBRARIES} cxy_tracking_lib)
 #target_link_libraries(icp_main ${catkin_LIBRARIES} cxy_tracking_lib)
 #target_link_libraries(main_exe ${catkin_LIBRARIES} cxy_tracking_lib)
-add_executable(main_new src/app/main_new.cpp)
-target_link_libraries(main_new ${catkin_LIBRARIES} cxy_tracking_lib)
+add_executable(transform_test src/app/transform_test.cpp)
+target_link_libraries(transform_test ${catkin_LIBRARIES} cxy_tracking_lib)
+add_executable(new_icp src/app/new_icp.cpp)
+target_link_libraries(new_icp ${catkin_LIBRARIES} cxy_tracking_lib)
 
 
 

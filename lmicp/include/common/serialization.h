@@ -19,8 +19,8 @@ namespace cxy
 			}
 		virtual ~serialization() {};
 
-		virtual void serialize() = 0;
-		virtual void unserialize() = 0;
+		virtual void serialize() const = 0 ;
+		virtual void unserialize() const = 0 ;
 
         /**
          * getline function return what the line is about
@@ -54,6 +54,6 @@ namespace cxy
 		std::string filename_;
 
 	protected:
-		std::ifstream fin_;
+		mutable std::ifstream fin_;
 	};
 }
