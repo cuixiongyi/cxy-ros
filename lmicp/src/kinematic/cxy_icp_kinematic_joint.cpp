@@ -9,6 +9,11 @@ namespace cxy
 	{
 
         template<typename _Scalar>
+        std::vector<std::vector<int >> cxy_icp_kinematic_joint<_Scalar>::jointRelationList_;
+        template<typename _Scalar>
+        Eigen::Matrix< std::int8_t , Eigen::Dynamic, Eigen::Dynamic> cxy_icp_kinematic_joint<_Scalar>::jointRelationMatrix_;
+
+        template<typename _Scalar>
         cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint(const cxy_config* const config_ptr
                                                                   , const int& joint_idx
                                                                   , const cxy_icp_kinematic_chain<_Scalar>* kc_ptr)

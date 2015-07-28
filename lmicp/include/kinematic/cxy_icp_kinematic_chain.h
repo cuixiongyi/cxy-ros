@@ -15,7 +15,7 @@
 
 
 // hack.hpp should not appear at last
-#include "common/hack.hpp"
+//#include "common/hack.hpp"
 #include "utility/cxy_transform.h"
 #include "utility/cxy_sync.h"
 #include "common/cxy_debug.h"

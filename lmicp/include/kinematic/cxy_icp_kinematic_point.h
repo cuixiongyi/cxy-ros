@@ -37,7 +37,7 @@ namespace cxy
                                     , const cxy_icp_kinematic_joint<_Scalar>* const
                                     , const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_);
 
-            ~cxy_icp_kinematic_point();
+            ~cxy_icp_kinematic_point() {};
 
             cxy_icp_kinematic_point(const cxy_icp_kinematic_point&) = delete;
             cxy_icp_kinematic_point& operator=(const cxy_icp_kinematic_point&) = delete;
