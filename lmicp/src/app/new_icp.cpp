@@ -14,7 +14,10 @@ int main(int argc, char const *argv[])
     std::shared_ptr<const cxy::cxy_config> config_ptr = cxy::cxy_config::getConfig();
     cxy::cxy_config::unserialize();
     cxy::cxy_lmicp_lib::cxy_icp_kinematic<float> kin(config_ptr.get());
-
+    cxy::cxy_lmicp_lib::cxy_icp_kinematic<float> kin_data(config_ptr.get());
+    Eigen::Matrix< float, Eigen::Dynamic, 1> x;
+    x.resize(config_ptr->joint_number_);
+    kin_data.updateJointModel(x);
 
     return 0;
 }

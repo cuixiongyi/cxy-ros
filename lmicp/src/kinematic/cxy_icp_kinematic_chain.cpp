@@ -27,14 +27,14 @@ namespace cxy
         void cxy_icp_kinematic_chain<_Scalar>::updateJoints()
         {
             // assuming x_ has been updated
+            // setJointPara has been called
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
 
                 if (syc_tryUpdateJointList(ii))
                 {
                     cxy_transform::Pose<_Scalar> tmp;
-                    cxy_transform::Pose<_Scalar> tmp_parent;
-                    getKinematicPose2World(ii, tmp, tmp_parent);
+                    getKinematicPose2World(ii, tmp);
 
                     syc_setJointUptoDate(ii, tmp);
                 }
@@ -119,15 +119,15 @@ namespace cxy
             }
             return false;
         }
+/*
 
-        /*
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelCloud_World()
         {
             CXY_ASSERT(1);
-            CXY_ASSERT(x.rows() == config_->joint_number_);
+            CXY_ASSERT(x_.rows() == config_->joint_number_);
             unsigned int pointCloudSize = 0;
-            for (int ii = 0; ii < x.rows(); ++ii)
+            for (int ii = 0; ii < x_.rows(); ++ii)
             {
                 pointCloudSize += joints_[ii]->getModelCloud()->size();
 
@@ -155,8 +155,7 @@ namespace cxy
         template<typename _Scalar>
         pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
                                            const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent )
+                                          , cxy_transform::Pose<_Scalar>& pose)
         {
 
             //cxy_transform::Pose<_Scalar> pose_world;
@@ -168,31 +167,20 @@ namespace cxy
             return transCloud;
         }
 
+*/
 
-        template<typename _Scalar>
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getOneModelCloud_World(
-                                          const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose)
-                                        
-        {
-            cxy_transform::Pose<_Scalar> pose_parent;
-            return getOneModelCloud_World(x, joint, pose, pose_parent);
-        }
-
-        */
 
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getKinematicPose2World(
                                             const int& joint
-                                            , cxy_transform::Pose<_Scalar>& pose
-                                            , cxy_transform::Pose<_Scalar>& pose_parent)
-        {
+                                            , cxy_transform::Pose<_Scalar>& pose)
 
+        {
+            cxy_transform::Pose<_Scalar> pose_parent;
             if (syc_isJointUptoDate(joint))
             {
                 pose = joints_[joint]->getPose();
-                pose_parent = cxy_transform::Pose<_Scalar>();
                 return ;
             }
 
@@ -207,23 +195,26 @@ namespace cxy
                     pose.t()(0) = x_(0);
                     pose.t()(1) = x_(1);
                     pose.t()(2) = x_(2);
+
                 }
                 else if (cxy_transform::Axis::X_axis_rotation == jointType || cxy_transform::Axis::Y_axis_rotation == jointType || cxy_transform::Axis::Z_axis_rotation == jointType )
                 {
+                    pose = cxy_transform::Pose<_Scalar>();
                     pose.rotateByAxis(jointType, Deg2Rad(x_(0)));
 
+
                 }
-                pose_parent = cxy_transform::Pose<_Scalar>();
+
                 return;
             }
             else
             {
 
-                getKinematicPose2World(joints_[joint]->getParent(), pose, pose_parent);
+                getKinematicPose2World(joints_[joint]->getParent(), pose_parent);
             }
 
             cxy_transform::Pose<_Scalar> pose_fix = joints_[joint]->getOriginPose();
-            pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(cxy_config::jointParaIdx_[joint]), pose);
+            pose = pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(cxy_config::jointParaIdx_[joint]), pose_parent);
 
             return;
         }

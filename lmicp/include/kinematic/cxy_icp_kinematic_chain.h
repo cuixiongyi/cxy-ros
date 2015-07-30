@@ -54,18 +54,12 @@ namespace cxy
             pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World() {};
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
-                                             const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent ) {};
-
-            pcl::PointCloud<pcl::PointXYZ>::Ptr getOneModelCloud_World(
                                           const int& joint
                                           , cxy_transform::Pose<_Scalar>& pose) {};
 
 
             void getKinematicPose2World( const int& joint
-                                          , cxy_transform::Pose<_Scalar>& pose
-                                          , cxy_transform::Pose<_Scalar>& pose_parent);
+                                          , cxy_transform::Pose<_Scalar>& pose);
 
             inline const int size() { return config_->joint_number_; }
 
