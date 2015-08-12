@@ -52,6 +52,7 @@ include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_
 
 add_library(cxy_tracking_lib
                 include/utility/cxy_transform.h                 src/utility/cxy_transform.cpp
+                include/utility/cxy_CAD_helper.h                 src/utility/cxy_CAD_helper.cpp
                 include/utility/cxy_sync.h                      src/utility/cxy_sync.cpp
                 include/common/cxy_config.h                     src/common/cxy_config.cpp
 #                include/common/hack.hpp
