@@ -45,11 +45,11 @@ namespace cxy
             const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_;
             const int joint_idx_;
             _Scalar* theta_;
-            int DoF_;
+            const int DoF_;
 
             cxy_joint_info joint_info_;
             cxy_transform::Pose<_Scalar> pose_;
-            cxy_transform::Pose<_Scalar> originPose_;
+            const cxy_transform::Pose<_Scalar> originPose_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
 

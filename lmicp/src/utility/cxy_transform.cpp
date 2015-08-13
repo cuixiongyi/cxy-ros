@@ -15,13 +15,31 @@ namespace cxy_transform
 	Pose<_Scalar>:: Pose(int a) : t_(0.0, 0.0, 0.0), q_(1.0, 0.0, 0.0, 0.0), bhasNormalized_(false) {}
 
     template <typename _Scalar>
+    Pose<_Scalar>:: Pose(const _Scalar& tx
+                         , const _Scalar& ty
+                         , const _Scalar& tz
+                         , const _Scalar& rx
+                         , const _Scalar& ry
+                         , const _Scalar& rz)
+    {
+
+            t_(0) = tx;
+            t_(1) = ty;
+            t_(2) = tz;
+            rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(rx));
+            rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(ry));
+            rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(rz));
+
+    }
+
+    template <typename _Scalar>
 	Pose<_Scalar>:: ~Pose() {};
 
 
 
 
     template <typename _Scalar>
-	void Pose<_Scalar>::rotateByAxis(Axis axis, const _Scalar & degree, Quaternoin& q_out)
+	void Pose<_Scalar>::rotateByAxis(const Axis& axis, const _Scalar & degree, Quaternoin& q_out)
 	{
 		q_out.x() = 0.0;
 		q_out.y() = 0.0;
@@ -59,7 +77,7 @@ namespace cxy_transform
 
 
     template <typename _Scalar>
-	void Pose<_Scalar>:: rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in)
+	void Pose<_Scalar>:: rotateByAxis(Axis axis, const _Scalar & degree)
 	{
 		
 		Quaternoin q1(q_);
@@ -70,42 +88,21 @@ namespace cxy_transform
 		q_.x() = q1.w()*q2.x() + q2.w()*q1.x() + q1.y()*q2.z() - q1.z()*q2.y();
 		q_.y() = q1.w()*q2.y() + q2.w()*q1.y() + q1.z()*q2.x() - q1.x()*q2.z();
 		q_.z() = q1.w()*q2.z() + q2.w()*q1.z() + q1.x()*q2.y() - q1.y()*q2.x();
-		q_.normalize();
-        Vector tmp;
-        composePoint(t_in, tmp);
-        this->t() = tmp;
+		normalize();
+        //Vector tmp;
+        //composePoint(t_in, tmp);
+        //this->t() = tmp;
 	}
 
-    // the pose call this function must be the fix transformtion in the model
-    template <typename _Scalar>
-    Pose<_Scalar> Pose<_Scalar>::rotatefromFix(const Axis & axis, _Scalar & degree, const Pose& p_parent)
-    {
-
-        Pose<_Scalar> parent_fix;
-        Pose<_Scalar> theta;
-        Pose<_Scalar> parent_fix_theta;
-
-        // parent*fix
-        p_parent.composePose(*this, parent_fix);
-
-        // rotate theta pose
-        theta = rotateByAxis_fromIdentity(axis, degree);
-
-        // (parent*fix) * theta
-        parent_fix.composePose(theta, parent_fix_theta);
-
-        return  parent_fix_theta;
-
-    }
 
 
     //: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
     template <typename _Scalar>
-    Pose<_Scalar> Pose<_Scalar>::rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org)
+    Pose<_Scalar> Pose<_Scalar>::rotateByAxis_fromIdentity(const Axis & axis, const _Scalar & degree)
     {
         Pose pose;
 
-        Quaternoin q1(p_org.q());
+        Quaternoin q1(1.0, 0.0, 0.0, 0.0);
         Quaternoin q2;
 
 		rotateByAxis(axis, degree, q2);

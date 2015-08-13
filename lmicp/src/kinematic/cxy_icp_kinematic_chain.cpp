@@ -181,17 +181,17 @@ namespace cxy
                                             , cxy_transform::Pose<_Scalar>& pose)
 
         {
-            cxy_transform::Pose<_Scalar> pose_parent;
             if (syc_isJointUptoDate(joint))
             {
                 pose = joints_[joint]->getPose();
                 return ;
             }
-            const _Scalar* x {joints_[joint]->getTheta()};
+            cxy_transform::Pose<_Scalar> pose_parent;
+            const _Scalar* const& x {joints_[joint]->getTheta()};
+            const cxy_transform::Axis jointType = joints_[joint]->getJointType();
 
             if ( -1 == joints_[joint]->getParent())
             {
-                const cxy_transform::Axis jointType = joints_[joint]->getJointType();
                 if (cxy_transform::Axis::Six_DoF == jointType)
                 {
                     pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x[3]));
@@ -214,12 +214,18 @@ namespace cxy
             }
             else
             {
-
+                while ( ! syc_isJointUptoDate(joints_[joint]->getParent()))
+                {
+                    std::this_thread::yield();
+                }
                 getKinematicPose2World(joints_[joint]->getParent(), pose_parent);
             }
 
-            cxy_transform::Pose<_Scalar> pose_fix = joints_[joint]->getOriginPose();
-            pose = pose_fix.rotatefromFix(joints_[joint]->getJointType(), x[0], pose_parent);
+            const cxy_transform::Pose<_Scalar>& pose_fix = joints_[joint]->getOriginPose();
+            cxy_transform::Pose<_Scalar> tmp;
+            pose_parent.composePose(pose_fix, tmp);
+            tmp.composePose(cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(jointType, Deg2Rad(x[0])), pose);
+
 
             return;
         }

@@ -20,6 +20,8 @@ namespace cxy
             , kc_ptr_(kc_ptr)
             , joint_idx_(joint_idx)
             , DoF_(joint_info_.DoF)
+            , originPose_(joint_info_.t[0], joint_info_.t[1], joint_info_.t[2]
+                          , joint_info_.r[0], joint_info_.r[1], joint_info_.r[2])
         {
             theta_ = new _Scalar [DoF_];
         }

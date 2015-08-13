@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>

@@ -46,19 +46,25 @@ enum Axis : uint8_t
 		// a doesn't matter
 		Pose(int a);
 
+		Pose(const _Scalar& tx
+			, const _Scalar& ty
+			, const _Scalar& tz
+			, const _Scalar& rx
+			, const _Scalar& ry
+			, const _Scalar& rz);
+
+
 		~Pose();
 
 		//: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
 		//
-		void rotateByAxis(Axis axis, const _Scalar & degree, const Vector& t_in = Eigen::Matrix<_Scalar, 3, 1>(0.0,0.0,0.0));
+		void rotateByAxis(Axis axis, const _Scalar & degree);
 
-		static void rotateByAxis(Axis axis, const _Scalar & degree, Quaternoin& q_out);
-
-        Pose<_Scalar> rotatefromFix(const Axis & axis, _Scalar & degree, const Pose& p_parent);
+		static void rotateByAxis(const Axis& axis, const _Scalar & degree, Quaternoin& q_out);
 
 
         //: The inpute takes the rotating axis and the angle in radian (!!!!! no degree)
-        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, _Scalar & degree, const Pose& p_org = Pose());
+        static Pose<_Scalar> rotateByAxis_fromIdentity(const Axis & axis, const _Scalar & degree);
 
 
 
