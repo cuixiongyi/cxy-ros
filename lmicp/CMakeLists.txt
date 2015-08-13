@@ -18,7 +18,7 @@ else()
 endif()
 add_definitions(-DCXY_JACO_TYPE_FITTING)
 
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
 #find_package(Eigen3 REQUIRED)
@@ -28,9 +28,11 @@ find_package(Boost REQUIRED)
 find_package(catkin REQUIRED COMPONENTS roscpp
                                         rospy
                                         roslib
+                                        std_msgs
                                         geometry_msgs
                                         sensor_msgs
-                                        std_msgs
+                                        shape_msgs
+                                        geometric_shapes
                                         pcl_ros
                                         )
 
@@ -43,8 +45,8 @@ find_package(catkin REQUIRED COMPONENTS roscpp
 # ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
 # TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
-include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
-
+include_directories(include ${PCL_INCLUDE_DIRS}  ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
+#${OpenCV_INCLUDE_DIRS}
 
 #link_directories(${PCL_LIBRARY_DIRS})
 #add_definitions(${PCL_DEFINITIONS})
@@ -74,15 +76,16 @@ add_library(cxy_tracking_lib
 )
 
 
-target_link_libraries(cxy_tracking_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
 
 catkin_package(
    INCLUDE_DIRS include
    LIBRARIES cxy_tracking_lib
-   CATKIN_DEPENDS roscpp std_msgs   
-   DEPENDS opencv  
+   CATKIN_DEPENDS roscpp std_msgs   geometry_msgs sensor_msgs shape_msgs geometric_shapes
+   #DEPENDS opencv
 )
+
+target_link_libraries(cxy_tracking_lib  ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
 #add_executable(icp_main src/app/icp_main.cpp)
 #add_executable(lmicp_exe src/app/lmicp.cpp)

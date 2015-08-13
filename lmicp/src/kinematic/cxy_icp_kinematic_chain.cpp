@@ -17,20 +17,24 @@ namespace cxy
 
         }
 
-        template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::setJointPara(const MatrixX1& x)
-        {
-            x_ = x;
-        }
+
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::updateJoints()
+        void cxy_icp_kinematic_chain<_Scalar>::updateJoints(const MatrixX1& x)
         {
+            CXY_ASSERT(x.rows() == cxy_config::joint_DoFs);
+
+            x_ = x;
+
             // assuming x_ has been updated
             // setJointPara has been called
-            for (int ii = 0; ii < config_->joint_number_; ++ii)
+            int jtmp = 0;
+            for (int ii = 0; ii < cxy_config::joint_DoFs; )
             {
-
+                joints_[jtmp]->setTheta(x.data() + ii);
+            }
+            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+            {
                 if (syc_tryUpdateJointList(ii))
                 {
                     cxy_transform::Pose<_Scalar> tmp;
@@ -183,24 +187,25 @@ namespace cxy
                 pose = joints_[joint]->getPose();
                 return ;
             }
+            const _Scalar* x {joints_[joint]->getTheta()};
 
             if ( -1 == joints_[joint]->getParent())
             {
                 const cxy_transform::Axis jointType = joints_[joint]->getJointType();
                 if (cxy_transform::Axis::Six_DoF == jointType)
                 {
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x_(3)));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x_(4)));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x_(5)));
-                    pose.t()(0) = x_(0);
-                    pose.t()(1) = x_(1);
-                    pose.t()(2) = x_(2);
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x[3]));
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x[4]));
+                    pose.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x[5]));
+                    pose.t()(0) = x[0];
+                    pose.t()(1) = x[1];
+                    pose.t()(2) = x[2];
 
                 }
                 else if (cxy_transform::Axis::X_axis_rotation == jointType || cxy_transform::Axis::Y_axis_rotation == jointType || cxy_transform::Axis::Z_axis_rotation == jointType )
                 {
                     pose = cxy_transform::Pose<_Scalar>();
-                    pose.rotateByAxis(jointType, Deg2Rad(x_(0)));
+                    pose.rotateByAxis(jointType, Deg2Rad(x[0]));
 
 
                 }
@@ -214,7 +219,7 @@ namespace cxy
             }
 
             cxy_transform::Pose<_Scalar> pose_fix = joints_[joint]->getOriginPose();
-            pose = pose_fix.rotatefromFix(joints_[joint]->getJointType(), x_(cxy_config::jointParaIdx_[joint]), pose_parent);
+            pose = pose_fix.rotatefromFix(joints_[joint]->getJointType(), x[0], pose_parent);
 
             return;
         }

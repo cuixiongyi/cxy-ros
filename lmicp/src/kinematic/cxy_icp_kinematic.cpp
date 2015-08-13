@@ -56,13 +56,12 @@ namespace cxy_lmicp_lib
     template<typename _Scalar>
     void cxy_icp_kinematic<_Scalar>::updateJointModel(const MatrixX1& joint_para)
     {
-        kc_->setJointPara(joint_para);
-        kc_->updateJoints();
+        CXY_ASSERT(joint_para.rows() == cxy_config::joint_DoFs);
+        kc_->updateJoints(joint_para);
 
         /*
          * TODO update CAD model and get visible points on each joint
          * TODO pointJointIdx_ also need to be assigned
-
          */
         int point_num = 1;
         config_->setModelPointNum(point_num);

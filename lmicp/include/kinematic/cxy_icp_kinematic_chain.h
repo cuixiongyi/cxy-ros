@@ -40,11 +40,9 @@ namespace cxy
             cxy_icp_kinematic_chain(const cxy_config* const);
             ~cxy_icp_kinematic_chain();
 
-            void updateJoints();
+            void updateJoints(const MatrixX1&);
 
             void updateModelPoints();
-
-            void setJointPara(const MatrixX1&);
 
             void constructKinematicChain();
 

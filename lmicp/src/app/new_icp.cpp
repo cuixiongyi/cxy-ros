@@ -8,8 +8,11 @@
 
 
 
-int main(int argc, char const *argv[])
+int main(int argc, char  *argv[])
 {
+    ros::init(argc, argv, "my_node_name");
+    ros::NodeHandle nh;
+
 	//cxy::config("common/config");
     std::shared_ptr<const cxy::cxy_config> config_ptr = cxy::cxy_config::getConfig();
     cxy::cxy_config::unserialize();
