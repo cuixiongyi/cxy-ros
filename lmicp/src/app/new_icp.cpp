@@ -7,6 +7,7 @@
 #include "kinematic/cxy_icp_kinematic.h"
 
 
+using namespace cxy;
 
 int main(int argc, char  *argv[])
 {
@@ -19,7 +20,8 @@ int main(int argc, char  *argv[])
     cxy::cxy_lmicp_lib::cxy_icp_kinematic<float> kin(config_ptr.get());
     cxy::cxy_lmicp_lib::cxy_icp_kinematic<float> kin_data(config_ptr.get());
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
-    x.resize(config_ptr->joint_number_);
+    x.resize(cxy_config::joint_DoFs);
+    x.setZero();
     kin_data.updateJointModel(x);
 
     return 0;

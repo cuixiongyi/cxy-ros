@@ -22,6 +22,7 @@
 #include "common/cxy_debug.h"
 #include "common/cxy_common.h"
 #include "common/cxy_config.h"
+#include "utility/cxy_modelCloud_engin.h"
 
 #include "kinematic/cxy_icp_kinematic_joint.h"
 #include "kinematic/cxy_icp_kinematic_point.h"
@@ -71,6 +72,7 @@ namespace cxy
 
             std::mutex kinematic_chain_lock;
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
+            std::vector<std::shared_ptr<cxy_modelCloud_engin>> modelCloud_engin_;
             cxy_sync jointTime;
             MatrixX1 x_;
 

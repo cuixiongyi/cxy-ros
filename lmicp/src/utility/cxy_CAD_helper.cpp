@@ -9,10 +9,9 @@ namespace cxy
         this->sample_type = sample_type;
     }
 
-    cxy_CAD_helper::cxy_CAD_helper(ros::NodeHandle node_handle, ros::NodeHandle private_node_handle)
+    cxy_CAD_helper::cxy_CAD_helper()
     {
-        nh_ = node_handle;
-        pnh_ = private_node_handle;
+
     }
 
     cxy_CAD_helper::~cxy_CAD_helper()
@@ -21,7 +20,7 @@ namespace cxy
     }
 
 
-    bool cxy_CAD_helper::meshToPointCloud(std::string &filename_model,
+    bool cxy_CAD_helper::meshToPointCloud(const std::string &filename_model,
             pcl::PointCloud<pcl::PointXYZ> &cloud_out,
             pcl::PointCloud<pcl::PointXYZ> &normals,
             const SamplingParams &params)

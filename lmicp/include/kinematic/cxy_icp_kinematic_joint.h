@@ -37,6 +37,7 @@ namespace cxy
             cxy_icp_kinematic_joint(const cxy_config* const, const int&, const cxy_icp_kinematic_chain<_Scalar>*);
             ~cxy_icp_kinematic_joint();
                 void init();
+            const cxy_joint_info joint_info_;
 
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
@@ -47,11 +48,12 @@ namespace cxy
             _Scalar* theta_;
             const int DoF_;
 
-            cxy_joint_info joint_info_;
             cxy_transform::Pose<_Scalar> pose_;
             const cxy_transform::Pose<_Scalar> originPose_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
+            cxy_icp_kinematic_joint* pParent_;
+            std::vector<cxy_icp_kinematic_joint*> pChild_;
 
         /// inline function
         public:

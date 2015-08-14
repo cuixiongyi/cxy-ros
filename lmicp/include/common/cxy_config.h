@@ -147,5 +147,7 @@ namespace cxy
             }
             return true;
         }
+    public:
+        static const std::string rviz_frame_name_ {"icp"};
     };
 }

@@ -175,7 +175,7 @@ namespace cxy_transform
 	}
 
     template <typename _Scalar>
-	void Pose<_Scalar>:: composePoint(const pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_cloud) const
+	void Pose<_Scalar>:: composePoint(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_cloud) const
 	{
 		if ( nullptr == in_cloud)
 		{
@@ -200,17 +200,40 @@ namespace cxy_transform
 	}
 
     template <typename _Scalar>
+    void Pose<_Scalar>::composeDirectionVector(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_Cloud, const pcl::PointCloud<pcl::PointXYZ>::Ptr& out_Cloud) const
+    {
+        if ( nullptr == in_Cloud)
+        {
+            ROS_INFO("error Pose::composePoint empty input");
+            return;
+        }
+        out_Cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
+        out_Cloud->reserve(in_Cloud->size());
+
+        for (int ii = 0; ii < in_Cloud->size(); ++ii)
+        {
+            Vector v1(in_Cloud->points[ii].x, in_Cloud->points[ii].y, in_Cloud->points[ii].z);
+            Vector v2;
+            composeDirectionVector(v1, v2);
+            out_Cloud->push_back(pcl::PointXYZ(v2(0), v2(1), v2(3)));
+        }
+        return;
+    }
+
+
+    template <typename _Scalar>
 	void Pose<_Scalar>:: composeDirectionVector(const Vector& in_p, Vector& out_p) const
-			{
-				if ( ! bhasNormalized_)
-				{
-					normalize();
-				}
-				out_p(0) = in_p(0) + 2*(-(q_.y()*q_.y()+q_.z()*q_.z())*in_p(0) + (q_.x()*q_.y()-q_.w()*q_.z())*in_p(1) + (q_.w()*q_.y()+q_.x()*q_.z())*in_p(2));
-				out_p(1) = in_p(1) + 2*((q_.w()*q_.z()+q_.x()*q_.y())*in_p(0) - (q_.x()*q_.x()+q_.z()*q_.z())*in_p(1) + (q_.y()*q_.z()-q_.w()*q_.x())*in_p(2));
-				out_p(2) = in_p(2) + 2*((q_.x()*q_.z()-q_.w()*q_.y())*in_p(0) + (q_.w()*q_.x()+q_.y()*q_.z())*in_p(1) - (q_.x()*q_.x()+q_.y()*q_.y())*in_p(2));
-				
-			}
+    {
+        if ( ! bhasNormalized_)
+        {
+            normalize();
+        }
+        out_p(0) = in_p(0) + 2*(-(q_.y()*q_.y()+q_.z()*q_.z())*in_p(0) + (q_.x()*q_.y()-q_.w()*q_.z())*in_p(1) + (q_.w()*q_.y()+q_.x()*q_.z())*in_p(2));
+        out_p(1) = in_p(1) + 2*((q_.w()*q_.z()+q_.x()*q_.y())*in_p(0) - (q_.x()*q_.x()+q_.z()*q_.z())*in_p(1) + (q_.y()*q_.z()-q_.w()*q_.x())*in_p(2));
+        out_p(2) = in_p(2) + 2*((q_.x()*q_.z()-q_.w()*q_.y())*in_p(0) + (q_.w()*q_.x()+q_.y()*q_.z())*in_p(1) - (q_.x()*q_.x()+q_.y()*q_.y())*in_p(2));
+
+    }
+
     template <typename _Scalar>
 	void Pose<_Scalar>:: inverseComposePoint(const Vector& in_p, Vector &out_p) const
 	{

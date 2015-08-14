@@ -41,6 +41,7 @@ namespace cxy
                     getKinematicPose2World(ii, tmp);
 
                     syc_setJointUptoDate(ii, tmp);
+
                 }
 
             }
@@ -61,7 +62,7 @@ namespace cxy
                  */
                 points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
                 points_[ii]->modelPoint_global_ = (*modelCloud_)[ii];
-
+                
 
 
             }
@@ -246,12 +247,23 @@ namespace cxy
         {
             joints_.reserve(config_->joint_number_);
             joint_sync_list.reserve(config_->joint_number_);
+            modelCloud_engin_.reserve(config_->joint_number_);
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
                 joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii, this));
                 joints_[ii]->init();
                 joint_sync_list.push_back(Update_Status::NotUptoDate);
             }
+
+            // Set child list for each joint
+
+            // set modelCloud for each joint
+            for (int ii = 0; ii < config_->joint_number_; ++ii)
+            {
+                modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename));
+            }
+
+            //
         }
 
         template<typename _Scalar>

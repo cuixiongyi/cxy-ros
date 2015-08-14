@@ -34,7 +34,6 @@ namespace cxy
     class cxy_CAD_helper
     {
     protected:
-        ros::NodeHandle             nh_, pnh_;
 
         void shapeToPointCloud(shapes::Mesh &shape
                                , sensor_msgs::PointCloud &cloud
@@ -52,11 +51,11 @@ namespace cxy
 
 
     public:
-        cxy_CAD_helper(ros::NodeHandle node_handle, ros::NodeHandle private_node_handle);
+        cxy_CAD_helper();
         ~cxy_CAD_helper();
 
 
-        bool meshToPointCloud(std::string &filename_model,
+        bool meshToPointCloud(const std::string &filename_model,
                 pcl::PointCloud<pcl::PointXYZ> &cloud_out,
                 pcl::PointCloud<pcl::PointXYZ> &normals,
                 const SamplingParams &params);
