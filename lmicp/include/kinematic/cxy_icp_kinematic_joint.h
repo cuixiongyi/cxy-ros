@@ -38,7 +38,8 @@ namespace cxy
             ~cxy_icp_kinematic_joint();
                 void init();
             const cxy_joint_info joint_info_;
-
+            void setChildList(const std::vector<const cxy_icp_kinematic_joint*>&);
+            void setParent(const cxy_icp_kinematic_joint* );
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
 		private:
@@ -52,8 +53,8 @@ namespace cxy
             const cxy_transform::Pose<_Scalar> originPose_;
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 
-            cxy_icp_kinematic_joint* pParent_;
-            std::vector<cxy_icp_kinematic_joint*> pChild_;
+            const cxy_icp_kinematic_joint* pParent_;
+            std::vector<const cxy_icp_kinematic_joint*> pChildList_;
 
         /// inline function
         public:
@@ -68,16 +69,10 @@ namespace cxy
             inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return modelCloud_;}
             inline void setTheta(const _Scalar* p) { std::memcpy(theta_, p, sizeof(_Scalar)*DoF_);};
             inline const _Scalar* getTheta() { return theta_;};
-            /*
-             * jointRelationList_ recored list of parent
-             * [ii][0] is joint ii's immediate parent
-             */
-            static std::vector<std::vector<int >> jointRelationList_;
+
             /*
              * query about what's relation between joint a and b
              */
-            static void updateJointRelation();
-            static const std::vector<int >& getJointRelationList(const int&);
 
 
         };

@@ -159,7 +159,7 @@ namespace cxy
         {
 
             /*
-             * the 1st element of jointRelationList_ is it self
+             * the 1st element of jointChildList_ is it self
              */
             const std::vector<int>& jointParentList (cxy_icp_kinematic_joint<_Scalar>::getJointRelationList(this->joint_idx_));
             for (int ii = 0; ii < jointParentList.size(); ++ii)

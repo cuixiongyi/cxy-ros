@@ -8,8 +8,6 @@ namespace cxy
 	namespace cxy_lmicp_lib
 	{
 
-        template<typename _Scalar>
-        std::vector<std::vector<int >> cxy_icp_kinematic_joint<_Scalar>::jointRelationList_;
 
         template<typename _Scalar>
         cxy_icp_kinematic_joint<_Scalar>::cxy_icp_kinematic_joint(const cxy_config* const config_ptr
@@ -39,6 +37,22 @@ namespace cxy
 
         }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_joint<_Scalar>::setChildList
+                    (const std::vector<const cxy_icp_kinematic_joint*>& childList)
+        {
+            pChildList_ = childList;
+            return;
+        }
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_joint<_Scalar>:: setParent(const cxy_icp_kinematic_joint* parent)
+        {
+            pParent_ = parent;
+            return;
+        }
+
+
 
 /*
         template<typename _Scalar>
@@ -55,52 +69,6 @@ namespace cxy
 */
 
 
-
-        template<typename _Scalar>
-        void cxy_icp_kinematic_joint<_Scalar>:: updateJointRelation()
-        {
-            jointRelationList_.resize(cxy_config::joint_number_);
-
-            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
-            {
-                /*
-                 * the 1st element of jointRelationList_ is it self
-                 */
-                jointRelationList_[ii].push_back(ii);
-
-            }
-            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
-            {
-                int parent = cxy_config::joint_config_[ii].joint_parent;
-
-                if (-1 == cxy_config::joint_config_[ii].joint_parent)
-                {
-                    jointRelationList_[ii].push_back(-1);
-
-                    continue;
-                }
-
-                jointRelationList_[ii].push_back(parent);
-
-                parent = cxy_config::joint_config_[parent].joint_parent;
-                while (1)
-                {
-                    jointRelationList_[ii].push_back(parent);
-                    if (-1 == parent)
-                        break;
-                    parent = cxy_config::joint_config_[parent].joint_parent;
-
-                }
-            }
-
-            return;
-        }
-
-        template<typename _Scalar>
-        const std::vector<int >& cxy_icp_kinematic_joint<_Scalar>::getJointRelationList(const int& joint)
-        {
-            return jointRelationList_[joint];
-        }
 
 
 

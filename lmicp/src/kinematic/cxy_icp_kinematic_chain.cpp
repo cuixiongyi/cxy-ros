@@ -62,7 +62,7 @@ namespace cxy
                  */
                 points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
                 points_[ii]->modelPoint_global_ = (*modelCloud_)[ii];
-                
+
 
 
             }
@@ -256,7 +256,43 @@ namespace cxy
             }
 
             // Set child list for each joint
+            {
+                std::vector<std::vector<int >> jointChildList;
+                jointChildList.resize(cxy_config::joint_number_);
+                for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+                {
+                    int idx = ii;
+                    int parent = cxy_config::joint_config_[idx].joint_parent;
+                    if (-1 == parent)
+                    {
+                        joints_[ii]->setParent(nullptr);
+                        continue;
+                    }
+                    else
+                    {
+                        joints_[ii]->setParent(joints_[parent].get());
+                    }
+                    while (-1 != parent)
+                    {
+                        jointChildList[parent].push_back(ii);
 
+                        idx = parent;
+                        parent = cxy_config::joint_config_[idx].joint_parent;
+                    }
+
+                }
+                for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+                {
+                    std::vector<const cxy_icp_kinematic_joint*> childList(jointChildList[ii].size());
+                    for (int jj = 0; jj < jointChildList[ii].size(); ++jj)
+                    {
+                        childList[jj] = joints_[jointChildList[ii][jj]].get();
+
+                    }
+                    joints_[ii]->setChildList(childList);
+
+                }
+            }
             // set modelCloud for each joint
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
