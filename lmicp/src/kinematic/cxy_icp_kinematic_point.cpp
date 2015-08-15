@@ -159,14 +159,15 @@ namespace cxy
         {
 
             /*
-             * the 1st element of jointChildList_ is it self
+             * the 1st element of childList is it self
              */
-            const std::vector<int>& jointParentList (cxy_icp_kinematic_joint<_Scalar>::getJointRelationList(this->joint_idx_));
-            for (int ii = 0; ii < jointParentList.size(); ++ii)
+            const std::vector<const cxy_icp_kinematic_joint*>& childList = joint_->getChildList();
+            for (int ii = 0; ii < childList.size(); ++ii)
             {
-                const cxy_icp_kinematic_joint<_Scalar>& joint(kc_ptr_->getJoint(jointParentList[ii]));
+                /// 1st element is the joint it self
+                const cxy_icp_kinematic_joint<_Scalar>* const& joint = childList[ii];
 
-                if (cxy_transform::Axis::Six_DoF == joint.getJointType())
+                if (cxy_transform::Axis::Six_DoF == joint->getJointType())
                     continue;
 
                 Eigen::Matrix< _Scalar, 3, 1> rotation_axis;

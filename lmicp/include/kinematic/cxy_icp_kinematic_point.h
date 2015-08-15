@@ -29,7 +29,9 @@ namespace cxy
         class cxy_icp_kinematic_point
         {
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
-            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXX;
+
+
         public:
             cxy_icp_kinematic_point(const cxy_config* const
                                     , const pcl::KdTreeFLANN<PointT>::Ptr&

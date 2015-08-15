@@ -85,7 +85,7 @@ namespace cxy
 
         static std::string filename_;
         static bool isOpen_ ;
-        static int joint_number_ ;
+        static unsigned int joint_number_ ;
         static std::vector<cxy_joint_info> joint_config_;
 
         static int joint_DoFs ;
@@ -93,6 +93,8 @@ namespace cxy
         // this is the number of jacobian type used
         static constexpr int n_num_ = {CXY_JACO_TYPE_COUNT_FINAL};
 
+        static bool withJacobianEffectChild;
+        static int withJacobianEffectChild_HierarchyMax;
         static bool with_icp_jacobian ;
         static float icp_jaclbian_weight;
 

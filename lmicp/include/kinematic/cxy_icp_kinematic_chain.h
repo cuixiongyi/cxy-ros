@@ -37,7 +37,7 @@ namespace cxy
         {
 
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
-            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXX;
         public:
             cxy_icp_kinematic_chain(const cxy_config* const);
             ~cxy_icp_kinematic_chain();

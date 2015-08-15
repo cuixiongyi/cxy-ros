@@ -86,6 +86,7 @@ namespace cxy
                  * TODO add other jacobian residual
                  */
 
+
                 row = ii*config_->n_num_;
                 points_[ii]->computePointResidual(row, residual);
             }
@@ -191,7 +192,7 @@ namespace cxy
             const _Scalar* const& x {joints_[joint]->getTheta()};
             const cxy_transform::Axis jointType = joints_[joint]->getJointType();
 
-            if ( -1 == joints_[joint]->getParent())
+            if ( -1 == joints_[joint]->getParentIdx())
             {
                 if (cxy_transform::Axis::Six_DoF == jointType)
                 {
@@ -215,11 +216,11 @@ namespace cxy
             }
             else
             {
-                while ( ! syc_isJointUptoDate(joints_[joint]->getParent()))
+                while ( ! syc_isJointUptoDate(joints_[joint]->getParentIdx()))
                 {
                     std::this_thread::yield();
                 }
-                getKinematicPose2World(joints_[joint]->getParent(), pose_parent);
+                getKinematicPose2World(joints_[joint]->getParentIdx(), pose_parent);
             }
 
             const cxy_transform::Pose<_Scalar>& pose_fix = joints_[joint]->getOriginPose();
@@ -250,14 +251,15 @@ namespace cxy
             modelCloud_engin_.reserve(config_->joint_number_);
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
-                joints_.push_back(std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii, this));
+                joints_.push_back(
+                        std::make_shared<cxy_icp_kinematic_joint<_Scalar>>(config_, ii, this));
                 joints_[ii]->init();
                 joint_sync_list.push_back(Update_Status::NotUptoDate);
             }
 
             // Set child list for each joint
             {
-                std::vector<std::vector<int >> jointChildList;
+                std::vector<std::vector<int >> jointChildList {cxy_config::joint_number_};
                 jointChildList.resize(cxy_config::joint_number_);
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {
@@ -266,11 +268,17 @@ namespace cxy
                     if (-1 == parent)
                     {
                         joints_[ii]->setParent(nullptr);
+                        joints_[ii]->setHierarchy(0);
+
                         continue;
                     }
                     else
                     {
                         joints_[ii]->setParent(joints_[parent].get());
+                        /// set Hierarchy for each joint
+                        /// +1 from its parent joint
+                        joints_[ii]->setHierarchy(joints_[parent]->getHierarchy()+1);
+
                     }
                     while (-1 != parent)
                     {
@@ -278,15 +286,22 @@ namespace cxy
 
                         idx = parent;
                         parent = cxy_config::joint_config_[idx].joint_parent;
+
                     }
 
                 }
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {
                     std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList(jointChildList[ii].size());
+                    /*
+                     * setChildList
+                     * ChildList the 1st element is the joint itself
+                     */
+                    childList.push_back(joints_[ii].get());
+
                     for (int jj = 0; jj < jointChildList[ii].size(); ++jj)
                     {
-                        childList[jj] = joints_[jointChildList[ii][jj]].get();
+                        childList.push_back(joints_[jointChildList[ii][jj]].get());
 
                     }
                     joints_[ii]->setChildList(childList);
@@ -298,7 +313,13 @@ namespace cxy
             {
                 modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename));
             }
-
+            /// set Joint Parameter Start Idx
+            int idx = 0;
+            for (int ii = 0; ii < config_->joint_number_; ++ii)
+            {
+                joints_[ii]->setParaStartIdx(idx);
+                idx += joints_[ii]->getNumDoF();
+            }
             //
         }
 

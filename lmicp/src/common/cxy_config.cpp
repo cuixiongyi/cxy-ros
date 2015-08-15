@@ -3,26 +3,28 @@
 
 namespace cxy
 {
-     std::string cxy_config::filename_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/include/common/config"};
-      bool cxy_config::isOpen_ = {false};
-      int cxy_config::joint_number_ = {0};
-      std::vector<cxy_joint_info> cxy_config::joint_config_;
-     std::vector<int> cxy_config::jointParaIdx_;
+    std::string cxy_config::filename_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/include/common/config"};
+    bool cxy_config::isOpen_ = {false};
+    unsigned int cxy_config::joint_number_ = {0};
+    std::vector<cxy_joint_info> cxy_config::joint_config_;
+    std::vector<int> cxy_config::jointParaIdx_;
 
-      int cxy_config::joint_DoFs = {0};
+    int cxy_config::joint_DoFs = {0};
+    bool cxy_config::withJacobianEffectChild = {true};
+    int cxy_config::withJacobianEffectChild_HierarchyMax = {5};
 
-      bool cxy_config::with_icp_jacobian = {true};
-      float cxy_config::icp_jaclbian_weight = {10};
+    bool cxy_config::with_icp_jacobian = {true};
+    float cxy_config::icp_jaclbian_weight = {10};
 
-      bool cxy_config::with_collision_jacobian = {false};
-      float cxy_config::collision_jacobian_weight = {10};
+    bool cxy_config::with_collision_jacobian = {false};
+    float cxy_config::collision_jacobian_weight = {10};
 
-      bool cxy_config::with_silhouette_jacobian = {false};
-      float cxy_config::silhouette_jacobian_weight = {10};
+    bool cxy_config::with_silhouette_jacobian = {false};
+    float cxy_config::silhouette_jacobian_weight = {10};
 
-      bool cxy_config::with_push_jacobian = {false};
-      float cxy_config::push_jacobian_weight = {10};
-     std::ifstream cxy_config::fin_;
+    bool cxy_config::with_push_jacobian = {false};
+    float cxy_config::push_jacobian_weight = {10};
+    std::ifstream cxy_config::fin_;
 
     const std::string cxy_config::rviz_frame_name_ {"icp"} ;
 

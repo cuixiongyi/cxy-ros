@@ -26,7 +26,9 @@ namespace cxy
         class cxy_icp_kinematic_joint 
         {
             typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
-            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixXX;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXX;
+
+
 
 
 		public:
@@ -39,7 +41,9 @@ namespace cxy
                 void init();
             const cxy_joint_info joint_info_;
             void setChildList(const std::vector<const cxy_icp_kinematic_joint*>&);
+            const std::vector<const cxy_icp_kinematic_joint*>& getChildList() const;
             void setParent(const cxy_icp_kinematic_joint* );
+            inline const cxy_icp_kinematic_joint*&  getParent() {return pParent_;}
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
 		private:
@@ -48,6 +52,8 @@ namespace cxy
             const int joint_idx_;
             _Scalar* theta_;
             const int DoF_;
+            int hierarchy_num_;
+            int paraStartIdx_;
 
             cxy_transform::Pose<_Scalar> pose_;
             const cxy_transform::Pose<_Scalar> originPose_;
@@ -58,21 +64,22 @@ namespace cxy
 
         /// inline function
         public:
-            inline const int&                   getParent() const {return joint_info_.joint_parent;}
-            inline const cxy_transform::Axis&         getJointType() const {return joint_info_.jointType;}
-            inline const std::string&                 getModelFileName() {return joint_info_.model_filename;}
-            inline const int&                   numDoF() {return joint_info_.DoF;}
-        inline void                             setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
+            inline const int&                   getParentIdx() const {return joint_info_.joint_parent;}
+            inline const cxy_transform::Axis&   getJointType() const {return joint_info_.jointType;}
+            inline const std::string&           getModelFileName() {return joint_info_.model_filename;}
+            inline const int&                   getNumDoF() const {return joint_info_.DoF;}
+            inline void                         setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
             inline void                         setPose(cxy_transform::Pose<_Scalar>&& pose) {pose_ = std::move(pose);}
             inline const cxy_transform::Pose<_Scalar>&  getPose() const { return pose_;}
-            inline const cxy_transform::Pose<_Scalar>&  getOriginPose() { return originPose_;}
-            inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return modelCloud_;}
+            inline const cxy_transform::Pose<_Scalar>&  getOriginPose() const { return originPose_;}
+            inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() const { return modelCloud_;}
             inline void setTheta(const _Scalar* p) { std::memcpy(theta_, p, sizeof(_Scalar)*DoF_);};
-            inline const _Scalar* getTheta() { return theta_;};
+            inline const _Scalar* getTheta() const { return theta_;};
+            inline void setHierarchy(const int& hier) { hierarchy_num_ = hier;};
+            inline const int& getHierarchy() const { return hierarchy_num_;};
 
-            /*
-             * query about what's relation between joint a and b
-             */
+            inline void setParaStartIdx(const int& idx) {paraStartIdx_ = idx;}
+            inline const int& getParaStartIdx() const {return paraStartIdx_;}
 
 
         };
