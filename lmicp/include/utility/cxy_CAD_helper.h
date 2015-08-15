@@ -40,7 +40,7 @@ namespace cxy
                                , pcl::PointCloud<pcl::PointXYZ> &normals
                                , const SamplingParams &params);
 
-        bool stlToShape(std::string &filename
+        bool stlToShape(const std::string &filename
                         , shapes::Mesh &shape);
 
         geometry_msgs::Point32  sampleRandomPoint(geometry_msgs::Point v1, geometry_msgs::Point v2,
@@ -68,11 +68,11 @@ namespace cxy
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &in_normals,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &out_cloud,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &out_normals);
-        bool filterOccludedPoints(pcl::PointCloud<pcl::PointXYZ>::Ptr &input,
+        bool filterOccludedPoints(const pcl::PointCloud<pcl::PointXYZ>::Ptr &input,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &output,
-                pcl::PointCloud<pcl::PointXYZ>::Ptr &normals,
+                const pcl::PointCloud<pcl::PointXYZ>::Ptr &normals,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &output_normals,
-                Eigen::Vector3d to_origin);
+                Eigen::Vector3d&& to_origin);
         //bool filterOccluded2(pcl::PointCloud<pcl::PointXYZ>::Ptr &input,
         //                     pcl::PointCloud<pcl::PointXYZ>::Ptr &output,
         //                     Eigen::Vector3d to_origin);

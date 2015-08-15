@@ -14,9 +14,7 @@ namespace cxy
     class cxy_modelCloud_engin
     {
     protected:
-        static ros::NodeHandle             nh_;
-        static ros::Publisher data_point_pub_;
-        static ros::Publisher model_point_pub_;
+
 
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
@@ -30,12 +28,6 @@ namespace cxy
 
         const pcl::PointCloud<pcl::PointXYZ>::Ptr& getModelCloud();
         pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud(const cxy_transform::Pose<float>& pose);
-
-
-
-        static void publishModelPoint(const pcl::PointCloud<PointT>::Ptr& cloud);
-        static void publishDataPoint(const pcl::PointCloud<PointT>::Ptr& cloud);
-        static void publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud);
 
 
     };

@@ -179,7 +179,7 @@ namespace cxy
         }
     }
 
-    bool cxy_CAD_helper::stlToShape(std::string &filename, shapes::Mesh &shape)
+    bool cxy_CAD_helper::stlToShape(const std::string &filename, shapes::Mesh &shape)
     {
         Eigen::Vector3d scale(1.0, 1.0, 1.0);
 
@@ -356,11 +356,11 @@ namespace cxy
         return true;
     }
 
-    bool cxy_CAD_helper::filterOccludedPoints(pcl::PointCloud<pcl::PointXYZ>::Ptr &input,
+    bool cxy_CAD_helper::filterOccludedPoints(const pcl::PointCloud<pcl::PointXYZ>::Ptr &input,
             pcl::PointCloud<pcl::PointXYZ>::Ptr &output,
-            pcl::PointCloud<pcl::PointXYZ>::Ptr &normals,
+            const pcl::PointCloud<pcl::PointXYZ>::Ptr &normals,
             pcl::PointCloud<pcl::PointXYZ>::Ptr &output_normals,
-            Eigen::Vector3d      to_origin)
+            Eigen::Vector3d&&      to_origin)
     {
         if (input == NULL)
         return false;

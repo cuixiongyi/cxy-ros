@@ -60,10 +60,10 @@ namespace cxy
         public:
             inline const int&                   getParent() const {return joint_info_.joint_parent;}
             inline const cxy_transform::Axis&         getJointType() const {return joint_info_.jointType;}
-            inline std::string&                 getModelFileName() {return joint_info_.model_filename;}
+            inline const std::string&                 getModelFileName() {return joint_info_.model_filename;}
             inline const int&                   numDoF() {return joint_info_.DoF;}
-            inline void setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
-            inline void setPose(cxy_transform::Pose<_Scalar>&& pose) {pose_ = std::move(pose);}
+        inline void                             setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
+            inline void                         setPose(cxy_transform::Pose<_Scalar>&& pose) {pose_ = std::move(pose);}
             inline const cxy_transform::Pose<_Scalar>&  getPose() const { return pose_;}
             inline const cxy_transform::Pose<_Scalar>&  getOriginPose() { return originPose_;}
             inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() { return modelCloud_;}

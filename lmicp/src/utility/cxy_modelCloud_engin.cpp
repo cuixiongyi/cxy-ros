@@ -4,10 +4,6 @@
 
 namespace cxy
 {
-    ros::NodeHandle cxy_modelCloud_engin::nh_;
-
-    ros::Publisher cxy_modelCloud_engin::model_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2_>( "model_point_pub", 0 );
-    ros::Publisher cxy_modelCloud_engin::data_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2_>( "data_point_pub_", 0 );
 
     cxy_modelCloud_engin::cxy_modelCloud_engin(const std::string& filename )
     : modelCloud_(new pcl::PointCloud<PointT>)
@@ -50,26 +46,7 @@ namespace cxy
 
 
 
-    void cxy_modelCloud_engin::publishModelPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
-    {
-        sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
-        model_point_pub_.publish(rosCloud);
-        return;
-    }
-    void cxy_modelCloud_engin::publishDataPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
-    {
-        sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
-        data_point_pub_.publish(rosCloud);
-        return;
-    }
-    void cxy_modelCloud_engin::publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud)
-    {
-        pcl::toROSMsg(*cloud, rosCloud);
-        rosCloud.header.frame_id = cxy_config::rviz_frame_name_;
-        rosCloud.header.stamp = ros::Time::now();
-        return;
-    }
+
+
 
 }

@@ -60,6 +60,7 @@ add_library(cxy_tracking_lib
                 include/utility/cxy_CAD_helper.h                 src/utility/cxy_CAD_helper.cpp
                 include/utility/cxy_sync.h                      src/utility/cxy_sync.cpp
                 include/utility/cxy_modelCloud_engin.h          src/utility/cxy_modelCloud_engin.cpp
+                include/utility/cxy_publisher.h                 src/utility/cxy_publisher.cpp
 #                include/common/hack.hpp
 
                 include/optimization/cxy_cost_func_abstract.h

@@ -12,7 +12,7 @@ namespace cxy_lmicp_lib
     : config_(config_ptr)
     {
         kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
-        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
+//        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
 
     }
 

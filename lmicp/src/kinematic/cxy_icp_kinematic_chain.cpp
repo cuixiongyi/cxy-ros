@@ -283,7 +283,7 @@ namespace cxy
                 }
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {
-                    std::vector<const cxy_icp_kinematic_joint*> childList(jointChildList[ii].size());
+                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList(jointChildList[ii].size());
                     for (int jj = 0; jj < jointChildList[ii].size(); ++jj)
                     {
                         childList[jj] = joints_[jointChildList[ii][jj]].get();

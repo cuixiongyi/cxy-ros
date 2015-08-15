@@ -24,6 +24,8 @@ namespace cxy
       float cxy_config::push_jacobian_weight = {10};
      std::ifstream cxy_config::fin_;
 
+    const std::string cxy_config::rviz_frame_name_ {"icp"} ;
+
 
 	cxy_config::cxy_config()
 		{

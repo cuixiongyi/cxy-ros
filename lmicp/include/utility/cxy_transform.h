@@ -79,7 +79,7 @@ enum Axis : uint8_t
 		void composePoint(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_cloud) const;
 
 		void composeDirectionVector(const Vector& in_p, Vector &out_p) const;
-		void composeDirectionVector(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_p, const pcl::PointCloud<pcl::PointXYZ>::Ptr& out_p) const;
+		void composeDirectionVector(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_p,  pcl::PointCloud<pcl::PointXYZ>::Ptr& out_p) const;
 
 		void inverseComposePoint(const Vector& in_p, Vector &out_p) const;
 

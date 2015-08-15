@@ -200,7 +200,7 @@ namespace cxy_transform
 	}
 
     template <typename _Scalar>
-    void Pose<_Scalar>::composeDirectionVector(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_Cloud, const pcl::PointCloud<pcl::PointXYZ>::Ptr& out_Cloud) const
+    void Pose<_Scalar>::composeDirectionVector(const pcl::PointCloud<pcl::PointXYZ>::Ptr& in_Cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& out_Cloud) const
     {
         if ( nullptr == in_Cloud)
         {
