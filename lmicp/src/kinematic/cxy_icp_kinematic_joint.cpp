@@ -42,7 +42,7 @@ namespace cxy
          */
         template<typename _Scalar>
         void cxy_icp_kinematic_joint<_Scalar>::setChildList
-                    (const std::vector<const cxy_icp_kinematic_joint*>& childList)
+                    ( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& childList)
         {
             pChildList_ = childList;
             return;
@@ -52,7 +52,7 @@ namespace cxy
          * The 1st element of childList is the joint itself
          */
         template<typename _Scalar>
-        const std::vector<const cxy_icp_kinematic_joint*>&
+        std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const &
                 cxy_icp_kinematic_joint<_Scalar>::getChildList() const
         {
             return pChildList_;

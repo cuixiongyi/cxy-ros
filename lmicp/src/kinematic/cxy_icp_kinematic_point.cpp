@@ -113,40 +113,41 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::computePointJacobian(const int& rows, MatrixXX& jac)
+        void cxy_icp_kinematic_point<_Scalar>::computePointJacobian(Eigen::MatrixBase<MatrixXX>& jac)
         {
             {
-                int rows_true, cols_true;
+                long rows_true, cols_true;
                 config_->getJacobianSize(rows_true, cols_true);
-                CXY_ASSERT(rows_true > rows && cols_true == config_->joint_DoFs);
+                CXY_ASSERT(jac.cols() == config_->joint_DoFs);
+                CXY_ASSERT(jac.rows() == cxy_config::n_num_);
 
             }
 
             /*
              * TODO add jacobian of other type
              */
-            uint8_t ii = rows;
+            uint8_t ii = 0;
             if (config_->with_icp_jacobian)
             {
 
-                compute_icp_jacobian(ii, jac);
+                compute_icp_jacobian(jac.block(ii,0, 1, jac.cols()));
                 ++ii;
             }
             if (config_->with_collision_jacobian)
             {
-                compute_collision_jacobian(ii, jac);
+                compute_collision_jacobian(jac.block(ii,0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_push_jacobian)
             {
-                compute_push_jacobian(ii, jac);
+                compute_push_jacobian(jac.block(ii,0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_silhouette_jacobian)
             {
-                compute_silhouette_jacobian(ii, jac);
+                compute_silhouette_jacobian(jac.block(ii,0, 1, jac.cols()));
 
                 ++ii;
             }
@@ -155,13 +156,13 @@ namespace cxy
 
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian(const int& rows, MatrixXX& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
         {
 
             /*
              * the 1st element of childList is it self
              */
-            const std::vector<const cxy_icp_kinematic_joint*>& childList = joint_->getChildList();
+            std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const & childList = joint_->getChildList();
             for (int ii = 0; ii < childList.size(); ++ii)
             {
                 /// 1st element is the joint it self
@@ -171,23 +172,23 @@ namespace cxy
                     continue;
 
                 Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
-                Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint.getPose().t()(0), modelPoint_global_.y - joint.getPose().t()(1), modelPoint_global_.z - joint.getPose().t()(2));
+                Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint.getPose().t()(1), modelPoint_global_.z - joint.getPose().t()(2));
 
                 Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
-                if (cxy_transform::Axis::X_axis_rotation == joint.getJointType())
+                if (cxy_transform::Axis::X_axis_rotation == joint->getJointType())
                 {
                     fix_axis(0) = 1;
-                    joint.getPose().composeDirectionVector(fix_axis, rotation_axis);
+                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
                 }
-                if (cxy_transform::Axis::Y_axis_rotation == joint.getJointType())
+                if (cxy_transform::Axis::Y_axis_rotation == joint->getJointType())
                 {
                     fix_axis(1) = 1;
-                    joint.getPose().composeDirectionVector(fix_axis, rotation_axis);
+                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
                 }
-                if (cxy_transform::Axis::Z_axis_rotation == joint.getJointType())
+                if (cxy_transform::Axis::Z_axis_rotation == joint->getJointType())
                 {
                     fix_axis(2) = 1;
-                    joint.getPose().composeDirectionVector(fix_axis, rotation_axis);
+                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
                 }
 
                 Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(tmp);
@@ -206,7 +207,7 @@ namespace cxy
                     scale2 = 0.0;
                 if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2) > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
                 {
-                    jac(rows, cxy_config::jointParaIdx_[jointParentList[ii]]) =  -std::abs(cross(2) + cross(1) + cross(0));
+                    jac(0, joint->getParaStartIdx()) =  -std::abs(cross(2) + cross(1) + cross(0));
                     /*
                     if (jj == 20)
                         ROS_INFO_STREAM("reversed");
@@ -214,7 +215,7 @@ namespace cxy
                 }
                 else
                 {
-                    jac(rows, cxy_config::jointParaIdx_[jointParentList[ii]]) =  std::abs(cross(2) + cross(1) + cross(0));
+                    jac(0, joint->getParaStartIdx()) =  std::abs(cross(2) + cross(1) + cross(0));
                     //fjac(jj, 0) = -fjac(jj, 0);
                 }
             }
@@ -222,19 +223,19 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_collision_jacobian(const int& rows, MatrixXX& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_collision_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
         {
 
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_push_jacobian(const int& rows, MatrixXX& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_push_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
         {
 
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_silhouette_jacobian(const int& rows, MatrixXX& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_silhouette_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
         {
 
         }

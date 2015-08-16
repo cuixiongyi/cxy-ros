@@ -72,7 +72,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getResidual(MatrixX1& residual)
         {
-            int rows, cols;
+            long rows, cols;
             config_->getJacobianSize(rows, cols);
             if (rows != residual.rows())
             {
@@ -96,7 +96,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getJacobian(MatrixXX& jacobian)
         {
-            int rows, cols;
+            long rows, cols;
             config_->getJacobianSize(rows, cols);
             if (rows != jacobian.rows()
                     || cols != jacobian.cols())
@@ -108,7 +108,7 @@ namespace cxy
             for (int ii = 0; ii < points_.size(); ++ii)
             {
                 row = ii*config_->n_num_;
-                points_[ii]->computePointJacobian(row, jacobian);
+                points_[ii]->computePointJacobian(jacobian.block(row, 0, config_->n_num_, jacobian.cols()));
 
             }
 
@@ -313,6 +313,7 @@ namespace cxy
             {
                 modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename));
             }
+
             /// set Joint Parameter Start Idx
             int idx = 0;
             for (int ii = 0; ii < config_->joint_number_; ++ii)

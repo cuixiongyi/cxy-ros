@@ -116,7 +116,7 @@ namespace cxy
         inline const int& getModelPointNum() const { return model_Point_num;}
         inline void setModelPointNum(const int& num) const { model_Point_num = num;}
 
-        inline void getJacobianSize(int& rows, int& cols) const
+        inline void getJacobianSize(long& rows, long& cols) const
         {
             rows = model_Point_num * n_num_;
             cols = joint_DoFs;

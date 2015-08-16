@@ -40,8 +40,8 @@ namespace cxy
             ~cxy_icp_kinematic_joint();
                 void init();
             const cxy_joint_info joint_info_;
-            void setChildList(const std::vector<const cxy_icp_kinematic_joint*>&);
-            const std::vector<const cxy_icp_kinematic_joint*>& getChildList() const;
+            void setChildList( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const&);
+            std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& getChildList() const;
             void setParent(const cxy_icp_kinematic_joint* );
             inline const cxy_icp_kinematic_joint*&  getParent() {return pParent_;}
 				//cxy_transform::Pose& getPose() {return pose_;}

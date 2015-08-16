@@ -48,12 +48,12 @@ namespace cxy
 
             void computePointResidual(const int& rows, MatrixX1&);
 
-            void computePointJacobian(const int& rows, MatrixXX&);
+            void computePointJacobian(Eigen::MatrixBase<MatrixXX>& jac);
 
-            void compute_icp_jacobian(const int& rows, MatrixXX& );
-            void compute_collision_jacobian(const int& rows, MatrixXX& );
-            void compute_push_jacobian(const int& rows, MatrixXX& );
-            void compute_silhouette_jacobian(const int& rows, MatrixXX& );
+            void compute_icp_jacobian(Eigen::MatrixBase<MatrixXX>& jac);
+            void compute_collision_jacobian(Eigen::MatrixBase<MatrixXX>& jac);
+            void compute_push_jacobian(Eigen::MatrixBase<MatrixXX>& jac);
+            void compute_silhouette_jacobian(Eigen::MatrixBase<MatrixXX>& jac);
 
             const _Scalar& matchPointCloud(const PointT&
                                         , PointT&
