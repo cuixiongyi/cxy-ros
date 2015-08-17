@@ -108,7 +108,8 @@ namespace cxy
             for (int ii = 0; ii < points_.size(); ++ii)
             {
                 row = ii*config_->n_num_;
-                points_[ii]->computePointJacobian(jacobian.block(row, 0, config_->n_num_, jacobian.cols()));
+                jacobian.row(1);
+                points_[ii]->computePointJacobian(jacobian.block(row, 0, cxy_config::n_num_, jacobian.cols()));
 
             }
 

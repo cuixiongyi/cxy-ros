@@ -113,7 +113,7 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::computePointJacobian(Eigen::MatrixBase<MatrixXX>& jac)
+        void cxy_icp_kinematic_point<_Scalar>::computePointJacobian(Eigen::Ref<MatrixXX> jac)
         {
             {
                 long rows_true, cols_true;
@@ -130,24 +130,24 @@ namespace cxy
             if (config_->with_icp_jacobian)
             {
 
-                compute_icp_jacobian(jac.block(ii,0, 1, jac.cols()));
+                compute_icp_jacobian(jac.block(ii, 0, 1, jac.cols()));
                 ++ii;
             }
             if (config_->with_collision_jacobian)
             {
-                compute_collision_jacobian(jac.block(ii,0, 1, jac.cols()));
+                compute_collision_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_push_jacobian)
             {
-                compute_push_jacobian(jac.block(ii,0, 1, jac.cols()));
+                compute_push_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_silhouette_jacobian)
             {
-                compute_silhouette_jacobian(jac.block(ii,0, 1, jac.cols()));
+                compute_silhouette_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
@@ -156,7 +156,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian(Eigen::Ref<MatrixXX> jac)
         {
 
             /*
@@ -172,7 +172,7 @@ namespace cxy
                     continue;
 
                 Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
-                Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint.getPose().t()(1), modelPoint_global_.z - joint.getPose().t()(2));
+                Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
 
                 Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
                 if (cxy_transform::Axis::X_axis_rotation == joint->getJointType())
@@ -223,19 +223,19 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_collision_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_collision_jacobian(Eigen::Ref<MatrixXX> jac)
         {
 
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_push_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_push_jacobian(Eigen::Ref<MatrixXX> jac)
         {
 
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::compute_silhouette_jacobian(Eigen::MatrixBase<MatrixXX>& jac)
+        void cxy_icp_kinematic_point<_Scalar>::compute_silhouette_jacobian(Eigen::Ref<MatrixXX> jac)
         {
 
         }
