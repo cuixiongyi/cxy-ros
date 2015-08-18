@@ -18,7 +18,7 @@
 */
 
 #ifdef ENABLE_CXY_ASSERT
-/*
+
     #   define CXY_ASSERT(condition) \
         do { \
             if (! (condition)) { \
@@ -27,7 +27,7 @@
                 std::exit(EXIT_FAILURE); \
             } \
         } while (false)
-*/
+
 #   define CXY_ASSERT(condition) ;
 
 #else
