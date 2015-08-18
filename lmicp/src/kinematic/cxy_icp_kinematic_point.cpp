@@ -78,13 +78,13 @@ namespace cxy
         }
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_point<_Scalar>::computePointResidual(const int& rows, MatrixX1& res)
+        void cxy_icp_kinematic_point<_Scalar>::computePointResidual(Eigen::Ref<MatrixX1> res)
         {
 
             /*
              * TODO add residual of other type
              */
-            uint8_t ii = rows;
+            uint8_t ii = 0;
             if (config_->with_icp_jacobian)
             {
                 res(ii) = cxy_icp_kinematic_point::matchPointCloud(modelPoint_global_

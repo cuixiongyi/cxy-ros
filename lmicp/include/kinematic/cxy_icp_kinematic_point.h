@@ -46,7 +46,7 @@ namespace cxy
 
             void init();
 
-            void computePointResidual(const int& rows, MatrixX1&);
+            void computePointResidual(Eigen::Ref<MatrixX1>);
 
             void computePointJacobian(Eigen::Ref<MatrixXX> jac);
 

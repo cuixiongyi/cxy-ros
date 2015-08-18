@@ -93,7 +93,7 @@ namespace cxy
 
 
                 row = ii*config_->n_num_;
-                points_[ii]->computePointResidual(row, residual);
+                points_[ii]->computePointResidual(residual.block(row, 0, cxy_config::n_num_, 1));
             }
 
         }
