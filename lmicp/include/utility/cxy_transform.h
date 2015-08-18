@@ -1,4 +1,7 @@
-#pragma once
+
+#ifndef CXY_TRANSFORM
+#define CXY_TRANSFORM
+
 #include <Eigen/Core>
 #include <Eigen/Geometry> 
 #include <iostream>
@@ -97,3 +100,5 @@ enum Axis : uint8_t
 	};
 }
 }
+
+#endif  //#ifndef
