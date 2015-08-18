@@ -43,6 +43,23 @@ namespace cxy
         return retCloud;
     }
 
+    pcl::PointCloud<pcl::PointXYZ>::Ptr
+    cxy_modelCloud_engin::getVisibleCloud(const cxy_transform::Pose<double>& pose)
+    {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
+        pose.composePoint(modelCloud_, transCloud);
+        pose.composeDirectionVector(modelCloud_normal_, transCloud_normal);
+
+        cad_helper_.filterOccludedPoints(transCloud, retCloud, transCloud_normal, retCloud_normal, Eigen::Vector3d(1.0, 0.0, 0.0));
+
+        return retCloud;
+    }
+
+
+
 
 
 

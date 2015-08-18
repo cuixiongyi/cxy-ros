@@ -79,7 +79,6 @@ namespace cxy
             const cxy_config* const config_;
             std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>> points_;
 
-            std::vector<int> pointJointIdx_;
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr modelCloud_;
 

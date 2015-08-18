@@ -53,16 +53,21 @@ namespace cxy
         {
             //points_ = std::make_shared<std::vector<cxy_icp_kinematic_point<_Scalar>*>>(modelCloud_->size());
 
-            for (int ii = 0; ii < modelCloud_->size(); ++ii)
+            // ii is for each joint
+            for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
             {
+                /// this points are in global coordinate
+                pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
 
-                /*
-                 * TODO pointJointIdx_ need to be assigned when modelCloud generation
-                 * TODO use object_pool to allocate memory
-                 */
-                points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
-                points_[ii]->modelPoint_global_ = (*modelCloud_)[ii];
-
+                for (int jj = 0; jj < points->size(); ++jj)
+                {
+                    /*
+                     * TODO use object_pool to allocate memory
+                     */
+                    points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
+                    auto lastPoint = points_.end()-1;
+                    (*lastPoint)->modelPoint_global_ = (*points)[ii];
+                }
 
 
             }
@@ -309,6 +314,7 @@ namespace cxy
 
                 }
             }
+
             // set modelCloud for each joint
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {

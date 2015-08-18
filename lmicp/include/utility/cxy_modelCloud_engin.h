@@ -27,7 +27,14 @@ namespace cxy
         ~cxy_modelCloud_engin();
 
         const pcl::PointCloud<pcl::PointXYZ>::Ptr& getModelCloud();
-        pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud(const cxy_transform::Pose<float>& pose);
+
+        /*
+         * This is a hack that prevent this class from template too
+         */
+        pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud
+                (const cxy_transform::Pose<float>& pose);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud
+                (const cxy_transform::Pose<double>& pose);
 
 
     };

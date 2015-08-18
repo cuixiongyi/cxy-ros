@@ -37,7 +37,6 @@ namespace cxy_lmicp_lib
 
         kc_->updateModelPoints();
 
-        //points_[ii]->jacobian_.resize(config_->n_num_, cols);
 
         kc_->getJacobian(jac);
     }
@@ -48,8 +47,6 @@ namespace cxy_lmicp_lib
     void cxy_icp_kinematic<_Scalar>::setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
     {
         kc_->setDataCloud(data);
-
-
 
     }
 

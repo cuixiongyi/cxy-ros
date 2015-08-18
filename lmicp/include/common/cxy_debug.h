@@ -28,7 +28,6 @@
             } \
         } while (false)
 
-#   define CXY_ASSERT(condition) ;
 
 #else
     #   define CXY_ASSERT(condition) do { } while (false)
