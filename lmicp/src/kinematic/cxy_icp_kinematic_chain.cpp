@@ -2,7 +2,7 @@
 
 namespace cxy
 {
-    namespace cxy_lmicp_lib
+    namespace cxy_kinematic
     {
         template<typename _Scalar>
         cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const cxy_config* const config)
@@ -377,5 +377,5 @@ namespace cxy
 }
 
 
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_chain<double>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_chain<float>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_chain<double>;

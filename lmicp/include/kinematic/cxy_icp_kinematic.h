@@ -20,7 +20,7 @@
 
 namespace cxy
 {
-	namespace cxy_lmicp_lib
+	namespace cxy_kinematic
 	{
         template<typename _Scalar>
         class cxy_icp_kinematic

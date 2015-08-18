@@ -6,7 +6,7 @@
 
 namespace cxy
 {
-    namespace cxy_lmicp_lib
+    namespace cxy_kinematic
     {
 
         template<typename _Scalar>
@@ -242,6 +242,6 @@ namespace cxy
     }
 }
 
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_point<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_point<double>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_point<float>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_point<double>;
 

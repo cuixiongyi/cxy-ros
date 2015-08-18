@@ -77,6 +77,7 @@ add_library(cxy_tracking_lib
               include/kinematic/cxy_icp_kinematic_joint.h       src/kinematic/cxy_icp_kinematic_joint.cpp
               include/kinematic/cxy_icp_kinematic_chain.h       src/kinematic/cxy_icp_kinematic_chain.cpp
               include/kinematic/cxy_icp_kinematic_point.h       src/kinematic/cxy_icp_kinematic_point.cpp
+              include/tracker/cxy_tracker.h       src/tracker/cxy_tracker.cpp
 )
 
 

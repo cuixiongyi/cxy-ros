@@ -2,7 +2,7 @@
 
 namespace cxy
 {
-namespace cxy_lmicp_lib
+namespace cxy_kinematic
 {
     template<typename _Scalar>
     std::once_flag cxy_icp_kinematic<_Scalar>::joint_Parent_init;
@@ -81,5 +81,5 @@ namespace cxy_lmicp_lib
 
 }
 }
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic<double>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic<float>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic<double>;

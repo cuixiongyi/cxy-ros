@@ -5,7 +5,7 @@
 
 namespace cxy
 {
-	namespace cxy_lmicp_lib
+	namespace cxy_kinematic
 	{
 
 
@@ -88,6 +88,6 @@ namespace cxy
     }
 }
 
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_joint<float>;
-template class cxy::cxy_lmicp_lib::cxy_icp_kinematic_joint<double>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_joint<float>;
+template class cxy::cxy_kinematic::cxy_icp_kinematic_joint<double>;
 
