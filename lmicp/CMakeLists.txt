@@ -66,6 +66,7 @@ add_library(cxy_tracking_lib
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
                 include/optimization/cxy_nonlinear_minimizer_LM.h
+                include/optimization/cxy_cost_func_kinematic.h  src/optimization/cxy_cost_func_kinematic.cpp
 
 #              include/energy/cxy_icp.h
 #              include/energy/cxy_icp_rigid.h

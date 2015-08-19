@@ -18,27 +18,22 @@ namespace cxy
 
     }
 
+
     template<typename _Scalar>
     void cxy_tracker<_Scalar>::runOptimization()
     {
-        Eigen::LevenbergMarquardt <cxy_tracker<_Scalar>, _Scalar > lm2(*this);
+        kinematic_.
+        cxy_optimization::cxy_cost_func_kinematic<_Scalar> func();
+        Eigen::LevenbergMarquardt <cxy_optimization::cxy_cost_func_kinematic<_Scalar>, _Scalar > lm2(func);
         _Scalar res = lm2.lmder1(x_);
 
         return;
     }
 
-    template<typename _Scalar>
-    _Scalar cxy_tracker<_Scalar>::operator()(MatrixX1 & x, MatrixX1& fvec) const
-    {
-        kinematic_.computeResidual(x_, fvec);
-    }
-
-    template<typename _Scalar>
-    _Scalar cxy_tracker<_Scalar>::df(MatrixX1 & x, MatrixXX& fjac) const
-    {
-        kinematic_.computeJacobian(x, fjac);
-    }
 
 
 
 }
+
+template class cxy::cxy_tracker<float>;
+template class cxy::cxy_tracker<double>;

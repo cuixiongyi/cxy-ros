@@ -24,7 +24,7 @@ namespace cxy_kinematic
 
         updateJointModel(x);
 
-        kc_->updateModelPoints();
+        //kc_->updateModelPoints();
 
         kc_->getResidual(res);
     }
@@ -35,7 +35,7 @@ namespace cxy_kinematic
 
         updateJointModel(x);
 
-        kc_->updateModelPoints();
+        //kc_->updateModelPoints();
 
 
         kc_->getJacobian(jac);
