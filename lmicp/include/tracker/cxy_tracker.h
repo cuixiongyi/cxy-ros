@@ -24,12 +24,33 @@ namespace cxy
 
         mutable cxy_kinematic::cxy_icp_kinematic<_Scalar> kinematic_;
 
-        inline MatrixX1 const& getX_() {return x_;}
+        inline MatrixX1 const& getX() const {return x_;}
+        inline void setX(MatrixX1 const& x) {x_ = x;}
+
+
+        inline pcl::PointCloud<pcl::PointXYZ>::Ptr const& getDataCloud() const
+        {
+            return dataCloud_;
+        }
+
+        inline void setDataCloud( pcl::PointCloud<pcl::PointXYZ>::Ptr const& dataCloud)
+        {
+            cxy_tracker::dataCloud_ = dataCloud;
+            kinematic_.setDataCloud(dataCloud);
+        }
+
+        inline pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud()
+        {
+            visibleModelCloud_ = kinematic_.getVisibleModelCloud(x_);
+            return visibleModelCloud_;
+        }
     private:
         const cxy_config* const config_;
 
         MatrixX1 x_;
-        //MatrixXX jaco_;
+        pcl::PointCloud<PointT>::Ptr dataCloud_;
+        pcl::PointCloud<PointT>::Ptr visibleModelCloud_;
+
     };
 
 }

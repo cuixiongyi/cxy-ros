@@ -46,10 +46,12 @@ namespace cxy
 
             void updateModelPoints();
 
+            pcl::PointCloud<pcl::PointXYZ>::Ptr updateModel_getVisible();
+
             void constructKinematicChain();
 
 
-            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr);
+            void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr const&);
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelCloud_World() {};
 

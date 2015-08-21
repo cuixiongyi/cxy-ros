@@ -89,6 +89,15 @@ namespace cxy_kinematic
 
     }
 
+    template<typename _Scalar>
+    pcl::PointCloud<pcl::PointXYZ>::Ptr const& cxy_icp_kinematic<_Scalar>::
+        getVisibleModelCloud(MatrixX1 const& x)
+    {
+        updateJoints(x);
+        visibleModelCloud_ = kc_->updateModel_getVisible();
+
+        return visibleModelCloud_;
+    }
 }
 }
 template class cxy::cxy_kinematic::cxy_icp_kinematic<float>;

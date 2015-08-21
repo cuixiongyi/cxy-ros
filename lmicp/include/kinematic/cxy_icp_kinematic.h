@@ -42,25 +42,37 @@ namespace cxy
             /**
              * This function update joint model with joint angle(1 or 6 DoF) of x_
              */
-            void updateJoints(const MatrixX1 &);
+            void updateJoints( MatrixX1 const&);
 
-            void updateModel(const MatrixX1 &);
+            void updateModel( MatrixX1 const&);
 
 
             inline void setModelPointSize( std::size_t const& num)  { model_Point_num_ = num;}
             inline  std::size_t const& getModelPointSize() const { return model_Point_num_;}
 
 
+            inline pcl::PointCloud<pcl::PointXYZ>::Ptr const& getDataCloud() const
+            {
+                return dataCloud_;
+            }
+
+            inline void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr const& dataCloud)
+            {
+                cxy_icp_kinematic::dataCloud_ = dataCloud;
+                kc_->setDataCloud(dataCloud_);
+            }
+            pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud(MatrixX1 const&);
 
         private:
             std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
-			std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>> points_;
 
             MatrixX1 x_;
             static std::once_flag joint_Parent_init;
 
             std::size_t model_Point_num_;
 
+            pcl::PointCloud<pcl::PointXYZ>::Ptr dataCloud_;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr visibleModelCloud_;
 
         };
 	}
