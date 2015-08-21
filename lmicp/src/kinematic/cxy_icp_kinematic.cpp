@@ -22,7 +22,7 @@ namespace cxy_kinematic
     {
 
 
-        updateJointModel(x);
+        updateJoints(x);
 
         //kc_->updateModelPoints();
 
@@ -33,7 +33,7 @@ namespace cxy_kinematic
     void cxy_icp_kinematic<_Scalar>::computeJacobian(const MatrixX1& x, MatrixXX& jac)
     {
 
-        updateJointModel(x);
+        updateJoints(x);
 
         //kc_->updateModelPoints();
 
@@ -43,16 +43,12 @@ namespace cxy_kinematic
 
 
 
-    template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr data)
-    {
-        kc_->setDataCloud(data);
 
-    }
 
     template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::updateJointModel(const MatrixX1& joint_para)
+    void cxy_icp_kinematic<_Scalar>::updateJoints(const MatrixX1 &joint_para)
     {
+        x_ = joint_para;
         CXY_ASSERT(joint_para.rows() == cxy_config::joint_DoFs);
         kc_->updateJoints(joint_para);
 
@@ -60,16 +56,30 @@ namespace cxy_kinematic
          * TODO update CAD model and get visible points on each joint
          * TODO pointJointIdx_ also need to be assigned
          */
-        int point_num = 1;
-        config_->setModelPointNum(point_num);
-        kc_->getFullModelCloud_World();
+
+    }
+
+
+    template<typename _Scalar>
+    void cxy_icp_kinematic<_Scalar>::updateModel(const MatrixX1& joint_para)
+    {
+
+        CXY_ASSERT(joint_para.rows() == cxy_config::joint_DoFs);
+        updateJoints(joint_para);
+
+        kc_->updateModelPoints();
+
+        setModelPointSize( kc_->getModelPointSize() );
+
+        //config_->setModelPointNum(point_num);
+        //kc_->getFullModelCloud_World();
 
         /*
          * TODO for now asumming the model points are stored in modelCloud_
          */
-        kc_->updateModelPoints();
-    }
 
+
+    }
 
 
 

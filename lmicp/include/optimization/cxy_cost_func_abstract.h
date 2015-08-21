@@ -22,9 +22,13 @@ namespace cxy
                 ParaAtCompileTime = NX,
                 DataAtCompileTime = NY
             };
-            typedef Eigen::Matrix<_Scalar,ParaAtCompileTime,1> ParaType;
-            typedef Eigen::Matrix<_Scalar,DataAtCompileTime,1> ResidualType;
-            typedef Eigen::Matrix<_Scalar,DataAtCompileTime,ParaAtCompileTime> JacobianType;
+            typedef Eigen::Matrix<_Scalar,Eigen::Dynamic,1> ParaType;
+            typedef Eigen::Matrix<_Scalar,Eigen::Dynamic,1> ResidualType;
+            typedef Eigen::Matrix<_Scalar,Eigen::Dynamic,Eigen::Dynamic> JacobianType;
+
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, 1> MatrixX1;
+            typedef Eigen::Matrix< _Scalar, Eigen::Dynamic, Eigen::Dynamic> MatrixXX;
+
         public:
 
              const int nPara_, nData_;
@@ -36,8 +40,8 @@ namespace cxy
             constexpr int values() const { return nData_; }
 
             // you should define that in the subclass :
-            virtual _Scalar operator()(ParaType & x, ResidualType& fvec) const = 0;
-            virtual _Scalar df(ParaType & x, JacobianType& fjac) const = 0;
+            virtual _Scalar operator()(MatrixX1 & x, MatrixX1& fvec) const = 0;
+            virtual _Scalar df(MatrixX1 & x, MatrixXX& fjac) const = 0;
 
 
             //  void operator() (const InputType& x, ValueType* v, JacobianType* _j=0) const;

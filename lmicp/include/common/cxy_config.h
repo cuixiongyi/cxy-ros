@@ -113,8 +113,6 @@ namespace cxy
 			return isOpen_;
 		}
 
-        inline const int& getModelPointNum() const { return model_Point_num;}
-        inline void setModelPointNum(const int& num) const { model_Point_num = num;}
 
         inline void getJacobianSize(long& rows, long& cols) const
         {

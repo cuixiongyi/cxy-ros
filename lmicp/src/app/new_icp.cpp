@@ -22,7 +22,7 @@ int main(int argc, char  *argv[])
     Eigen::Matrix< float, Eigen::Dynamic, 1> x;
     x.resize(cxy_config::joint_DoFs);
     x.setZero();
-    kin_data.updateJointModel(x);
+    kin_data.updateJoints(x);
 
     return 0;
 }

@@ -51,7 +51,7 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
         {
-            //points_ = std::make_shared<std::vector<cxy_icp_kinematic_point<_Scalar>*>>(modelCloud_->size());
+            points_ = std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>>();
 
             // ii is for each joint
             for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)

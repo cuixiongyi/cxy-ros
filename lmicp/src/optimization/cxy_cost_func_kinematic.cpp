@@ -22,7 +22,7 @@ namespace cxy_optimization
 
     template<typename _Scalar>
     _Scalar cxy_cost_func_kinematic<_Scalar>::operator()
-            (MatrixX1 const& x, MatrixX1& res) const
+            (MatrixX1 & x, MatrixX1& res) const
     {
         kinematic_->computeResidual(x, res);
         return 0;
@@ -30,7 +30,7 @@ namespace cxy_optimization
 
     template<typename _Scalar>
     _Scalar cxy_cost_func_kinematic<_Scalar>::df
-            (MatrixX1 const& x, MatrixXX& jac) const
+            (MatrixX1 & x, MatrixXX& jac) const
     {
         kinematic_->computeJacobian(x, jac);
         return 0;
@@ -39,3 +39,6 @@ namespace cxy_optimization
 
 }
 }
+
+template class cxy::cxy_optimization::cxy_cost_func_kinematic<float>;
+template class cxy::cxy_optimization::cxy_cost_func_kinematic<double>;

@@ -22,10 +22,10 @@ namespace cxy
 
             cxy_cost_func_kinematic(int const&, int const&, cxy_kinematic::cxy_icp_kinematic<_Scalar>* const&);
 
-            virtual _Scalar operator()(MatrixX1 const& x, MatrixX1& res) const;
+            virtual _Scalar operator()(MatrixX1 & x, MatrixX1& res) const;
 
 
-            virtual _Scalar df(MatrixX1 const& x, MatrixXX& jac) const;
+            virtual _Scalar df(MatrixX1 & x, MatrixXX& jac) const;
 
         private:
             cxy_kinematic::cxy_icp_kinematic<_Scalar>* const& kinematic_;

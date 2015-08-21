@@ -96,6 +96,9 @@ namespace cxy
             bool syc_tryUpdateJointList(const int &);
             bool syc_isJointUptoDate(const int &);
             bool syc_setJointUptoDate(const int &, const cxy_transform::Pose<_Scalar>&);
+
+        public:
+            inline std::size_t const& getModelPointSize() {return points_.size();}
         };
 
 
