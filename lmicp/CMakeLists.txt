@@ -3,7 +3,7 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.1")
     cmake_policy(SET CMP0054 NEW)
 endif()
 
-project(project_lmicp)
+project(project_lmicp C CXX)
 
 
 set(CMAKE_CXX_FLAGS "-std=c++0x -g -march=native -mno-avx ${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -16,8 +16,9 @@ if(ENABLE_MY_ASSERT)
 else()
   add_definitions(-DMY_DEBUG=0)
 endif()
+add_definitions(-DCXY_JACO_TYPE_FITTING)
 
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 # find_package(Boost REQUIRED)
 #find_package(Eigen3 REQUIRED)
@@ -27,9 +28,11 @@ find_package(Boost REQUIRED)
 find_package(catkin REQUIRED COMPONENTS roscpp
                                         rospy
                                         roslib
+                                        std_msgs
                                         geometry_msgs
                                         sensor_msgs
-                                        std_msgs
+                                        shape_msgs
+                                        geometric_shapes
                                         pcl_ros
                                         )
 
@@ -42,49 +45,64 @@ find_package(catkin REQUIRED COMPONENTS roscpp
 # ADD_EXECUTABLE(assignment_learning_ex assignment_learning_ex.cpp)
 # TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
-include_directories(include ${PCL_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
-
+include_directories(include ${PCL_INCLUDE_DIRS}  ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
+#${OpenCV_INCLUDE_DIRS}
 
 #link_directories(${PCL_LIBRARY_DIRS})
 #add_definitions(${PCL_DEFINITIONS})
 #
 
-add_library(lmicp_lib 
-                include/cxy_transform.h src/cxy_transform.cpp
-                include/lmicp.h
+add_library(cxy_tracking_lib
+
+                include/common/cxy_config.h                     src/common/cxy_config.cpp
+
+                include/utility/cxy_transform.h                 src/utility/cxy_transform.cpp
+                include/utility/cxy_CAD_helper.h                 src/utility/cxy_CAD_helper.cpp
+                include/utility/cxy_sync.h                      src/utility/cxy_sync.cpp
+                include/utility/cxy_modelCloud_engin.h          src/utility/cxy_modelCloud_engin.cpp
+                include/utility/cxy_publisher.h                 src/utility/cxy_publisher.cpp
+#                include/common/hack.hpp
+
                 include/optimization/cxy_cost_func_abstract.h
                 include/optimization/cxy_nonlinear_minimizer.h
                 include/optimization/cxy_nonlinear_minimizer_LM.h
-              include/cxy_icp.h
-              include/cxy_icp_rigid.h
-              include/cxy_icp_arti.h  src/cxy_icp_arti.cpp
-              include/cxy_icp_arti_ik.h  src/cxy_icp_arti_ik.cpp
-              include/cxy_icp_arti_ik_func.h  src/cxy_icp_arti_ik_func.cpp
-              include/cxy_icp_arti_func.h  src/cxy_icp_arti_func.cpp
-              include/cxy_icp_kinematic_node.h  src/cxy_icp_kinematic_node.cpp
-              include/cxy_icp_kinematic_chain.h  src/cxy_icp_kinematic_chain.cpp
+                include/optimization/cxy_cost_func_kinematic.h  src/optimization/cxy_cost_func_kinematic.cpp
 
-              src/cxy_icp_rigid_func.cpp include/cxy_icp_rigid_func.h)
+#              include/energy/cxy_icp.h
+#              include/energy/cxy_icp_rigid.h
+#              include/energy/cxy_icp_rigid_func.h 		        src/energy/cxy_icp_rigid_func.cpp
+#              include/energy/cxy_icp_arti_ik.h  	            src/energy/cxy_icp_arti_ik.cpp
+#              include/energy/cxy_icp_arti_ik_func.h  	        src/energy/cxy_icp_arti_ik_func.cpp
+#              include/energy/cxy_energy_fitting.h               src/energy/cxy_energy_fitting.cpp
+              include/kinematic/cxy_icp_kinematic.h             src/kinematic/cxy_icp_kinematic.cpp
+              include/kinematic/cxy_icp_kinematic_joint.h       src/kinematic/cxy_icp_kinematic_joint.cpp
+              include/kinematic/cxy_icp_kinematic_chain.h       src/kinematic/cxy_icp_kinematic_chain.cpp
+              include/kinematic/cxy_icp_kinematic_point.h       src/kinematic/cxy_icp_kinematic_point.cpp
+              include/tracker/cxy_tracker.h       src/tracker/cxy_tracker.cpp
+)
 
 
-target_link_libraries(lmicp_lib ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}   )#dlib)
 
 
 catkin_package(
    INCLUDE_DIRS include
-   LIBRARIES lmicp_lib  
-   CATKIN_DEPENDS roscpp std_msgs   
-   DEPENDS opencv  
+   LIBRARIES cxy_tracking_lib
+   CATKIN_DEPENDS roscpp std_msgs   geometry_msgs sensor_msgs shape_msgs geometric_shapes
+   #DEPENDS opencv
 )
 
-add_executable(icp_main src/icp_main.cpp)
-add_executable(lmicp_exe src/lmicp.cpp)
-add_executable(convergence_test_main_exe src/convergence_test_main.cpp)
-add_executable(main_exe src/main.cpp)
-target_link_libraries(lmicp_exe ${catkin_LIBRARIES} lmicp_lib)
-target_link_libraries(icp_main ${catkin_LIBRARIES} lmicp_lib)
-target_link_libraries(convergence_test_main_exe ${catkin_LIBRARIES} lmicp_lib)
-target_link_libraries(main_exe ${catkin_LIBRARIES} lmicp_lib)
+target_link_libraries(cxy_tracking_lib  ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
+
+#add_executable(icp_main src/app/icp_main.cpp)
+#add_executable(lmicp_exe src/app/lmicp.cpp)
+#add_executable(main_exe src/app/main.cpp)
+#target_link_libraries(lmicp_exe ${catkin_LIBRARIES} cxy_tracking_lib)
+#target_link_libraries(icp_main ${catkin_LIBRARIES} cxy_tracking_lib)
+#target_link_libraries(main_exe ${catkin_LIBRARIES} cxy_tracking_lib)
+add_executable(transform_test src/app/transform_test.cpp)
+target_link_libraries(transform_test ${catkin_LIBRARIES} cxy_tracking_lib)
+add_executable(new_icp src/app/new_icp.cpp)
+target_link_libraries(new_icp ${catkin_LIBRARIES} cxy_tracking_lib)
 
 
 
