@@ -219,23 +219,27 @@ namespace cxy
 
             if ( -1 == joints_[joint]->getParentIdx())
             {
+                cxy_transform::Pose<_Scalar> posetmp;
+
                 if (cxy_transform::Axis::Six_DoF == jointType)
                 {
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x[3]));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x[4]));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x[5]));
-                    pose.t()(0) = x[0];
-                    pose.t()(1) = x[1];
-                    pose.t()(2) = x[2];
+
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x[3]));
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x[4]));
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x[5]));
+                    posetmp.t()(0) = x[0];
+                    posetmp.t()(1) = x[1];
+                    posetmp.t()(2) = x[2];
 
                 }
                 else if (cxy_transform::Axis::X_axis_rotation == jointType || cxy_transform::Axis::Y_axis_rotation == jointType || cxy_transform::Axis::Z_axis_rotation == jointType )
                 {
-                    pose = cxy_transform::Pose<_Scalar>();
-                    pose.rotateByAxis(jointType, Deg2Rad(x[0]));
-
+                    posetmp.rotateByAxis(jointType, Deg2Rad(x[0]));
 
                 }
+
+                const cxy_transform::Pose<_Scalar>& pose_fix = joints_[joint]->getOriginPose();
+                pose_fix.composePose(posetmp, pose);
 
                 return;
             }

@@ -8,8 +8,9 @@ namespace cxy
     cxy_tracker<_Scalar>::cxy_tracker(const cxy_config *const config)
     : config_(config)
     , kinematic_(config)
+    , x_(cxy_config::joint_DoFs)
     {
-
+        x_.setZero();
     }
 
     template<typename _Scalar>

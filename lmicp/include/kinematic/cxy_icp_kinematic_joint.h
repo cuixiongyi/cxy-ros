@@ -70,11 +70,11 @@ namespace cxy
             inline const int&                   getNumDoF() const {return joint_info_.DoF;}
             inline void                         setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
             inline void                         setPose(cxy_transform::Pose<_Scalar>&& pose) {pose_ = std::move(pose);}
-            inline const cxy_transform::Pose<_Scalar>&  getPose() const { return pose_;}
-            inline const cxy_transform::Pose<_Scalar>&  getOriginPose() const { return originPose_;}
+            inline cxy_transform::Pose<_Scalar> const&  getPose() const { return pose_;}
+            inline cxy_transform::Pose<_Scalar> const&  getOriginPose() const { return originPose_;}
             inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() const { return modelCloud_;}
             inline void setTheta(const _Scalar* p) { std::memcpy(theta_, p, sizeof(_Scalar)*DoF_);};
-            inline const _Scalar* getTheta() const { return theta_;};
+            inline _Scalar* const& getTheta() const { return theta_;};
             inline void setHierarchy(const int& hier) { hierarchy_num_ = hier;};
             inline const int& getHierarchy() const { return hierarchy_num_;};
 
