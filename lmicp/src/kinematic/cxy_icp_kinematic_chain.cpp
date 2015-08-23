@@ -32,6 +32,8 @@ namespace cxy
             for (int ii = 0; ii < cxy_config::joint_DoFs; )
             {
                 joints_[jtmp]->setTheta(x.data() + ii);
+                ii += joints_[jtmp]->getNumDoF();
+                ++jtmp;
             }
             for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
             {
@@ -315,7 +317,7 @@ namespace cxy
                 }
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {
-                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList(jointChildList[ii].size());
+                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList;
                     /*
                      * setChildList
                      * ChildList the 1st element is the joint itself

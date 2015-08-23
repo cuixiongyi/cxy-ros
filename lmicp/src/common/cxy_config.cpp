@@ -3,7 +3,9 @@
 
 namespace cxy
 {
-    std::string cxy_config::filename_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/include/common/config"};
+    std::string cxy_config::filePrefix_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/"};
+    std::string cxy_config::filename_ = {filePrefix_+"include/common/config"};
+
     bool cxy_config::isOpen_ = {false};
     unsigned int cxy_config::joint_number_ = {0};
     std::vector<cxy_joint_info> cxy_config::joint_config_;
@@ -153,7 +155,9 @@ namespace cxy
             jointParaIdx_[ii] = jointParaIdxCount;
             jointParaIdxCount += kj.DoF;
             // joint model file name
-            iss>>kj.model_filename;
+            std::string modelFile;
+            iss>>modelFile;
+            kj.model_filename = "file://" + cxy_config::filePrefix_+modelFile;
 
             // the second line
             while (1)

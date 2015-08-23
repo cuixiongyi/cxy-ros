@@ -9,7 +9,7 @@ namespace cxy
 {
     cxy_publisher::cxy_publisher()
     {
-        nh_ = ros::NodeHandle();
+        //nh_ = ros::NodeHandle();
         model_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "model_point_pub", 0 );
         data_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "data_point_pub", 0 );
     }

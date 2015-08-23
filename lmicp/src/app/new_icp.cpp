@@ -20,9 +20,9 @@ int main(int argc, char  *argv[])
     cxy::cxy_config::unserialize();
     cxy::cxy_tracker<float> tracker(config_ptr.get());
     cxy::cxy_tracker<float> data(config_ptr.get());
-    cxy::cxy_kinematic::cxy_icp_kinematic<float> kin_data(config_ptr.get());
-    Eigen::Matrix< float, Eigen::Dynamic, 1> x_data;
-
+    //cxy::cxy_kinematic::cxy_icp_kinematic<float> kin_data(config_ptr.get());
+    Eigen::Matrix< float, Eigen::Dynamic, 1> x_data(cxy_config::joint_DoFs);
+    x_data.setZero();
     /*
      * use synthesized data test tracking
      */

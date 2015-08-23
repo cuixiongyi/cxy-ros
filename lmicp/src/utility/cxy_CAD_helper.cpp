@@ -26,7 +26,6 @@ namespace cxy
             const SamplingParams &params)
     {
         sensor_msgs::PointCloud2    cloud_tmp;
-        bool                        ret_value;
         shapes::Mesh                    shape;
         sensor_msgs::PointCloud         cloud;
 
@@ -38,7 +37,7 @@ namespace cxy
 
         pcl::fromROSMsg(cloud_tmp, cloud_out);
 
-        return ret_value;
+        return true;
     }
 
     void cxy_CAD_helper::shapeToPointCloud(shapes::Mesh &shape
