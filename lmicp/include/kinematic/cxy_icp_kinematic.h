@@ -62,7 +62,9 @@ namespace cxy
                 kc_->setDataCloud(dataCloud_);
             }
             pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud(MatrixX1 const&);
-
+            pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud(
+                    MatrixX1 const& x
+                    , pcl::PointCloud<pcl::PointXYZ>::Ptr & fullCloud );
         private:
             std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 

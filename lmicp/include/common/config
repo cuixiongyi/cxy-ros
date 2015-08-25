@@ -1,15 +1,15 @@
-joint_number 2
+joint_number 1
 # config joint info has: 
 # 1.joint index(start from 0)  2. joint parent(-1 as root) 3. joint type 	4. model file name
 # the second line is the translation and roatation parameter
 #joint 0
-0 -1	Six_DoF        model/oxygencyl.stl
-4.8 1.3 9.9	0		1.0		0.1854
+0 -1	Six_DoF        model/1inDiameterCylinder.stl
+0 0 0 	0		0		0
 # 4.8 1.9 9.9
 
 # joint 1
-1 	0  	X_axis_rotation  model/oxygencyl.stl
-1 1 0	0		0		1.0
+#1 	0  	X_axis_rotation  model/1inDiameterCylinder.stl
+#1 1 0	0		40		1.0
 
 with_icp_jacobian 1 10
 with_collision_jacobian 1 -1

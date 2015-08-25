@@ -44,6 +44,14 @@ namespace cxy
             visibleModelCloud_ = kinematic_.getVisibleModelCloud(x_);
             return visibleModelCloud_;
         }
+
+        inline pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud
+                (pcl::PointCloud<pcl::PointXYZ>::Ptr & fullCloud )
+        {
+            visibleModelCloud_ = kinematic_.getVisibleModelCloud(x_, fullCloud);
+
+            return visibleModelCloud_;
+        }
     private:
         const cxy_config* const config_;
 

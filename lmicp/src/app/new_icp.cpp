@@ -43,9 +43,11 @@ int main(int argc, char  *argv[])
 
             tracker.setDataCloud(dataCloud);
             tracker.runOptimization();
-            modelCloud = tracker.getVisibleModelCloud();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud (new pcl::PointCloud<pcl::PointXYZ>);
+            modelCloud = tracker.getVisibleModelCloud(fullCloud);
 
-            cxy_publisher::publishDataPoint(dataCloud);
+            //cxy_publisher::publishDataPoint(dataCloud);
+            cxy_publisher::publishDataPoint(fullCloud);
             cxy_publisher::publishModelPoint(modelCloud);
 
         }

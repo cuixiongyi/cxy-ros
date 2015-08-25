@@ -85,8 +85,30 @@ namespace cxy
                 /// this points are in global coordinate
                 pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
 
+
                 for (int jj = 0; jj < points->size(); ++jj)
                 {
+                    ret->push_back((*points)[jj]);
+                }
+            }
+            return ret;
+        }
+
+        template<typename _Scalar>
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelPoints()
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr ret( new pcl::PointCloud<pcl::PointXYZ>);
+            // ii is for each joint
+            for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
+            {
+                /// this points are in global coordinate
+                pcl::PointCloud<PointT>::Ptr
+                    points = modelCloud_engin_[ii]->getModelCloud(joints_[ii]->getPose());
+
+                for (int jj = 0; jj < points->size(); ++jj)
+                {
+                    (*points)[jj].x;
+
                     ret->push_back((*points)[jj]);
                 }
             }

@@ -95,6 +95,19 @@ namespace cxy_kinematic
     {
         updateJoints(x);
         visibleModelCloud_ = kc_->updateModel_getVisible();
+        pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud = kc_->getFullModelPoints();
+
+        return visibleModelCloud_;
+    }
+    template<typename _Scalar>
+    pcl::PointCloud<pcl::PointXYZ>::Ptr const& cxy_icp_kinematic<_Scalar>::
+    getVisibleModelCloud(
+            MatrixX1 const& x
+            , pcl::PointCloud<pcl::PointXYZ>::Ptr & fullCloud )
+    {
+        updateJoints(x);
+        visibleModelCloud_ = kc_->updateModel_getVisible();
+        fullCloud = kc_->getFullModelPoints();
 
         return visibleModelCloud_;
     }
