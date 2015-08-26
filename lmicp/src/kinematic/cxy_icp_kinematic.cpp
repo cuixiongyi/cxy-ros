@@ -10,6 +10,7 @@ namespace cxy_kinematic
     template<typename _Scalar>
     cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config *const config_ptr)
     : config_(config_ptr)
+     , x_(cxy_config::joint_DoFs)
     {
         kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
 //        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);

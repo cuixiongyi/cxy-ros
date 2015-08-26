@@ -9,7 +9,7 @@ namespace cxy
     : modelCloud_(new pcl::PointCloud<PointT>)
      , modelCloud_normal_(new pcl::PointCloud<PointT>)
     {
-        SamplingParams para(10000, 0.005, SampleType::RANDOM);
+        SamplingParams para(1000, 0.005, SampleType::RANDOM);
         if (! cad_helper_.meshToPointCloud(filename, *modelCloud_, *modelCloud_normal_, para))
             throw std::runtime_error("CAD model import failed");
 
@@ -50,11 +50,16 @@ namespace cxy
         pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
-        pose.composePoint(modelCloud_, transCloud);
-        pose.composeDirectionVector(modelCloud_normal_, transCloud_normal);
 
-        cad_helper_.filterOccludedPoints(transCloud, retCloud, transCloud_normal, retCloud_normal, Eigen::Vector3d(1.0, 0.0, 0.0));
+        //pose.composePoint(modelCloud_, transCloud);
+        //pose.composeDirectionVector(modelCloud_normal_, transCloud_normal);
 
+        //cad_helper_.filterOccludedPoints(transCloud, retCloud, transCloud_normal, retCloud_normal, Eigen::Vector3d(1.0, 0.0, 0.0));
+
+        // TODO this is a hack
+        // get visible point isn't working
+        // just return fullPointCloud
+        retCloud = getModelCloud(pose);
         return retCloud;
     }
 

@@ -20,7 +20,7 @@ namespace cxy
         cxy_tracker(const cxy_config *const );
         ~cxy_tracker();
 
-        void runOptimization();
+        _Scalar runOptimization();
 
         mutable cxy_kinematic::cxy_icp_kinematic<_Scalar> kinematic_;
 

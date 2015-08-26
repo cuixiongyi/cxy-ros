@@ -21,7 +21,7 @@ namespace cxy
 
 
     template<typename _Scalar>
-    void cxy_tracker<_Scalar>::runOptimization()
+    _Scalar cxy_tracker<_Scalar>::runOptimization()
     {
         kinematic_.updateModel(x_);
         std::size_t const& pointSize = kinematic_.getModelPointSize();
@@ -32,7 +32,7 @@ namespace cxy
         Eigen::LevenbergMarquardt <cxy_optimization::cxy_cost_func_kinematic<_Scalar>, _Scalar > lm2(func);
         _Scalar res = lm2.lmder1(x_);
 
-        return;
+        return res;
     }
 
 

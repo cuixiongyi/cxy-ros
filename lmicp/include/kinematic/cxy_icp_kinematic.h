@@ -68,7 +68,7 @@ namespace cxy
         private:
             std::shared_ptr<cxy_icp_kinematic_chain<_Scalar>> kc_;
 
-            MatrixX1 x_;
+            mutable MatrixX1 x_;
             static std::once_flag joint_Parent_init;
 
             std::size_t model_Point_num_;

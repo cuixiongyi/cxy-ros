@@ -118,8 +118,8 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getResidual(MatrixX1& residual)
         {
-            long rows, cols;
-            config_->getJacobianSize(rows, cols);
+            long rows = cxy_config::n_num_*getModelPointSize();
+            //long cols = cxy_config::joint_DoFs;
             if (rows != residual.rows())
             {
                 residual.resize(rows, 1);
@@ -142,8 +142,8 @@ namespace cxy
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getJacobian(MatrixXX& jacobian)
         {
-            long rows, cols;
-            config_->getJacobianSize(rows, cols);
+            long rows = cxy_config::n_num_*getModelPointSize();
+            long cols = cxy_config::joint_DoFs;
             if (rows != jacobian.rows()
                     || cols != jacobian.cols())
             {
