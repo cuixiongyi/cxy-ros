@@ -67,8 +67,8 @@ namespace cxy
                      * TODO use object_pool to allocate memory
                      */
                     points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
-                    auto lastPoint = points_.end()-1;
-                    (*lastPoint)->modelPoint_global_ = (*points)[ii];
+                    auto &lastPoint = points_.back();
+                    lastPoint->modelPoint_global_ = (*points)[jj];
                 }
 
 
@@ -136,6 +136,7 @@ namespace cxy
 
                 row = ii*config_->n_num_;
                 points_[ii]->computePointResidual(residual.block(row, 0, cxy_config::n_num_, 1));
+                float tmp = residual(row);
                 res_sum += residual(row);
             }
 
@@ -158,7 +159,7 @@ namespace cxy
             for (int ii = 0; ii < points_.size(); ++ii)
             {
                 row = ii*config_->n_num_;
-                jacobian.row(1);
+                //jacobian.row(1);
                 points_[ii]->computePointJacobian(jacobian.block(row, 0, cxy_config::n_num_, jacobian.cols()));
 
             }
@@ -327,8 +328,6 @@ namespace cxy
                     {
                         joints_[ii]->setParent(nullptr);
                         joints_[ii]->setHierarchy(0);
-
-                        continue;
                     }
                     else
                     {

@@ -96,7 +96,7 @@ namespace cxy_kinematic
     {
         updateJoints(x);
         visibleModelCloud_ = kc_->updateModel_getVisible();
-        pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud = kc_->getFullModelPoints();
+        kc_->getFullModelPoints();
 
         return visibleModelCloud_;
     }

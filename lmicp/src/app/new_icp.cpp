@@ -29,7 +29,7 @@ int main(int argc, char  *argv[])
     pcl::PointCloud<PointT>::Ptr dataCloud;
     pcl::PointCloud<PointT>::Ptr modelCloud;
     char key;
-    const float trans_inc = 1;
+    const float trans_inc = 0.1;
     const float rot_inc = 1.0;
     while (1)
     {

@@ -9,7 +9,7 @@ namespace cxy
     : modelCloud_(new pcl::PointCloud<PointT>)
      , modelCloud_normal_(new pcl::PointCloud<PointT>)
     {
-        SamplingParams para(1000, 0.005, SampleType::RANDOM);
+        SamplingParams para(3000, 0.005, SampleType::RANDOM);
         if (! cad_helper_.meshToPointCloud(filename, *modelCloud_, *modelCloud_normal_, para))
             throw std::runtime_error("CAD model import failed");
 

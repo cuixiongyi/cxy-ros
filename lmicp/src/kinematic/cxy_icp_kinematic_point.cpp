@@ -51,7 +51,11 @@ namespace cxy
             std::vector<float> pointNKNSquaredDistance(K);
             /// kdtreeptr_ is updated by setModelCloud
             if (nullptr == kdtree_ptr_)
+            {
                 ROS_INFO("nullptr kdtree");
+                throw std::runtime_error("empty kdtree");
+
+            }
 
             if ( 0 == kdtree_ptr_->nearestKSearch (model, K, pointIdxNKNSearch, pointNKNSquaredDistance)  )
             {
@@ -87,9 +91,10 @@ namespace cxy
             uint8_t ii = 0;
             if (config_->with_icp_jacobian)
             {
-                res(ii) = cxy_icp_kinematic_point::matchPointCloud(modelPoint_global_
-                                                                              , dataPoint_
-                                                                              , point_resdual3_);
+                res(ii) = matchPointCloud(modelPoint_global_
+                                        , dataPoint_
+                                      , point_resdual3_);
+                std::cout<<res(ii)<<std::endl;
                 ++ii;
             }
             if (config_->with_collision_jacobian)
@@ -126,28 +131,28 @@ namespace cxy
             /*
              * TODO add jacobian of other type
              */
-            uint8_t ii = 0;
+            int ii = 0;
             if (config_->with_icp_jacobian)
             {
 
-                compute_icp_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
+                compute_icp_jacobian(jac.block(ii, 0, 1, jac.cols()));
                 ++ii;
             }
             if (config_->with_collision_jacobian)
             {
-                compute_collision_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
+                compute_collision_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_push_jacobian)
             {
-                compute_push_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
+                compute_push_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
             if (config_->with_silhouette_jacobian)
             {
-                compute_silhouette_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
+                compute_silhouette_jacobian(jac.block(ii, 0, 1, jac.cols()));
 
                 ++ii;
             }
@@ -183,6 +188,7 @@ namespace cxy
                     jac(0, 2) =
                             compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Z_axis_translation);
 
+                    std::cout<<jac(0,0)<<" "<<jac(0,1)<<" "<<jac(0,2)<<" "<<jac(0,3)<<" "<<jac(0,4)<<" "<<jac(0,5)<<" "<<std::endl;
                 }
                 else
                 {
@@ -228,11 +234,11 @@ namespace cxy
             {
                 fix_axis(0) = 1;
             }
-            if (cxy_transform::Axis::Y_axis_rotation == rotation_type)
+            else if (cxy_transform::Axis::Y_axis_rotation == rotation_type)
             {
                 fix_axis(1) = 1;
             }
-            if (cxy_transform::Axis::Z_axis_rotation == rotation_type)
+            else if (cxy_transform::Axis::Z_axis_rotation == rotation_type)
             {
                 fix_axis(2) = 1;
             }
@@ -273,18 +279,18 @@ namespace cxy
         _Scalar cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian_get_translation_jacobian(
                 const cxy_icp_kinematic_joint<_Scalar> *const &joint, cxy_transform::Axis const &rotation_type)
         {
-            Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+            ///Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
             if (cxy_transform::Axis::X_axis_translation == rotation_type)
             {
-                return desir_diff(0);
+                return point_resdual3_(0);
             }
             if (cxy_transform::Axis::Y_axis_translation == rotation_type)
             {
-                return desir_diff(1);
+                return point_resdual3_(1);
             }
             if (cxy_transform::Axis::Z_axis_translation == rotation_type)
             {
-                return desir_diff(2);
+                return point_resdual3_(2);
             }
             return 0;
         }

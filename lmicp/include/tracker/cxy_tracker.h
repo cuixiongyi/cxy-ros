@@ -22,7 +22,6 @@ namespace cxy
 
         _Scalar runOptimization();
 
-        mutable cxy_kinematic::cxy_icp_kinematic<_Scalar> kinematic_;
 
         inline MatrixX1 const& getX() const {return x_;}
         inline void setX(MatrixX1 const& x) {x_ = x;}
@@ -58,6 +57,7 @@ namespace cxy
         MatrixX1 x_;
         pcl::PointCloud<PointT>::Ptr dataCloud_;
         pcl::PointCloud<PointT>::Ptr visibleModelCloud_;
+        mutable cxy_kinematic::cxy_icp_kinematic<_Scalar> kinematic_;
 
     };
 
