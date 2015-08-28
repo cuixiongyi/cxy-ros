@@ -43,6 +43,12 @@ namespace cxy
             void setChildList( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const&);
             std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& getChildList() const;
             void setParent(const cxy_icp_kinematic_joint* );
+            void setParentList( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> &);
+            /*
+             * The 1st element of parentList is the joint itself
+             */
+            inline std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& getParentList() const {return pParentList_;};
+
             inline const cxy_icp_kinematic_joint*&  getParent() {return pParent_;}
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
@@ -61,6 +67,7 @@ namespace cxy
 
             const cxy_icp_kinematic_joint* pParent_;
             std::vector<const cxy_icp_kinematic_joint*> pChildList_;
+            std::vector<const cxy_icp_kinematic_joint*> pParentList_;
 
         /// inline function
         public:

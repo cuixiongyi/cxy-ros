@@ -20,6 +20,7 @@ namespace cxy
             , DoF_(joint_info_.DoF)
             , originPose_(joint_info_.t[0], joint_info_.t[1], joint_info_.t[2]
                           , joint_info_.r[0], joint_info_.r[1], joint_info_.r[2])
+            , pParent_(nullptr)
         {
             theta_ = new _Scalar [DoF_];
         }
@@ -84,7 +85,13 @@ namespace cxy
 
 
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_joint<_Scalar>::setParentList(std::vector<const cxy_icp_kinematic_joint *> &parentList)
+        {
+            pParentList_ = std::move(parentList);
 
+            return;
+        }
     }
 }
 

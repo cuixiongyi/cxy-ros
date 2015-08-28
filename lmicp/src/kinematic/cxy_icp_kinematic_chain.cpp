@@ -125,6 +125,7 @@ namespace cxy
                 residual.resize(rows, 1);
             }
 
+            _Scalar res_sum = 0.0;
             int row = 0;
             for (int ii = 0; ii < points_.size(); ++ii)
             {
@@ -135,8 +136,11 @@ namespace cxy
 
                 row = ii*config_->n_num_;
                 points_[ii]->computePointResidual(residual.block(row, 0, cxy_config::n_num_, 1));
+                res_sum += residual(row);
             }
 
+            res_sum = res_sum / getModelPointSize();
+            std::cout<<"residual = "<<res_sum<<std::endl;
         }
 
         template<typename _Scalar>
@@ -316,6 +320,9 @@ namespace cxy
                 {
                     int idx = ii;
                     int parent = cxy_config::joint_config_[idx].joint_parent;
+                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> parentList;
+                    parentList.push_back(joints_[ii].get());
+
                     if (-1 == parent)
                     {
                         joints_[ii]->setParent(nullptr);
@@ -334,12 +341,13 @@ namespace cxy
                     while (-1 != parent)
                     {
                         jointChildList[parent].push_back(ii);
+                        parentList.push_back(joints_[parent].get());
 
                         idx = parent;
                         parent = cxy_config::joint_config_[idx].joint_parent;
 
                     }
-
+                    joints_[ii]->setParentList(parentList);
                 }
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {

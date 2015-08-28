@@ -130,24 +130,24 @@ namespace cxy
             if (config_->with_icp_jacobian)
             {
 
-                compute_icp_jacobian(jac.block(ii, 0, 1, jac.cols()));
+                compute_icp_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
                 ++ii;
             }
             if (config_->with_collision_jacobian)
             {
-                compute_collision_jacobian(jac.block(ii, 0, 1, jac.cols()));
+                compute_collision_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
 
                 ++ii;
             }
             if (config_->with_push_jacobian)
             {
-                compute_push_jacobian(jac.block(ii, 0, 1, jac.cols()));
+                compute_push_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
 
                 ++ii;
             }
             if (config_->with_silhouette_jacobian)
             {
-                compute_silhouette_jacobian(jac.block(ii, 0, 1, jac.cols()));
+                compute_silhouette_jacobian(jac.block(ii, 0, joint_->getNumDoF(), jac.cols()));
 
                 ++ii;
             }
@@ -160,66 +160,40 @@ namespace cxy
         {
 
             /*
-             * the 1st element of childList is it self
+             * the 1st element of parentList is it self
              */
-            std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const & childList = joint_->getChildList();
-            for (int ii = 0; ii < childList.size(); ++ii)
+            std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &parentList = joint_->getParentList();
+            for (int ii = 0; ii < parentList.size(); ++ii)
             {
                 /// 1st element is the joint it self
-                const cxy_icp_kinematic_joint<_Scalar>* const& joint = childList[ii];
+                const cxy_icp_kinematic_joint<_Scalar> *const &joint = parentList[ii];
 
                 if (cxy_transform::Axis::Six_DoF == joint->getJointType())
-                    continue;
+                {
+                    jac(0, 3) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::X_axis_rotation);
+                    jac(0, 4) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Y_axis_rotation);
+                    jac(0, 5) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Z_axis_rotation);
+                    jac(0, 0) =
+                            compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::X_axis_translation);
+                    jac(0, 1) =
+                            compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Y_axis_translation);
+                    jac(0, 2) =
+                            compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Z_axis_translation);
 
-                Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
-                Eigen::Matrix< _Scalar, 3, 1> tmp(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
-
-                Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
-                if (cxy_transform::Axis::X_axis_rotation == joint->getJointType())
-                {
-                    fix_axis(0) = 1;
-                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
-                }
-                if (cxy_transform::Axis::Y_axis_rotation == joint->getJointType())
-                {
-                    fix_axis(1) = 1;
-                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
-                }
-                if (cxy_transform::Axis::Z_axis_rotation == joint->getJointType())
-                {
-                    fix_axis(2) = 1;
-                    joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
-                }
-
-                Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(tmp);
-                //Eigen::Matrix< _Scalar, 3, 1> cross_norm = cross / (std::sqrt(cross(0)*cross(0)+cross(1)*cross(1)+cross(2)*cross(2)));
-                Eigen::Matrix< _Scalar, 3, 1>& cross_norm = cross;
-                const float jac_step_scale = 0.3;
-                const float r3_length = 1; //std::sqrt(point_resdual3_(0)*r3(0)+r3(1)*r3(1)+r3(2)*r3(2));
-                float scale0 = r3_length * jac_step_scale * cross_norm(0);
-                float scale1 = r3_length * jac_step_scale * cross_norm(1);
-                float scale2 = r3_length * jac_step_scale * cross_norm(2);
-                if (std::isnan(scale0))
-                    scale0 = 0.0;
-                if (std::isnan(scale1))
-                    scale1 = 0.0;
-                if (std::isnan(scale2))
-                    scale2 = 0.0;
-                if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2) > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
-                {
-                    jac(0, joint->getParaStartIdx()) =  -std::abs(cross(2) + cross(1) + cross(0));
-                    /*
-                    if (jj == 20)
-                        ROS_INFO_STREAM("reversed");
-                        */
                 }
                 else
                 {
-                    jac(0, joint->getParaStartIdx()) =  std::abs(cross(2) + cross(1) + cross(0));
-                    //fjac(jj, 0) = -fjac(jj, 0);
-                }
-            }
 
+                    jac(0, joint->getParaStartIdx()) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, joint->getJointType());
+
+                }
+
+
+            }
         }
 
         template<typename _Scalar>
@@ -238,6 +212,81 @@ namespace cxy
         void cxy_icp_kinematic_point<_Scalar>::compute_silhouette_jacobian(Eigen::Ref<MatrixXX> jac)
         {
 
+        }
+
+
+        template<typename _Scalar>
+        _Scalar cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian_get_rotation_jacobian(
+                const cxy_icp_kinematic_joint<_Scalar> *const &joint, cxy_transform::Axis const &rotation_type)
+        {
+            // Jacobian =  rotation_axis cross (diser_pos - cur_pos)
+
+            Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
+            Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+            Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
+            if (cxy_transform::Axis::X_axis_rotation == rotation_type)
+            {
+                fix_axis(0) = 1;
+            }
+            if (cxy_transform::Axis::Y_axis_rotation == rotation_type)
+            {
+                fix_axis(1) = 1;
+            }
+            if (cxy_transform::Axis::Z_axis_rotation == rotation_type)
+            {
+                fix_axis(2) = 1;
+            }
+            joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
+
+            Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(desir_diff);
+            //Eigen::Matrix< _Scalar, 3, 1> cross_norm = cross / (std::sqrt(cross(0)*cross(0)+cross(1)*cross(1)+cross(2)*cross(2)));
+            Eigen::Matrix< _Scalar, 3, 1>& cross_norm = cross;
+            const float jac_step_scale = 0.3;
+            const float r3_length = 1; //std::sqrt(point_resdual3_(0)*r3(0)+r3(1)*r3(1)+r3(2)*r3(2));
+            //float scale0 = r3_length * jac_step_scale * cross_norm(0);
+            float scale0 = cross_norm(0);
+            //float scale1 = r3_length * jac_step_scale * cross_norm(1);
+            float scale1 = cross_norm(1);
+            //float scale2 = r3_length * jac_step_scale * cross_norm(2);
+            float scale2 = cross_norm(2);
+            if (std::isnan(scale0))
+                scale0 = 0.0;
+            if (std::isnan(scale1))
+                scale1 = 0.0;
+            if (std::isnan(scale2))
+                scale2 = 0.0;
+            if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2) > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
+            {
+                return  -std::abs(cross(2) + cross(1) + cross(0));
+                /*
+                if (jj == 20)
+                    ROS_INFO_STREAM("reversed");
+                */
+            }
+            else
+            {
+                return std::abs(cross(2) + cross(1) + cross(0));
+            }
+        }
+
+        template<typename _Scalar>
+        _Scalar cxy_icp_kinematic_point<_Scalar>::compute_icp_jacobian_get_translation_jacobian(
+                const cxy_icp_kinematic_joint<_Scalar> *const &joint, cxy_transform::Axis const &rotation_type)
+        {
+            Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+            if (cxy_transform::Axis::X_axis_translation == rotation_type)
+            {
+                return desir_diff(0);
+            }
+            if (cxy_transform::Axis::Y_axis_translation == rotation_type)
+            {
+                return desir_diff(1);
+            }
+            if (cxy_transform::Axis::Z_axis_translation == rotation_type)
+            {
+                return desir_diff(2);
+            }
+            return 0;
         }
     }
 }
