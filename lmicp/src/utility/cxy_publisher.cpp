@@ -34,24 +34,31 @@ namespace cxy
     void cxy_publisher::publishModelPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
     {
         sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
+        if ( ! publishPrepare(cloud, rosCloud))
+            return;
         getInstance()->model_point_pub_.publish(rosCloud);
         return;
     }
 
     void cxy_publisher::publishDataPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
     {
+
         sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
+        if ( ! publishPrepare(cloud, rosCloud))
+            return;
         getInstance()->data_point_pub_.publish(rosCloud);
         return;
     }
 
-    void cxy_publisher::publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud)
+    bool cxy_publisher::publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud)
     {
+        if (cloud == nullptr)
+            return false;
+        if (cloud->size() == 0)
+            return false;
         pcl::toROSMsg(*cloud, rosCloud);
         rosCloud.header.frame_id = cxy_config::rviz_frame_name_;
         rosCloud.header.stamp = ros::Time::now();
-        return;
+        return true;
     }
 }

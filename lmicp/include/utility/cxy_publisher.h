@@ -26,7 +26,7 @@ namespace cxy
             static void publishDataPoint(
                     const pcl::PointCloud<PointT>::Ptr& cloud);
 
-            static void publishPrepare(
+            static bool publishPrepare(
                         const pcl::PointCloud<PointT>::Ptr& cloud
                         , sensor_msgs::PointCloud2& rosCloud);
 

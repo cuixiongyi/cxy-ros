@@ -30,7 +30,7 @@ int main(int argc, char  *argv[])
     pcl::PointCloud<PointT>::Ptr modelCloud;
     char key;
     const float trans_inc = 0.1;
-    const float rot_inc = 1.0;
+    const float rot_inc = 2.0;
     while (1)
     {
         std::cin>>key;
@@ -54,6 +54,13 @@ int main(int argc, char  *argv[])
         if ('r' == key)
         {
             x_data(0) += trans_inc;
+            //x_data(4) += rot_inc;
+        }
+        if ('p' == key)
+        {
+            cxy_publisher::publishDataPoint(dataCloud);
+            cxy_publisher::publishModelPoint(modelCloud);
+
         }
     }
 
