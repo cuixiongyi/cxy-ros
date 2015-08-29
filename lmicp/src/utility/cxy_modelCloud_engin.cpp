@@ -44,13 +44,14 @@ namespace cxy
 
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr
-    cxy_modelCloud_engin::getVisibleCloud( cxy_transform::Pose<float> const& pose)
+    cxy_modelCloud_engin::getVisibleCloud( cxy_transform::Pose<float> const& pose
+                                           , pcl::PointCloud<pcl::PointXYZ>::Ptr& modelCloud_local)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr transCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
-
+        //modelCloud_local = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
         //pose.composePoint(modelCloud_, transCloud);
         //pose.composeDirectionVector(modelCloud_normal_, transCloud_normal);
 
@@ -60,11 +61,13 @@ namespace cxy
         // get visible point isn't working
         // just return fullPointCloud
         retCloud = getModelCloud(pose);
+        modelCloud_local = modelCloud_;
         return retCloud;
     }
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr
-    cxy_modelCloud_engin::getVisibleCloud(const cxy_transform::Pose<double>& pose)
+    cxy_modelCloud_engin::getVisibleCloud(const cxy_transform::Pose<double>& pose
+                                      , pcl::PointCloud<pcl::PointXYZ>::Ptr& modelCloud_local)
     {
         pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud(new pcl::PointCloud<pcl::PointXYZ>);
         pcl::PointCloud<pcl::PointXYZ>::Ptr retCloud_normal(new pcl::PointCloud<pcl::PointXYZ>);
@@ -74,6 +77,7 @@ namespace cxy
         pose.composeDirectionVector(modelCloud_normal_, transCloud_normal);
 
         cad_helper_.filterOccludedPoints(transCloud, retCloud, transCloud_normal, retCloud_normal, Eigen::Vector3d(1.0, 0.0, 0.0));
+        modelCloud_local = modelCloud_;
 
         return retCloud;
     }

@@ -22,6 +22,7 @@ namespace cxy
                 , kdtree_ptr_(kdtree)
                 , dataCloud_(dataCloud)
                 , kc_ptr_(kc_ptr)
+
         {
 
         }
@@ -94,7 +95,7 @@ namespace cxy
                 res(ii) = matchPointCloud(modelPoint_global_
                                         , dataPoint_
                                       , point_resdual3_);
-                std::cout<<res(ii)<<std::endl;
+                //std::cout<<res(ii)<<std::endl;
                 ++ii;
             }
             if (config_->with_collision_jacobian)
@@ -188,7 +189,7 @@ namespace cxy
                     jac(0, 2) =
                             compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Z_axis_translation);
 
-                    std::cout<<jac(0,0)<<" "<<jac(0,1)<<" "<<jac(0,2)<<" "<<jac(0,3)<<" "<<jac(0,4)<<" "<<jac(0,5)<<" "<<std::endl;
+                    //std::cout<<jac(0,0)<<" "<<jac(0,1)<<" "<<jac(0,2)<<" "<<jac(0,3)<<" "<<jac(0,4)<<" "<<jac(0,5)<<" "<<std::endl;
                 }
                 else
                 {
@@ -282,15 +283,15 @@ namespace cxy
             ///Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
             if (cxy_transform::Axis::X_axis_translation == rotation_type)
             {
-                return point_resdual3_(0);
+                return -point_resdual3_(0);
             }
             if (cxy_transform::Axis::Y_axis_translation == rotation_type)
             {
-                return point_resdual3_(1);
+                return -point_resdual3_(1);
             }
             if (cxy_transform::Axis::Z_axis_translation == rotation_type)
             {
-                return point_resdual3_(2);
+                return -point_resdual3_(2);
             }
             return 0;
         }

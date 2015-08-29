@@ -23,7 +23,7 @@ namespace cxy
     template<typename _Scalar>
     _Scalar cxy_tracker<_Scalar>::runOptimization()
     {
-        kinematic_.updateModel(x_);
+        kinematic_.constructModelPoints(x_);
         std::size_t const& pointSize = kinematic_.getModelPointSize();
         cxy_optimization::cxy_cost_func_kinematic<_Scalar> func(
                 cxy_config::joint_DoFs

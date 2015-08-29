@@ -44,7 +44,7 @@ namespace cxy
              */
             void updateJoints( MatrixX1 const&);
 
-            void updateModel( MatrixX1 const&);
+            void constructModelPoints( MatrixX1 const&);
 
 
             inline void setModelPointSize( std::size_t const& num)  { model_Point_num_ = num;}

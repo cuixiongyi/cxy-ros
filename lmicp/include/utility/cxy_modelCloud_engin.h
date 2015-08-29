@@ -36,9 +36,11 @@ namespace cxy
          * This is a hack that prevent this class from template too
          */
         pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud
-                (const cxy_transform::Pose<float>& pose);
+                (const cxy_transform::Pose<float>& pose
+                , pcl::PointCloud<pcl::PointXYZ>::Ptr&);
         pcl::PointCloud<pcl::PointXYZ>::Ptr getVisibleCloud
-                (const cxy_transform::Pose<double>& pose);
+                (const cxy_transform::Pose<double>& pose
+                , pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
 
     };

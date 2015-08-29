@@ -7,6 +7,8 @@ namespace cxy
         template<typename _Scalar>
         cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const cxy_config* const config)
         : config_(config)
+          , fout_res_("/home/xiongyi/cxy_workspace/src/cxyros/res.txt")
+          , fout_jac_("/home/xiongyi/cxy_workspace/src/cxyros/jac.txt")
         {
             constructKinematicChain();
         }
@@ -35,6 +37,7 @@ namespace cxy
                 ii += joints_[jtmp]->getNumDoF();
                 ++jtmp;
             }
+            syc_resetSyncList();
             for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
             {
                 if (syc_tryUpdateJointList(ii))
@@ -51,7 +54,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
+        void cxy_icp_kinematic_chain<_Scalar>::constructModelPoints()
         {
             points_ = std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>>();
 
@@ -59,7 +62,13 @@ namespace cxy
             for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
             {
                 /// this points are in global coordinate
-                pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
+                pcl::PointCloud<PointT>::Ptr modelCloud_local;
+                pcl::PointCloud<PointT>::Ptr points =
+                        modelCloud_engin_[ii]->getVisibleCloud(
+                          joints_[ii]->getPose()
+                          , modelCloud_local);
+
+                CXY_ASSERT(modelCloud_local->size() == points->size());
 
                 for (int jj = 0; jj < points->size(); ++jj)
                 {
@@ -69,6 +78,7 @@ namespace cxy
                     points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
                     auto &lastPoint = points_.back();
                     lastPoint->modelPoint_global_ = (*points)[jj];
+                    lastPoint->modelPoint_local_ = (*modelCloud_local)[jj];
                 }
 
 
@@ -83,7 +93,9 @@ namespace cxy
             for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
             {
                 /// this points are in global coordinate
-                pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
+                pcl::PointCloud<PointT>::Ptr modelCloud_local;
+                pcl::PointCloud<PointT>::Ptr points =
+                        modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose(), modelCloud_local);
 
 
                 for (int jj = 0; jj < points->size(); ++jj)
@@ -124,6 +136,7 @@ namespace cxy
             {
                 residual.resize(rows, 1);
             }
+            residual.setZero();
 
             _Scalar res_sum = 0.0;
             int row = 0;
@@ -140,6 +153,8 @@ namespace cxy
                 res_sum += residual(row);
             }
 
+            fout_res_<<"res = "<<std::endl;
+            fout_res_<<residual<<std::endl;
             res_sum = res_sum / getModelPointSize();
             std::cout<<"residual = "<<res_sum<<std::endl;
         }
@@ -155,6 +170,7 @@ namespace cxy
                 jacobian.resize(rows, cols);
             }
 
+            jacobian.setZero();
             int row = 0;
             for (int ii = 0; ii < points_.size(); ++ii)
             {
@@ -163,7 +179,8 @@ namespace cxy
                 points_[ii]->computePointJacobian(jacobian.block(row, 0, cxy_config::n_num_, jacobian.cols()));
 
             }
-
+            fout_res_<<"jac = "<<std::endl;
+            fout_res_<<jacobian<<std::endl;
         }
 
         template<typename _Scalar>
@@ -422,9 +439,17 @@ namespace cxy
             return true;
         }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
+        {
+            // ii is for each joint
+            for (int ii = 0; ii < points_.size(); ++ii)
+            {
 
-
-
+                auto &Point = points_[ii];
+                Point->updateModelPointGlobal();
+            }
+        }
     }
 }
 

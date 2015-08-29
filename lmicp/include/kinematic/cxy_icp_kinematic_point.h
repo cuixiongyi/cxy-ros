@@ -72,6 +72,7 @@ namespace cxy
                                         , Eigen::Matrix< _Scalar, 3, 1>& res);
         //private:
 
+
             const int joint_idx_ = {0};
 
             const cxy_config* const config_;
@@ -79,7 +80,7 @@ namespace cxy
             const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_;
 
 
-            Eigen::Matrix<_Scalar, 3, 1> modelPoint_local_;
+            PointT modelPoint_local_;
             PointT modelPoint_global_;
             PointT dataPoint_;
 
@@ -92,6 +93,8 @@ namespace cxy
             const pcl::KdTreeFLANN<PointT>::Ptr& kdtree_ptr_;
             const pcl::PointCloud<PointT>::Ptr& dataCloud_;
 
+            inline void updateModelPointGlobal()
+            {joint_->getPose().composePoint(modelPoint_local_, modelPoint_global_);};
         };
     }
 }

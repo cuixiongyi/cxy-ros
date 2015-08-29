@@ -44,6 +44,8 @@ namespace cxy
 
             void updateJoints(const MatrixX1&);
 
+            void constructModelPoints();
+
             void updateModelPoints();
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr updateModel_getVisible();
@@ -73,6 +75,9 @@ namespace cxy
 
             inline const cxy_icp_kinematic_joint<_Scalar>& getJoint(const int& joint) const {return (*joints_[joint]);}
         private:
+
+            std::ofstream fout_res_;
+            std::ofstream fout_jac_;
 
             std::mutex kinematic_chain_lock;
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
