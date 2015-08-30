@@ -29,8 +29,9 @@ int main(int argc, char  *argv[])
     pcl::PointCloud<PointT>::Ptr dataCloud;
     pcl::PointCloud<PointT>::Ptr modelCloud;
     char key;
-    const float trans_inc = 0.1;
-    const float rot_inc = 2.0;
+    const float trans_inc = 1;
+     float rot_inc = Deg2Rad(3.0);
+    rot_inc = 2.0;
     while (1)
     {
         std::cin>>key;
@@ -42,19 +43,20 @@ int main(int argc, char  *argv[])
             dataCloud = data.getVisibleModelCloud();
 
             tracker.setDataCloud(dataCloud);
-            std::cout<<tracker.runOptimization()<<std::endl;
+            tracker.runOptimization();
             pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud (new pcl::PointCloud<pcl::PointXYZ>);
             modelCloud = tracker.getVisibleModelCloud(fullCloud);
 
             //cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishDataPoint(dataCloud);
-            cxy_publisher::publishModelPoint(modelCloud);
+            cxy_publisher::publishModelPoint(fullCloud);
 
         }
         if ('r' == key)
         {
-            //x_data(0) += trans_inc;
-            x_data(5) += rot_inc;
+            x_data(1) += trans_inc;
+            x_data(2) += trans_inc;
+            //x_data(5) += rot_inc;
         }
         if ('p' == key)
         {
