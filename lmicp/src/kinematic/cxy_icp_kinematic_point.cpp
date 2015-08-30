@@ -179,19 +179,20 @@ namespace cxy
 
                 if (cxy_transform::Axis::Six_DoF == joint->getJointType())
                 {
-                    jac(0, 3) =
-                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::X_axis_rotation);
-                    jac(0, 4) =
-                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Y_axis_rotation);
-                    jac(0, 5) =
-                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Z_axis_rotation);
+/*
                     jac(0, 0) =
                             compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::X_axis_translation);
                     jac(0, 1) =
                             compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Y_axis_translation);
                     jac(0, 2) =
                             compute_icp_jacobian_get_translation_jacobian(joint, cxy_transform::Axis::Z_axis_translation);
-
+*/
+                    jac(0, 3) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::X_axis_rotation);
+                    jac(0, 4) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Y_axis_rotation);
+                    jac(0, 5) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, cxy_transform::Axis::Z_axis_rotation);
                     //std::cout<<jac(0,0)<<" "<<jac(0,1)<<" "<<jac(0,2)<<" "<<jac(0,3)<<" "<<jac(0,4)<<" "<<jac(0,5)<<" "<<std::endl;
                 }
                 else
@@ -233,10 +234,14 @@ namespace cxy
 
             Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
             Eigen::Matrix< _Scalar, 3, 1> desir_diff(
-                    modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+                    modelPoint_global_.x - joint->getPose().t()(0)
+                    , modelPoint_global_.y - joint->getPose().t()(1)
+                    , modelPoint_global_.z - joint->getPose().t()(2));
 
             _Scalar poset3[]
-                    {joint->getPose().t()(0), joint->getPose().t()(1),joint->getPose().t()(2)};
+                    {joint->getPose().t()(0)
+                        , joint->getPose().t()(1)
+                        ,joint->getPose().t()(2)};
 
             Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
             if (cxy_transform::Axis::X_axis_rotation == rotation_type)
@@ -251,6 +256,8 @@ namespace cxy
             {
                 fix_axis(2) = 1;
             }
+            else
+                throw std::runtime_error("compute_icp_jacobian_get_rotation_jacobian using the wrong rotation_type");
             joint->getPose().composeDirectionVector(fix_axis, rotation_axis);
 
             Eigen::Matrix< _Scalar, 3, 1> cross = rotation_axis.cross(desir_diff);
@@ -270,7 +277,8 @@ namespace cxy
                 scale1 = 0.0;
             if (std::isnan(scale2))
                 scale2 = 0.0;
-            if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2) > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
+            if (std::abs(point_resdual3_(0)+scale0) + std::abs(point_resdual3_(1)+scale1) + std::abs(point_resdual3_(2)+scale2)
+                > std::abs(point_resdual3_(0)) + std::abs(point_resdual3_(1)) + std::abs(point_resdual3_(2)))
             {
                 return  -std::abs(cross(2) + cross(1) + cross(0));
                 /*
@@ -293,15 +301,17 @@ namespace cxy
             {
                 return -point_resdual3_(0);
             }
-            if (cxy_transform::Axis::Y_axis_translation == rotation_type)
+            else if (cxy_transform::Axis::Y_axis_translation == rotation_type)
             {
                 return -point_resdual3_(1);
             }
-            if (cxy_transform::Axis::Z_axis_translation == rotation_type)
+            else if (cxy_transform::Axis::Z_axis_translation == rotation_type)
             {
                 return -point_resdual3_(2);
             }
-            return 0;
+            else
+                throw std::runtime_error("compute_icp_jacobian_get_translation_jacobian using the wrong translation_type");
+
         }
     }
 }

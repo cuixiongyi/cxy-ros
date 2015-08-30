@@ -31,7 +31,7 @@ int main(int argc, char  *argv[])
     char key;
     const float trans_inc = 1;
      float rot_inc = Deg2Rad(3.0);
-    rot_inc = 2.0;
+    //rot_inc = 2.5;
     while (1)
     {
         std::cin>>key;
@@ -49,14 +49,14 @@ int main(int argc, char  *argv[])
 
             //cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishDataPoint(dataCloud);
-            cxy_publisher::publishModelPoint(fullCloud);
+            cxy_publisher::publishModelPoint(modelCloud);
 
         }
         if ('r' == key)
         {
-            x_data(1) += trans_inc;
-            x_data(2) += trans_inc;
-            //x_data(5) += rot_inc;
+            //x_data(1) += trans_inc;
+            //x_data(2) += trans_inc;
+            x_data(5) += rot_inc;
         }
         if ('p' == key)
         {
