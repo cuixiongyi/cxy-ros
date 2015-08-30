@@ -41,7 +41,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        const _Scalar& cxy_icp_kinematic_point<_Scalar>::matchPointCloud(const PointT& model
+        _Scalar cxy_icp_kinematic_point<_Scalar>::matchPointCloud(const PointT& model
                                                                         , PointT& data
                                                                         , Eigen::Matrix< _Scalar, 3, 1>& res)
         {
@@ -129,6 +129,9 @@ namespace cxy
 
             }
 
+            matchPointCloud(modelPoint_global_
+                            , dataPoint_
+                            , point_resdual3_);
             /*
              * TODO add jacobian of other type
              */
@@ -229,7 +232,12 @@ namespace cxy
             // Jacobian =  rotation_axis cross (diser_pos - cur_pos)
 
             Eigen::Matrix< _Scalar, 3, 1> rotation_axis;
-            Eigen::Matrix< _Scalar, 3, 1> desir_diff(modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+            Eigen::Matrix< _Scalar, 3, 1> desir_diff(
+                    modelPoint_global_.x - joint->getPose().t()(0), modelPoint_global_.y - joint->getPose().t()(1), modelPoint_global_.z - joint->getPose().t()(2));
+
+            _Scalar poset3[]
+                    {joint->getPose().t()(0), joint->getPose().t()(1),joint->getPose().t()(2)};
+
             Eigen::Matrix< _Scalar, 3, 1> fix_axis(0, 0, 0);
             if (cxy_transform::Axis::X_axis_rotation == rotation_type)
             {

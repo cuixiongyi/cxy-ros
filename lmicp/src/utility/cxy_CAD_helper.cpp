@@ -46,7 +46,8 @@ namespace cxy
                                            , const SamplingParams &params)
     {
         cloud.header.frame_id = shape.STRING_NAME;
-        srand(time(NULL));
+        //srand(time(NULL));
+        srand(1);
 
         if (params.sample_type == SampleType::RANDOM)
         {

@@ -67,7 +67,7 @@ namespace cxy
             void compute_push_jacobian(Eigen::Ref<MatrixXX> jac);
             void compute_silhouette_jacobian(Eigen::Ref<MatrixXX> jac);
 
-            const _Scalar& matchPointCloud(const PointT&
+            _Scalar matchPointCloud(const PointT&
                                         , PointT&
                                         , Eigen::Matrix< _Scalar, 3, 1>& res);
         //private:
