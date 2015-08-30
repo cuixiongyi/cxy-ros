@@ -57,7 +57,7 @@ namespace cxy
 
             for (int i = 0; i < shape.triangle_count; i++)
             {
-                float density = 1000;
+                float density = 100;
                 double area;
 
                 geometry_msgs::Point    v1;

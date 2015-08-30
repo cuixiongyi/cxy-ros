@@ -54,10 +54,13 @@ int main(int argc, char  *argv[])
         if ('r' == key)
         {
             //x_data(0) += trans_inc;
-            x_data(4) += rot_inc;
+            x_data(5) += rot_inc;
         }
         if ('p' == key)
         {
+            data.setX(x_data);
+            dataCloud = data.getVisibleModelCloud();
+
             cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishModelPoint(modelCloud);
 
