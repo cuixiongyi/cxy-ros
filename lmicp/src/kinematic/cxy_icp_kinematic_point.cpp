@@ -173,11 +173,14 @@ namespace cxy
              */
             std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &parentList = joint_->getParentList();
             //std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &parentList = joint_->getChildList();
+            float jacFactor = 2.0;
             for (int ii = 0; ii < parentList.size(); ++ii)
             {
                 /// 1st element is the joint it self
                 const cxy_icp_kinematic_joint<_Scalar> *const &joint = parentList[ii];
 
+                if (ii != 0)
+                    jacFactor = 1.0;
                 if (cxy_transform::Axis::Six_DoF == joint->getJointType())
                 {
 /*
@@ -200,7 +203,8 @@ namespace cxy
                 {
 
                     jac(0, joint->getParaStartIdx()) =
-                            compute_icp_jacobian_get_rotation_jacobian(joint, joint->getJointType());
+                            compute_icp_jacobian_get_rotation_jacobian(joint, joint->getJointType())
+                            * jacFactor;
 
                 }
                 /*

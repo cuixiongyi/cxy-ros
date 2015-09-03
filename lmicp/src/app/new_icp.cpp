@@ -30,7 +30,7 @@ int main(int argc, char  *argv[])
     pcl::PointCloud<PointT>::Ptr modelCloud;
     char key;
     const float trans_inc = 1;
-     float rot_inc = Deg2Rad(3.0);
+     float rot_inc = Deg2Rad(6.0);
     //rot_inc = 2.5;
     while (1)
     {
@@ -44,7 +44,8 @@ int main(int argc, char  *argv[])
 
             tracker.setDataCloud(dataCloud);
             tracker.runOptimization();
-            std::cout<<tracker.getX()-x_data<<std::endl;
+            std::cout<<"result = "<<std::endl<<Rad2Deg(tracker.getX())<<std::endl;
+            std::cout<<"true = "<<std::endl<<Rad2Deg(x_data)<<std::endl;
             pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud (new pcl::PointCloud<pcl::PointXYZ>);
             modelCloud = tracker.getVisibleModelCloud(fullCloud);
 
@@ -58,7 +59,7 @@ int main(int argc, char  *argv[])
             //x_data(1) += trans_inc;
             //x_data(2) += trans_inc;
             x_data(0) += rot_inc;
-            //x_data(1) += rot_inc;
+            x_data(1) += rot_inc;
         }
         if ('p' == key)
         {
