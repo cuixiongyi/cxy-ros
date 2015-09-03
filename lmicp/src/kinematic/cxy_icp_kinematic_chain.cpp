@@ -446,8 +446,7 @@ namespace cxy
             for (int ii = 0; ii < points_.size(); ++ii)
             {
 
-                auto &Point = points_[ii];
-                Point->updateModelPointGlobal();
+                points_[ii]->updateModelPointGlobal();
             }
         }
     }

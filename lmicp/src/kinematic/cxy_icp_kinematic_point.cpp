@@ -172,6 +172,7 @@ namespace cxy
              * the 1st element of parentList is it self
              */
             std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &parentList = joint_->getParentList();
+            //std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &parentList = joint_->getChildList();
             for (int ii = 0; ii < parentList.size(); ++ii)
             {
                 /// 1st element is the joint it self
@@ -202,8 +203,17 @@ namespace cxy
                             compute_icp_jacobian_get_rotation_jacobian(joint, joint->getJointType());
 
                 }
+                /*
+                std::vector<const cxy_icp_kinematic_joint<_Scalar> *> const &childList = joint_->getChildList();
+                for (int ii = 1; ii < childList.size(); ++ii)
+                {
+                    /// 1st element is the joint it self
+                    const cxy_icp_kinematic_joint<_Scalar> *const &joint = childList[ii];
 
-
+                    jac(0, joint->getParaStartIdx()) =
+                            compute_icp_jacobian_get_rotation_jacobian(joint, joint->getJointType());
+                }
+*/
             }
         }
 

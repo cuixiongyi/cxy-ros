@@ -131,10 +131,10 @@ namespace cxy
 
             std::stringstream iss(line);
             cxy_joint_info kj;
-
             // joint index
             iss>>kj.joint_idx;
             CXY_ASSERT(kj.joint_idx == ii);
+
             //std::cout<<"joint line: "<<line<<std::endl;
 
             // joint parent

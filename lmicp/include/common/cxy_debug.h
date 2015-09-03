@@ -24,8 +24,8 @@
             if (! (condition)) { \
                 std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
                           << " line " << __LINE__ << ": " << std::endl; \
-                std::exit(EXIT_FAILURE); \
-            } \
+                throw std::runtime_error(" cxy_assert "); \
+} \
         } while (false)
 
 

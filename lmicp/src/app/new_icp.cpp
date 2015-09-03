@@ -44,6 +44,7 @@ int main(int argc, char  *argv[])
 
             tracker.setDataCloud(dataCloud);
             tracker.runOptimization();
+            std::cout<<tracker.getX()-x_data<<std::endl;
             pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud (new pcl::PointCloud<pcl::PointXYZ>);
             modelCloud = tracker.getVisibleModelCloud(fullCloud);
 
@@ -56,7 +57,8 @@ int main(int argc, char  *argv[])
         {
             //x_data(1) += trans_inc;
             //x_data(2) += trans_inc;
-            x_data(5) += rot_inc;
+            x_data(0) += rot_inc;
+            //x_data(1) += rot_inc;
         }
         if ('p' == key)
         {
