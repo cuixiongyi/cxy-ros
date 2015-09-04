@@ -6,7 +6,7 @@ joint_number 3
 #4. model file name
 # the second line is the translation and roatation parameter
 #joint 0
-0  -1 Z_axis_rotation        model/1inDiameterCylinder.stl
+0  -1 Six_DoF        model/1inDiameterCylinder.stl
 0 0 0 	0		0		0
 # 4.8 1.9 9.9
 
