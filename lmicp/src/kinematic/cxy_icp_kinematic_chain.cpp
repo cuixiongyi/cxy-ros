@@ -153,6 +153,8 @@ namespace cxy
                 res_sum += residual(row);
             }
 
+            fout_res_<<"x = "<<std::endl;
+            fout_res_<<Rad2Deg(x_)<<std::endl;
             fout_res_<<"res = "<<std::endl;
             fout_res_<<residual<<std::endl;
             res_sum = res_sum / getModelPointSize();
@@ -179,6 +181,8 @@ namespace cxy
                 points_[ii]->computePointJacobian(jacobian.block(row, 0, cxy_config::n_num_, jacobian.cols()));
 
             }
+            fout_res_<<"x = "<<std::endl;
+            fout_res_<<Rad2Deg(x_)<<std::endl;
             fout_res_<<"jac = "<<std::endl;
             fout_res_<<jacobian<<std::endl;
         }

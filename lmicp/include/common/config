@@ -1,4 +1,4 @@
-joint_number 2
+joint_number 3
 # config joint info has: 
 # 1.joint index(start from 0)
 #2. joint parent(-1 as root)
@@ -12,7 +12,10 @@ joint_number 2
 
 #joint 1
 1 	0  	X_axis_rotation  model/1inDiameterCylinder.stl
-1 28 0	20		0		0
+1 30 0	20		0		0
+
+2 	1  	X_axis_rotation  model/1inDiameterCylinder.stl
+1 30 0	0		30		0
 
 with_icp_jacobian 1 10
 with_collision_jacobian 1 -1
