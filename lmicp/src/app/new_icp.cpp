@@ -56,10 +56,10 @@ int main(int argc, char  *argv[])
         }
         if ('r' == key)
         {
-            x_data(1) += trans_inc;
-            x_data(2) += trans_inc;
-            x_data(4) += rot_inc;
-            x_data(5) += rot_inc;
+            //x_data(1) += trans_inc;
+            //x_data(2) += trans_inc;
+            //x_data(4) += rot_inc;
+            //x_data(5) += rot_inc;
             x_data(7) += rot_inc;
         }
         if ('p' == key)

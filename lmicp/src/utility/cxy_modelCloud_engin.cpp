@@ -5,12 +5,12 @@
 namespace cxy
 {
 
-    cxy_modelCloud_engin::cxy_modelCloud_engin(const std::string& filename )
+    cxy_modelCloud_engin::cxy_modelCloud_engin(const std::string& filename, const float& para )
     : modelCloud_(new pcl::PointCloud<PointT>)
      , modelCloud_normal_(new pcl::PointCloud<PointT>)
     {
-        SamplingParams para(10, 0.005, SampleType::RANDOM);
-        if (! cad_helper_.meshToPointCloud(filename, *modelCloud_, *modelCloud_normal_, para))
+        SamplingParams samplepara(para, 0.005, SampleType::RANDOM);
+        if (! cad_helper_.meshToPointCloud(filename, *modelCloud_, *modelCloud_normal_, samplepara))
             throw std::runtime_error("CAD model import failed");
 
 

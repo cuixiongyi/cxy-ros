@@ -141,6 +141,8 @@ namespace cxy
             iss>>kj.joint_parent;
             CXY_ASSERT(kj.joint_parent < ii && kj.joint_parent >= -1 );
 
+            iss>>kj.model_sample_number;
+            CXY_ASSERT(kj.model_sample_number > 0 );
             // joint joint type
             std::string jointType;
             iss>>jointType;

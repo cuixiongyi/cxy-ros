@@ -391,7 +391,7 @@ namespace cxy
             // set modelCloud for each joint
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
-                modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename));
+                modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename, joints_[ii]->joint_info_.model_sample_number));
             }
 
             /// set Joint Parameter Start Idx
