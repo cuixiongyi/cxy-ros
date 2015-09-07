@@ -1,8 +1,10 @@
 #pragma once
+
+#include "visualization_msgs/MarkerArray.h"
+
 #include <unsupported/Eigen/NonLinearOptimization>
 
 #include "optimization/cxy_cost_func_kinematic.h"
-
 #include "common/cxy_config.h"
 #include "kinematic/cxy_icp_kinematic.h"
 
@@ -50,6 +52,11 @@ namespace cxy
             visibleModelCloud_ = kinematic_.getVisibleModelCloud(x_, fullCloud);
 
             return visibleModelCloud_;
+        }
+
+        inline visualization_msgs::MarkerArray const& getModelMarkerArray()
+        {
+            return kinematic_.getModelMarkerArray();
         }
     private:
         const cxy_config* const config_;

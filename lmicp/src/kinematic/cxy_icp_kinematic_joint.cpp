@@ -23,6 +23,7 @@ namespace cxy
             , pParent_(nullptr)
         {
             theta_ = new _Scalar [DoF_];
+
         }
 
         template<typename _Scalar>

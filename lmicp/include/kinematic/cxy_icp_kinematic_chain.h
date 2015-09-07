@@ -13,6 +13,8 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include <pcl/kdtree/kdtree_flann.h>
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
 
 
 // hack.hpp should not appear at last
@@ -54,6 +56,7 @@ namespace cxy
 
             void constructKinematicChain();
 
+            void constructMarkerArray();
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr const&);
 
@@ -73,7 +76,11 @@ namespace cxy
 
             void getJacobian(MatrixXX&);
 
-            inline const cxy_icp_kinematic_joint<_Scalar>& getJoint(const int& joint) const {return (*joints_[joint]);}
+            inline const cxy_icp_kinematic_joint<_Scalar>& getJoint
+                    (const int& joint) const {return (*joints_[joint]);}
+
+            visualization_msgs::MarkerArray const& getModelMarkerArray();
+
         private:
 
             std::ofstream fout_res_;
@@ -95,6 +102,9 @@ namespace cxy
             pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdtreeptr_;
             bool hasSetDataCloud_;
             cxy_sync dataTime;
+
+            visualization_msgs::MarkerArray markerArray_;
+
 
 
             /// this is the list to synchronize multithreading, do not access directly

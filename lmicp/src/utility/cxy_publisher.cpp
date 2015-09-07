@@ -12,6 +12,7 @@ namespace cxy
         //nh_ = ros::NodeHandle();
         model_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "model_point_pub", 0 );
         data_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "data_point_pub", 0 );
+        arrayMarker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("meshModel_pub",0);
     }
 
     cxy_publisher *cxy_publisher::getInstance()
@@ -60,5 +61,13 @@ namespace cxy
         rosCloud.header.frame_id = cxy_config::rviz_frame_name_;
         rosCloud.header.stamp = ros::Time::now();
         return true;
+    }
+
+    void cxy_publisher::publishMeshModel(visualization_msgs::MarkerArray const& markerArray)
+    {
+        getInstance()->arrayMarker_pub_.publish(markerArray);
+
+        return;
+
     }
 }

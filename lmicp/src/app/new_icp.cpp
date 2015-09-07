@@ -44,14 +44,15 @@ int main(int argc, char  *argv[])
 
             tracker.setDataCloud(dataCloud);
             tracker.runOptimization();
-            std::cout<<"result = "<<std::endl<<Rad2Deg(tracker.getX())<<std::endl;
-            std::cout<<"true = "<<std::endl<<Rad2Deg(x_data)<<std::endl;
+            //std::cout<<"result = "<<std::endl<<Rad2Deg(tracker.getX())<<std::endl;
+            //std::cout<<"true = "<<std::endl<<Rad2Deg(x_data)<<std::endl;
             pcl::PointCloud<pcl::PointXYZ>::Ptr fullCloud (new pcl::PointCloud<pcl::PointXYZ>);
             modelCloud = tracker.getVisibleModelCloud(fullCloud);
 
             //cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishModelPoint(modelCloud);
+            cxy_publisher::publishMeshModel(tracker.getModelMarkerArray());
 
         }
         if ('r' == key)
@@ -60,7 +61,16 @@ int main(int argc, char  *argv[])
             //x_data(2) += trans_inc;
             //x_data(4) += rot_inc;
             //x_data(5) += rot_inc;
-            x_data(7) += rot_inc;
+            //x_data(7) += rot_inc;
+            for (int ii = 3; ii < cxy_config::joint_DoFs; ++ii)
+            {
+                x_data(ii) += Deg2Rad(rand() % 5);
+            }
+            for (int ii = 0; ii < 3; ++ii)
+            {
+                //x_data(ii) += rand() % 5;
+            }
+
         }
         if ('p' == key)
         {

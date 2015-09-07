@@ -15,6 +15,7 @@ namespace cxy_kinematic
         kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
 //        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
 
+
     }
 
 
@@ -110,6 +111,8 @@ namespace cxy_kinematic
 
         return visibleModelCloud_;
     }
+
+
 }
 }
 template class cxy::cxy_kinematic::cxy_icp_kinematic<float>;

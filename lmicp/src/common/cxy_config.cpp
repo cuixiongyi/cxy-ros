@@ -66,7 +66,7 @@ namespace cxy
 		{
             if (-2 == lineStatus)
             {
-                std::cout<<"comment : "<<line<<std::endl;
+                //std::cout<<"comment : "<<line<<std::endl;
                 continue;
 
             }
@@ -178,6 +178,7 @@ namespace cxy
             iss.str(line);
             //std::cout<<"iss: "<<line<<std::endl;
             iss>>kj.t[0]>>kj.t[1]>>kj.t[2]>>kj.r[0]>>kj.r[1]>>kj.r[2];
+
 
             joint_config_.push_back(kj);
         }

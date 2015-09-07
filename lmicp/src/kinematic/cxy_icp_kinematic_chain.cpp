@@ -11,6 +11,9 @@ namespace cxy
           , fout_jac_("/home/xiongyi/cxy_workspace/src/cxyros/jac.txt")
         {
             constructKinematicChain();
+            constructMarkerArray();
+
+
         }
 
         template<typename _Scalar>
@@ -451,6 +454,57 @@ namespace cxy
             {
 
                 points_[ii]->updateModelPointGlobal();
+            }
+        }
+
+        template<typename _Scalar>
+        visualization_msgs::MarkerArray const &cxy_icp_kinematic_chain<_Scalar>
+                                ::getModelMarkerArray()
+        {
+            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+            {
+                visualization_msgs::Marker& markeri = markerArray_.markers[ii];
+
+                cxy_transform::Pose<_Scalar> const& posei = joints_[ii]->getPose();
+                /*
+                markeri.pose.position.x = posei.t()(0);
+                markeri.pose.position.y = posei.t()(1);
+                markeri.pose.position.z = posei.t()(2);
+                markeri.pose.orientation.x = posei.q().x();
+                markeri.pose.orientation.y = posei.q().y();
+                markeri.pose.orientation.z = posei.q().z();
+                markeri.pose.orientation.w = posei.q().w();
+*/
+            }
+
+            return markerArray_;
+        }
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::constructMarkerArray()
+        {
+            markerArray_.markers.resize(cxy_config::joint_number_);
+
+            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+            {
+                //markerArray_.markers.push_back(visualization_msgs::Marker());
+                visualization_msgs::Marker& markeri = markerArray_.markers[ii];
+
+                markeri.header.frame_id = cxy_config::rviz_frame_name_;
+                markeri.header.stamp = ros::Time();
+                markeri.id = 0;
+                markeri.type = visualization_msgs::Marker::MESH_RESOURCE;
+                markeri.action = visualization_msgs::Marker::ADD;
+                markeri.ns = "meshModel";
+                markeri.scale.x = 1;
+                markeri.scale.y = 1;
+                markeri.scale.z = 1;
+                markeri.color.a = 1.0; // Don't forget to set the alpha!
+                markeri.color.r = 0.0;
+                markeri.color.g = 1.0;
+                markeri.color.b = 0.0;
+                markeri.mesh_resource = joints_[ii]->joint_info_.model_filename;
+
             }
         }
     }

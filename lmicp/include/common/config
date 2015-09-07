@@ -1,4 +1,4 @@
-joint_number 4
+joint_number 15
 # config joint info has: 
 # 1.joint index(start from 0)
 #2. joint parent(-1 as root)
@@ -10,14 +10,54 @@ joint_number 4
 0  -1 60    Six_DoF        model/palm.STL
 0 0 0 	0		0		0
 
-1 	0 30 	X_axis_rotation  model/f1_1_d15h20_ascii.STL
+# 2nd finger
+1 	0 20 	X_axis_rotation  model/f2_1_d14h17_ascii.STL
 0 60 0	0		0		0
 
-2 	1  30	X_axis_rotation  model/f1_1_d15h20_ascii.STL
+2 	1  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
 0 30 0	0		0		0
 
-3 	2  30	X_axis_rotation  model/f1_1_d15h20_ascii.STL
+3 	2  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
 0 30 0	0		0		0
+
+# 3rd finger
+4 	0  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+18 60 0 0	0		0		0
+
+5 	4  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+6 	5  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+# 4th finger
+7 	0  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+36 60 0	0		0		0
+
+8 	7  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+9 	8  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+# 5th finger
+10 	0  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+54 60 0	0		0		0
+
+11 	10  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+12 	11  20	X_axis_rotation  model/f2_1_d14h17_ascii.STL
+0 30 0	0		0		0
+
+# index finger
+13 	0  20	X_axis_rotation  model/f1_1_d15h20_ascii.STL
+65 45 0	0		0		-45
+
+14 	13  20	X_axis_rotation  model/f1_1_d15h20_ascii.STL
+0 25 0	0		0		0
+
+
 
 with_icp_jacobian 1 10
 with_collision_jacobian 1 -1

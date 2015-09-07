@@ -10,6 +10,7 @@
 #include <memory>
 #include <mutex>
 #include <boost/pool/poolfwd.hpp>
+#include "visualization_msgs/MarkerArray.h"
 
 #include "utility/cxy_transform.h"
 #include "common/cxy_debug.h"
@@ -47,6 +48,8 @@ namespace cxy
             void constructModelPoints( MatrixX1 const&);
 
 
+
+
             inline void setModelPointSize( std::size_t const& num)  { model_Point_num_ = num;}
             inline  std::size_t const& getModelPointSize() const { return model_Point_num_;}
 
@@ -60,6 +63,10 @@ namespace cxy
             {
                 cxy_icp_kinematic::dataCloud_ = dataCloud;
                 kc_->setDataCloud(dataCloud_);
+            }
+            inline visualization_msgs::MarkerArray const& getModelMarkerArray()
+            {
+                return kc_->getModelMarkerArray();
             }
             pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud(MatrixX1 const&);
             pcl::PointCloud<pcl::PointXYZ>::Ptr const& getVisibleModelCloud(
