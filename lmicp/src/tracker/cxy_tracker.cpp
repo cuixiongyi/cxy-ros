@@ -30,8 +30,18 @@ namespace cxy
                 , pointSize
                 , &kinematic_);
         Eigen::LevenbergMarquardt <cxy_optimization::cxy_cost_func_kinematic<_Scalar>, _Scalar > lm2(func);
-        _Scalar res = lm2.lmder1(x_);
+        lm2.parameters.ftol = 1e-1;
+        lm2.parameters.xtol = 1e-1;
+        lm2.parameters.maxfev = 7;
 
+        _Scalar res = lm2.lmder1(x_, 0.001);
+
+        /// This is a hack
+        /*
+        x_(0) = 0;
+        x_(1) = 0;
+        x_(2) = 0;
+         */
         return res;
     }
 

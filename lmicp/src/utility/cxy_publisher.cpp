@@ -55,6 +55,7 @@ namespace cxy
         sensor_msgs::PointCloud2 rosCloud;
         if ( ! publishPrepare(cloud, rosCloud))
             return;
+
         getInstance()->data_point_pub_.publish(rosCloud);
         return;
     }
