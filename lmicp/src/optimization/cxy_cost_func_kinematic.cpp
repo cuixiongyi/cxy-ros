@@ -25,6 +25,7 @@ namespace cxy_optimization
             (MatrixX1 & x, MatrixX1& res) const
     {
         kinematic_->computeResidual(x, res);
+        //std::cout<<"x == "<<x<<std::endl;
         return 0;
     }
 

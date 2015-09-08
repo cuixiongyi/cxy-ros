@@ -51,14 +51,27 @@ namespace cxy
             void computePointJacobian(Eigen::Ref<MatrixXX> jac);
 
             void compute_icp_jacobian(Eigen::Ref<MatrixXX> jac);
+            /*
+             * Jacobian
+             * rotation_axis cross (diser_pos - cur_pos)
+             * Reference http://www.math.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf
+             */
+            _Scalar compute_icp_jacobian_get_rotation_jacobian(
+                    const cxy_icp_kinematic_joint<_Scalar>* const& joint
+                    , cxy_transform::Axis const& rotation_type);
+            _Scalar compute_icp_jacobian_get_translation_jacobian(
+                    const cxy_icp_kinematic_joint<_Scalar>* const& joint
+                    , cxy_transform::Axis const& rotation_type);
+
             void compute_collision_jacobian(Eigen::Ref<MatrixXX> jac);
             void compute_push_jacobian(Eigen::Ref<MatrixXX> jac);
             void compute_silhouette_jacobian(Eigen::Ref<MatrixXX> jac);
 
-            const _Scalar& matchPointCloud(const PointT&
+            _Scalar matchPointCloud(const PointT&
                                         , PointT&
                                         , Eigen::Matrix< _Scalar, 3, 1>& res);
         //private:
+
 
             const int joint_idx_ = {0};
 
@@ -67,7 +80,7 @@ namespace cxy
             const cxy_icp_kinematic_chain<_Scalar>* kc_ptr_;
 
 
-            Eigen::Matrix<_Scalar, 3, 1> modelPoint_local_;
+            PointT modelPoint_local_;
             PointT modelPoint_global_;
             PointT dataPoint_;
 
@@ -80,6 +93,8 @@ namespace cxy
             const pcl::KdTreeFLANN<PointT>::Ptr& kdtree_ptr_;
             const pcl::PointCloud<PointT>::Ptr& dataCloud_;
 
+            inline void updateModelPointGlobal()
+            {joint_->getPose().composePoint(modelPoint_local_, modelPoint_global_);};
         };
     }
 }

@@ -26,7 +26,6 @@ namespace cxy
             const SamplingParams &params)
     {
         sensor_msgs::PointCloud2    cloud_tmp;
-        bool                        ret_value;
         shapes::Mesh                    shape;
         sensor_msgs::PointCloud         cloud;
 
@@ -38,7 +37,7 @@ namespace cxy
 
         pcl::fromROSMsg(cloud_tmp, cloud_out);
 
-        return ret_value;
+        return true;
     }
 
     void cxy_CAD_helper::shapeToPointCloud(shapes::Mesh &shape
@@ -47,18 +46,19 @@ namespace cxy
                                            , const SamplingParams &params)
     {
         cloud.header.frame_id = shape.STRING_NAME;
-        srand(time(NULL));
+        //srand(time(NULL));
+        srand(1);
 
         if (params.sample_type == SampleType::RANDOM)
         {
-            float max_area = 0;
-            float running_tot = 0;
-            std::map<int, float> areas;
+            double max_area = 0;
+            double running_tot = 0;
+            std::vector<double> areas(shape.triangle_count);
 
             for (int i = 0; i < shape.triangle_count; i++)
             {
-                int density = 10000;
-                float area;
+                float density = 100;
+                double area;
 
                 geometry_msgs::Point    v1;
                 geometry_msgs::Point    v2;
@@ -84,9 +84,16 @@ namespace cxy
                     max_area = area;
             }
 
+            std::for_each(areas.begin(), areas.end(),
+                    [&](double& elm)
+                    {
+                        elm = elm / running_tot;
+                        elm *= RAND_MAX;
+                    }
+            );
             for (int i = 0; i < params.number_of_points; i++)
             {
-                float prob = rand() % int(running_tot);
+                int prob = rand() % RAND_MAX;
                 int imax = areas.size();
                 int imin = 0;
                 int index = 0;
@@ -97,21 +104,21 @@ namespace cxy
                     imid = imin + (int) ((imax - imin) / 2);
 
                     if (areas[imid] <= prob)
-                    if (areas[imid + 1] > prob)
-                    {
-                        index = imid;
-                        break;
-                    }
-                    else
-                        imin = imid + 1;
+                        if (areas[imid + 1] > prob)
+                        {
+                            index = imid;
+                            break;
+                        }
+                        else
+                            imin = imid + 1;
                     else if (areas[imid] > prob)
-                    if (areas[imid - 1] <= prob)
-                    {
-                        index = imid;
-                        break;
-                    }
-                    else
-                        imax = imid - 1;
+                        if (areas[imid - 1] <= prob)
+                        {
+                            index = imid;
+                            break;
+                        }
+                        else
+                            imax = imid - 1;
                 }
 
                 geometry_msgs::Point    v1;
@@ -199,8 +206,11 @@ namespace cxy
         return true;
     }
 
-    void cxy_CAD_helper::getNormal(geometry_msgs::Point v1, geometry_msgs::Point v2,
-            geometry_msgs::Point v3, geometry_msgs::Vector3 &normal)
+    void cxy_CAD_helper::getNormal(
+            geometry_msgs::Point const& v1
+            , geometry_msgs::Point const& v2
+            , geometry_msgs::Point const& v3
+            , geometry_msgs::Vector3 & normal)
     {
         Eigen::Vector3d vec1, vec2;
         Eigen::Vector3d ev1, ev2, ev3;
@@ -228,8 +238,11 @@ namespace cxy
         }
     }
 
-    double cxy_CAD_helper::findArea(geometry_msgs::Point v1, geometry_msgs::Point v2,
-            geometry_msgs::Point v3, int scale)
+    double cxy_CAD_helper::findArea(
+            geometry_msgs::Point const& v1
+            , geometry_msgs::Point const& v2
+            , geometry_msgs::Point const& v3
+            , float const& scale)
     {
         Eigen::Vector3d ev1, ev2, ev3;
         Eigen::Vector3d vec1, vec2;
@@ -239,12 +252,13 @@ namespace cxy
         ev2 = Eigen::Vector3d(v2.x, v2.y, v2.z);
         ev3 = Eigen::Vector3d(v3.x, v3.y, v3.z);
 
+
         vec1 = (ev2 - ev1) * scale;
         vec2 = (ev3 - ev1) * scale;
 
         cross_prod = vec1.cross(vec2);
 
-        return ((double) std::floor(0.5 * cross_prod.norm()));
+        return ((double) 0.5 * cross_prod.norm());
     }
 
     // http://mathworld.wolfram.com/TrianglePointPicking.html

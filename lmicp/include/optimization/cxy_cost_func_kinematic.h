@@ -28,7 +28,7 @@ namespace cxy
             virtual _Scalar df(MatrixX1 & x, MatrixXX& jac) const;
 
         private:
-            cxy_kinematic::cxy_icp_kinematic<_Scalar>* const& kinematic_;
+            cxy_kinematic::cxy_icp_kinematic<_Scalar>* kinematic_;
         };
 
     }

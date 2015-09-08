@@ -10,9 +10,11 @@ namespace cxy_kinematic
     template<typename _Scalar>
     cxy_icp_kinematic<_Scalar>::cxy_icp_kinematic(const cxy_config *const config_ptr)
     : config_(config_ptr)
+     , x_(cxy_config::joint_DoFs)
     {
         kc_ = std::make_shared<cxy_icp_kinematic_chain<_Scalar>>(config_ptr);
 //        std::call_once(joint_Parent_init, cxy_icp_kinematic_joint<_Scalar>::updateJointRelation);
+
 
     }
 
@@ -23,8 +25,7 @@ namespace cxy_kinematic
 
 
         updateJoints(x);
-
-        //kc_->updateModelPoints();
+        kc_->updateModelPoints();
 
         kc_->getResidual(res);
     }
@@ -35,8 +36,7 @@ namespace cxy_kinematic
 
         updateJoints(x);
 
-        //kc_->updateModelPoints();
-
+        kc_->updateModelPoints();
 
         kc_->getJacobian(jac);
     }
@@ -61,13 +61,13 @@ namespace cxy_kinematic
 
 
     template<typename _Scalar>
-    void cxy_icp_kinematic<_Scalar>::updateModel(const MatrixX1& joint_para)
+    void cxy_icp_kinematic<_Scalar>::constructModelPoints(const MatrixX1& joint_para)
     {
 
         CXY_ASSERT(joint_para.rows() == cxy_config::joint_DoFs);
         updateJoints(joint_para);
 
-        kc_->updateModelPoints();
+        kc_->constructModelPoints();
 
         setModelPointSize( kc_->getModelPointSize() );
 
@@ -95,9 +95,24 @@ namespace cxy_kinematic
     {
         updateJoints(x);
         visibleModelCloud_ = kc_->updateModel_getVisible();
+        kc_->getFullModelPoints();
 
         return visibleModelCloud_;
     }
+    template<typename _Scalar>
+    pcl::PointCloud<pcl::PointXYZ>::Ptr const& cxy_icp_kinematic<_Scalar>::
+            getVisibleModelCloud(
+                MatrixX1 const& x
+                , pcl::PointCloud<pcl::PointXYZ>::Ptr & fullCloud )
+    {
+        updateJoints(x);
+        visibleModelCloud_ = kc_->updateModel_getVisible();
+        fullCloud = kc_->getFullModelPoints();
+
+        return visibleModelCloud_;
+    }
+
+
 }
 }
 template class cxy::cxy_kinematic::cxy_icp_kinematic<float>;

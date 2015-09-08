@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <string>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -13,6 +14,8 @@
 #include "pcl/point_cloud.h"
 #include "pcl/point_types.h"
 #include <pcl/kdtree/kdtree_flann.h>
+#include "visualization_msgs/Marker.h"
+#include "visualization_msgs/MarkerArray.h"
 
 
 // hack.hpp should not appear at last
@@ -44,12 +47,17 @@ namespace cxy
 
             void updateJoints(const MatrixX1&);
 
+            void constructModelPoints();
+
             void updateModelPoints();
 
             pcl::PointCloud<pcl::PointXYZ>::Ptr updateModel_getVisible();
+            pcl::PointCloud<pcl::PointXYZ>::Ptr getFullModelPoints();
+
 
             void constructKinematicChain();
 
+            void constructMarkerArray();
 
             void setDataCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr const&);
 
@@ -69,8 +77,15 @@ namespace cxy
 
             void getJacobian(MatrixXX&);
 
-            inline const cxy_icp_kinematic_joint<_Scalar>& getJoint(const int& joint) const {return (*joints_[joint]);}
+            inline const cxy_icp_kinematic_joint<_Scalar>& getJoint
+                    (const int& joint) const {return (*joints_[joint]);}
+
+            visualization_msgs::MarkerArray const& getModelMarkerArray();
+
         private:
+
+            std::ofstream fout_res_;
+            std::ofstream fout_jac_;
 
             std::mutex kinematic_chain_lock;
             std::vector<std::shared_ptr<cxy_icp_kinematic_joint<_Scalar>>> joints_;
@@ -89,6 +104,9 @@ namespace cxy
             bool hasSetDataCloud_;
             cxy_sync dataTime;
 
+            visualization_msgs::MarkerArray markerArray_;
+
+
 
             /// this is the list to synchronize multithreading, do not access directly
             /// 0 means not up-to-date
@@ -100,7 +118,7 @@ namespace cxy
             bool syc_setJointUptoDate(const int &, const cxy_transform::Pose<_Scalar>&);
 
         public:
-            inline std::size_t const& getModelPointSize() {return points_.size();}
+            inline std::size_t  getModelPointSize() {return points_.size();}
         };
 
 

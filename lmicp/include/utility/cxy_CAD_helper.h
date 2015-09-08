@@ -60,10 +60,17 @@ namespace cxy
                 pcl::PointCloud<pcl::PointXYZ> &normals,
                 const SamplingParams &params);
 
-        void getNormal(geometry_msgs::Point v1, geometry_msgs::Point v2, geometry_msgs::Point v3,
-                geometry_msgs::Vector3 &normal);
-        double findArea(geometry_msgs::Point v1, geometry_msgs::Point v2, geometry_msgs::Point v3,
-                int scale);
+        void getNormal(
+                geometry_msgs::Point const& v1
+                , geometry_msgs::Point const& v2
+                , geometry_msgs::Point const& v3
+                , geometry_msgs::Vector3 & normal);
+        double findArea(
+                geometry_msgs::Point const& v1
+                , geometry_msgs::Point const& v2
+                , geometry_msgs::Point const& v3
+                , float const& scale);
+
         bool filterPointsWithInnerNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr &in_cloud,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &in_normals,
                 pcl::PointCloud<pcl::PointXYZ>::Ptr &out_cloud,

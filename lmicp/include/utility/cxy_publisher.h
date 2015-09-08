@@ -3,6 +3,9 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <string>
+
+#include "visualization_msgs/MarkerArray.h"
 
 #include "ros/ros.h"
 #include "visualization_msgs/Marker.h"
@@ -26,7 +29,10 @@ namespace cxy
             static void publishDataPoint(
                     const pcl::PointCloud<PointT>::Ptr& cloud);
 
-            static void publishPrepare(
+            static void publishMeshModel(
+                    visualization_msgs::MarkerArray const& markerArray);
+
+            static bool publishPrepare(
                         const pcl::PointCloud<PointT>::Ptr& cloud
                         , sensor_msgs::PointCloud2& rosCloud);
 
@@ -38,6 +44,8 @@ namespace cxy
             ros::NodeHandle             nh_;
             ros::Publisher data_point_pub_;
             ros::Publisher model_point_pub_;
+        ros::Publisher arrayMarker_pub_;
+        std::vector<ros::Publisher> marker_pub_vec_;
 
     };
 

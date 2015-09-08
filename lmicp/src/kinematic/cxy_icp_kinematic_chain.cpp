@@ -7,8 +7,13 @@ namespace cxy
         template<typename _Scalar>
         cxy_icp_kinematic_chain<_Scalar>::cxy_icp_kinematic_chain(const cxy_config* const config)
         : config_(config)
+          , fout_res_("/home/xiongyi/cxy_workspace/src/cxyros/res.txt")
+          , fout_jac_("/home/xiongyi/cxy_workspace/src/cxyros/jac.txt")
         {
             constructKinematicChain();
+            constructMarkerArray();
+
+
         }
 
         template<typename _Scalar>
@@ -32,7 +37,10 @@ namespace cxy
             for (int ii = 0; ii < cxy_config::joint_DoFs; )
             {
                 joints_[jtmp]->setTheta(x.data() + ii);
+                ii += joints_[jtmp]->getNumDoF();
+                ++jtmp;
             }
+            syc_resetSyncList();
             for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
             {
                 if (syc_tryUpdateJointList(ii))
@@ -49,7 +57,7 @@ namespace cxy
 
 
         template<typename _Scalar>
-        void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
+        void cxy_icp_kinematic_chain<_Scalar>::constructModelPoints()
         {
             points_ = std::vector<std::shared_ptr<cxy_icp_kinematic_point<_Scalar>>>();
 
@@ -57,7 +65,13 @@ namespace cxy
             for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
             {
                 /// this points are in global coordinate
-                pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
+                pcl::PointCloud<PointT>::Ptr modelCloud_local;
+                pcl::PointCloud<PointT>::Ptr points =
+                        modelCloud_engin_[ii]->getVisibleCloud(
+                          joints_[ii]->getPose()
+                          , modelCloud_local);
+
+                CXY_ASSERT(modelCloud_local->size() == points->size());
 
                 for (int jj = 0; jj < points->size(); ++jj)
                 {
@@ -65,8 +79,9 @@ namespace cxy
                      * TODO use object_pool to allocate memory
                      */
                     points_.push_back(std::make_shared<cxy_icp_kinematic_point<_Scalar>>(config_, kdtreeptr_, dataCloud_, (joints_[ii]).get(), this));
-                    auto lastPoint = points_.end()-1;
-                    (*lastPoint)->modelPoint_global_ = (*points)[ii];
+                    auto &lastPoint = points_.back();
+                    lastPoint->modelPoint_global_ = (*points)[jj];
+                    lastPoint->modelPoint_local_ = (*modelCloud_local)[jj];
                 }
 
 
@@ -81,7 +96,10 @@ namespace cxy
             for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
             {
                 /// this points are in global coordinate
-                pcl::PointCloud<PointT>::Ptr points = modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose());
+                pcl::PointCloud<PointT>::Ptr modelCloud_local;
+                pcl::PointCloud<PointT>::Ptr points =
+                        modelCloud_engin_[ii]->getVisibleCloud(joints_[ii]->getPose(), modelCloud_local);
+
 
                 for (int jj = 0; jj < points->size(); ++jj)
                 {
@@ -92,15 +110,38 @@ namespace cxy
         }
 
         template<typename _Scalar>
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cxy_icp_kinematic_chain<_Scalar>::getFullModelPoints()
+        {
+            pcl::PointCloud<pcl::PointXYZ>::Ptr ret( new pcl::PointCloud<pcl::PointXYZ>);
+            // ii is for each joint
+            for (int ii = 0; ii < modelCloud_engin_.size(); ++ii)
+            {
+                /// this points are in global coordinate
+                pcl::PointCloud<PointT>::Ptr
+                    points = modelCloud_engin_[ii]->getModelCloud(joints_[ii]->getPose());
+
+                for (int jj = 0; jj < points->size(); ++jj)
+                {
+                    (*points)[jj].x;
+
+                    ret->push_back((*points)[jj]);
+                }
+            }
+            return ret;
+        }
+
+        template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getResidual(MatrixX1& residual)
         {
-            long rows, cols;
-            config_->getJacobianSize(rows, cols);
+            long rows = cxy_config::n_num_*getModelPointSize();
+            //long cols = cxy_config::joint_DoFs;
             if (rows != residual.rows())
             {
                 residual.resize(rows, 1);
             }
+            residual.setZero();
 
+            _Scalar res_sum = 0.0;
             int row = 0;
             for (int ii = 0; ii < points_.size(); ++ii)
             {
@@ -111,30 +152,42 @@ namespace cxy
 
                 row = ii*config_->n_num_;
                 points_[ii]->computePointResidual(residual.block(row, 0, cxy_config::n_num_, 1));
+                float tmp = residual(row);
+                res_sum += residual(row);
             }
 
+            fout_res_<<"x = "<<std::endl;
+            fout_res_<<Rad2Deg(x_)<<std::endl;
+            fout_res_<<"res = "<<std::endl;
+            fout_res_<<residual<<std::endl;
+            res_sum = res_sum / getModelPointSize();
+            std::cout<<"residual = "<<res_sum<<std::endl;
         }
 
         template<typename _Scalar>
         void cxy_icp_kinematic_chain<_Scalar>::getJacobian(MatrixXX& jacobian)
         {
-            long rows, cols;
-            config_->getJacobianSize(rows, cols);
+            long rows = cxy_config::n_num_*getModelPointSize();
+            long cols = cxy_config::joint_DoFs;
             if (rows != jacobian.rows()
                     || cols != jacobian.cols())
             {
                 jacobian.resize(rows, cols);
             }
 
+            jacobian.setZero();
             int row = 0;
             for (int ii = 0; ii < points_.size(); ++ii)
             {
                 row = ii*config_->n_num_;
-                jacobian.row(1);
+                //jacobian.row(1);
                 points_[ii]->computePointJacobian(jacobian.block(row, 0, cxy_config::n_num_, jacobian.cols()));
 
             }
-
+            fout_res_<<"x = "<<std::endl;
+            fout_res_<<Rad2Deg(x_)<<std::endl;
+            fout_res_<<"jac = "<<std::endl;
+            fout_res_<<jacobian<<std::endl;
         }
 
         template<typename _Scalar>
@@ -217,23 +270,27 @@ namespace cxy
 
             if ( -1 == joints_[joint]->getParentIdx())
             {
+                cxy_transform::Pose<_Scalar> posetmp;
+
                 if (cxy_transform::Axis::Six_DoF == jointType)
                 {
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(x[3]));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(x[4]));
-                    pose.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(x[5]));
-                    pose.t()(0) = x[0];
-                    pose.t()(1) = x[1];
-                    pose.t()(2) = x[2];
+
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, x[3]);
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, x[4]);
+                    posetmp.rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, x[5]);
+                    posetmp.t()(0) = x[0];
+                    posetmp.t()(1) = x[1];
+                    posetmp.t()(2) = x[2];
 
                 }
                 else if (cxy_transform::Axis::X_axis_rotation == jointType || cxy_transform::Axis::Y_axis_rotation == jointType || cxy_transform::Axis::Z_axis_rotation == jointType )
                 {
-                    pose = cxy_transform::Pose<_Scalar>();
-                    pose.rotateByAxis(jointType, Deg2Rad(x[0]));
-
+                    posetmp.rotateByAxis(jointType, x[0]);
 
                 }
+
+                const cxy_transform::Pose<_Scalar>& pose_fix = joints_[joint]->getOriginPose();
+                pose_fix.composePose(posetmp, pose);
 
                 return;
             }
@@ -249,7 +306,7 @@ namespace cxy
             const cxy_transform::Pose<_Scalar>& pose_fix = joints_[joint]->getOriginPose();
             cxy_transform::Pose<_Scalar> tmp;
             pose_parent.composePose(pose_fix, tmp);
-            tmp.composePose(cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(jointType, Deg2Rad(x[0])), pose);
+            tmp.composePose(cxy_transform::Pose<_Scalar>::rotateByAxis_fromIdentity(jointType, x[0]), pose);
 
 
             return;
@@ -288,12 +345,13 @@ namespace cxy
                 {
                     int idx = ii;
                     int parent = cxy_config::joint_config_[idx].joint_parent;
+                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> parentList;
+                    parentList.push_back(joints_[ii].get());
+
                     if (-1 == parent)
                     {
                         joints_[ii]->setParent(nullptr);
                         joints_[ii]->setHierarchy(0);
-
-                        continue;
                     }
                     else
                     {
@@ -306,16 +364,17 @@ namespace cxy
                     while (-1 != parent)
                     {
                         jointChildList[parent].push_back(ii);
+                        parentList.push_back(joints_[parent].get());
 
                         idx = parent;
                         parent = cxy_config::joint_config_[idx].joint_parent;
 
                     }
-
+                    joints_[ii]->setParentList(parentList);
                 }
                 for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
                 {
-                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList(jointChildList[ii].size());
+                    std::vector<const cxy_icp_kinematic_joint<_Scalar>*> childList;
                     /*
                      * setChildList
                      * ChildList the 1st element is the joint itself
@@ -335,7 +394,7 @@ namespace cxy
             // set modelCloud for each joint
             for (int ii = 0; ii < config_->joint_number_; ++ii)
             {
-                modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename));
+                modelCloud_engin_.push_back(std::make_shared<cxy_modelCloud_engin>(joints_[ii]->joint_info_.model_filename, joints_[ii]->joint_info_.model_sample_number));
             }
 
             /// set Joint Parameter Start Idx
@@ -387,9 +446,71 @@ namespace cxy
             return true;
         }
 
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::updateModelPoints()
+        {
+            // ii is for each joint
+            for (int ii = 0; ii < points_.size(); ++ii)
+            {
 
+                points_[ii]->updateModelPointGlobal();
+            }
+        }
 
+        template<typename _Scalar>
+        visualization_msgs::MarkerArray const &cxy_icp_kinematic_chain<_Scalar>
+                                ::getModelMarkerArray()
+        {
+            for (int ii = 0; ii < markerArray_.markers.size(); ++ii)
+            {
+                visualization_msgs::Marker& markeri = markerArray_.markers[ii];
 
+                cxy_transform::Pose<_Scalar> const& posei = joints_[ii]->getPose();
+                markeri.pose.position.x = posei.t()(0);
+                markeri.pose.position.y = posei.t()(1);
+                markeri.pose.position.z = posei.t()(2);
+                markeri.pose.orientation.x = posei.q().x();
+                markeri.pose.orientation.y = posei.q().y();
+                markeri.pose.orientation.z = posei.q().z();
+                markeri.pose.orientation.w = posei.q().w();
+            }
+
+            return markerArray_;
+        }
+
+        template<typename _Scalar>
+        void cxy_icp_kinematic_chain<_Scalar>::constructMarkerArray()
+        {
+            markerArray_.markers.resize(cxy_config::joint_number_);
+
+            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+            {
+                //markerArray_.markers.push_back(visualization_msgs::Marker());
+                visualization_msgs::Marker& markeri = markerArray_.markers[ii];
+
+                markeri.header.frame_id = cxy_config::rviz_frame_name_;
+                markeri.header.stamp = ros::Time();
+                markeri.id = 0;
+                markeri.type = visualization_msgs::Marker::MESH_RESOURCE;
+                markeri.action = visualization_msgs::Marker::ADD;
+                markeri.ns = "meshModel";
+                markeri.scale.x = 1;
+                markeri.scale.y = 1;
+                markeri.scale.z = 1;
+                markeri.color.a = 1.0; // Don't forget to set the alpha!
+                markeri.color.r = 0.0;
+                markeri.color.g = 1.0;
+                markeri.color.b = 0.0;
+                /// TODO this is a hack to feed rviz binary stl file
+                unsigned long tmp_idx = joints_[ii]->joint_info_.model_filename.find("ascii");
+                CXY_ASSERT(std::string::npos != tmp_idx);
+
+                std::string binary_model_filename = joints_[ii]->joint_info_.model_filename;
+                binary_model_filename.replace(tmp_idx, 5, "binary");
+                markeri.mesh_resource = binary_model_filename;
+
+            }
+        }
     }
 }
 

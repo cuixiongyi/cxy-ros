@@ -26,6 +26,7 @@ namespace cxy_transform
             t_(0) = tx;
             t_(1) = ty;
             t_(2) = tz;
+		    q_.setIdentity();
             rotateByAxis(cxy::cxy_transform::Axis::X_axis_rotation, Deg2Rad(rx));
             rotateByAxis(cxy::cxy_transform::Axis::Y_axis_rotation, Deg2Rad(ry));
             rotateByAxis(cxy::cxy_transform::Axis::Z_axis_rotation, Deg2Rad(rz));
@@ -215,7 +216,7 @@ namespace cxy_transform
             Vector v1(in_Cloud->points[ii].x, in_Cloud->points[ii].y, in_Cloud->points[ii].z);
             Vector v2;
             composeDirectionVector(v1, v2);
-            out_Cloud->push_back(pcl::PointXYZ(v2(0), v2(1), v2(3)));
+            out_Cloud->push_back(pcl::PointXYZ(v2(0), v2(1), v2(2)));
         }
         return;
     }

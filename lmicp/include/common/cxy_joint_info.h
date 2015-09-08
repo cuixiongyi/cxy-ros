@@ -21,6 +21,7 @@ namespace cxy
         std::vector<double> t = {0.0, 0.0, 0.0};
         std::vector<double> r = {0.0, 0.0, 0.0};
 
+        int model_sample_number = 50;
     };
 
 }

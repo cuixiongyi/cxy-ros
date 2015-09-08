@@ -9,9 +9,18 @@ namespace cxy
 {
     cxy_publisher::cxy_publisher()
     {
-        nh_ = ros::NodeHandle();
+        //nh_ = ros::NodeHandle();
         model_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "model_point_pub", 0 );
         data_point_pub_ = nh_.advertise<sensor_msgs::PointCloud2>( "data_point_pub", 0 );
+        arrayMarker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("meshModel_pub",0);
+        marker_pub_vec_.resize(cxy_config::joint_number_);
+        for (int ii = 0; ii < marker_pub_vec_.size(); ++ii)
+        {
+            std::string pub_name = "oneModel_pub" + std::to_string(ii);
+            marker_pub_vec_[ii] = nh_.advertise<visualization_msgs::Marker>(pub_name, 0);
+
+        }
+
     }
 
     cxy_publisher *cxy_publisher::getInstance()
@@ -34,24 +43,50 @@ namespace cxy
     void cxy_publisher::publishModelPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
     {
         sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
+        if ( ! publishPrepare(cloud, rosCloud))
+            return;
         getInstance()->model_point_pub_.publish(rosCloud);
         return;
     }
 
     void cxy_publisher::publishDataPoint(const pcl::PointCloud<PointT>::Ptr& cloud)
     {
+
         sensor_msgs::PointCloud2 rosCloud;
-        publishPrepare(cloud, rosCloud);
+        if ( ! publishPrepare(cloud, rosCloud))
+            return;
+
         getInstance()->data_point_pub_.publish(rosCloud);
         return;
     }
 
-    void cxy_publisher::publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud)
+    bool cxy_publisher::publishPrepare(const pcl::PointCloud<PointT>::Ptr& cloud, sensor_msgs::PointCloud2& rosCloud)
     {
+        if (cloud == nullptr)
+            return false;
+        if (cloud->size() == 0)
+            return false;
         pcl::toROSMsg(*cloud, rosCloud);
         rosCloud.header.frame_id = cxy_config::rviz_frame_name_;
         rosCloud.header.stamp = ros::Time::now();
+        return true;
+    }
+
+    void cxy_publisher::publishMeshModel(visualization_msgs::MarkerArray const& markerArray)
+    {
+
+        /*
+         * TODO this is a hack, it seems that MarkerArray only display
+         * the last mesh model
+         * So I can only publish mesh model individually for now
+         */
+        std::vector<ros::Publisher> const& pub_vec = getInstance()->marker_pub_vec_;
+        for (int ii = 0; ii < pub_vec.size(); ++ii)
+        {
+            pub_vec[ii].publish(markerArray.markers[ii]);
+
+        }
         return;
+
     }
 }

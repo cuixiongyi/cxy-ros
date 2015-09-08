@@ -43,6 +43,12 @@ namespace cxy
             void setChildList( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const&);
             std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& getChildList() const;
             void setParent(const cxy_icp_kinematic_joint* );
+            void setParentList( std::vector<const cxy_icp_kinematic_joint<_Scalar>*> &);
+            /*
+             * The 1st element of parentList is the joint itself
+             */
+            inline std::vector<const cxy_icp_kinematic_joint<_Scalar>*> const& getParentList() const {return pParentList_;};
+
             inline const cxy_icp_kinematic_joint*&  getParent() {return pParent_;}
 				//cxy_transform::Pose& getPose() {return pose_;}
 				//const cxy_transform::Pose& getPose() const {return pose_;}
@@ -61,6 +67,7 @@ namespace cxy
 
             const cxy_icp_kinematic_joint* pParent_;
             std::vector<const cxy_icp_kinematic_joint*> pChildList_;
+            std::vector<const cxy_icp_kinematic_joint*> pParentList_;
 
         /// inline function
         public:
@@ -70,11 +77,11 @@ namespace cxy
             inline const int&                   getNumDoF() const {return joint_info_.DoF;}
             inline void                         setPose(const cxy_transform::Pose<_Scalar>& pose) {pose_ = pose;}
             inline void                         setPose(cxy_transform::Pose<_Scalar>&& pose) {pose_ = std::move(pose);}
-            inline const cxy_transform::Pose<_Scalar>&  getPose() const { return pose_;}
-            inline const cxy_transform::Pose<_Scalar>&  getOriginPose() const { return originPose_;}
+            inline cxy_transform::Pose<_Scalar> const&  getPose() const { return pose_;}
+            inline cxy_transform::Pose<_Scalar> const&  getOriginPose() const { return originPose_;}
             inline const pcl::PointCloud<pcl::PointXYZ>::Ptr&  getModelCloud() const { return modelCloud_;}
             inline void setTheta(const _Scalar* p) { std::memcpy(theta_, p, sizeof(_Scalar)*DoF_);};
-            inline const _Scalar* getTheta() const { return theta_;};
+            inline _Scalar* const& getTheta() const { return theta_;};
             inline void setHierarchy(const int& hier) { hierarchy_num_ = hier;};
             inline const int& getHierarchy() const { return hierarchy_num_;};
 

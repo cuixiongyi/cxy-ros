@@ -3,11 +3,15 @@
 
 namespace cxy
 {
-    std::string cxy_config::filename_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/include/common/config"};
+    std::string cxy_config::filePrefix_ = {"/home/xiongyi/cxy_workspace/src/cxyros/lmicp/"};
+    std::string cxy_config::filename_ = {filePrefix_+"include/common/config"};
+
     bool cxy_config::isOpen_ = {false};
     unsigned int cxy_config::joint_number_ = {0};
     std::vector<cxy_joint_info> cxy_config::joint_config_;
     std::vector<int> cxy_config::jointParaIdx_;
+
+    unsigned int cxy_config::random_seed = 0.0;
 
     int cxy_config::joint_DoFs = {0};
     bool cxy_config::withJacobianEffectChild = {true};
@@ -64,7 +68,7 @@ namespace cxy
 		{
             if (-2 == lineStatus)
             {
-                std::cout<<"comment : "<<line<<std::endl;
+                //std::cout<<"comment : "<<line<<std::endl;
                 continue;
 
             }
@@ -72,6 +76,11 @@ namespace cxy
 			std::string var_name;
 			iss >> var_name;
 
+
+            if ( "random_seed" == var_name)
+            {
+
+            }
 
             if ( "joint_number" == var_name)
 			{
@@ -129,16 +138,18 @@ namespace cxy
 
             std::stringstream iss(line);
             cxy_joint_info kj;
-
             // joint index
             iss>>kj.joint_idx;
             CXY_ASSERT(kj.joint_idx == ii);
+
             //std::cout<<"joint line: "<<line<<std::endl;
 
             // joint parent
             iss>>kj.joint_parent;
             CXY_ASSERT(kj.joint_parent < ii && kj.joint_parent >= -1 );
 
+            iss>>kj.model_sample_number;
+            CXY_ASSERT(kj.model_sample_number > 0 );
             // joint joint type
             std::string jointType;
             iss>>jointType;
@@ -153,7 +164,9 @@ namespace cxy
             jointParaIdx_[ii] = jointParaIdxCount;
             jointParaIdxCount += kj.DoF;
             // joint model file name
-            iss>>kj.model_filename;
+            std::string modelFile;
+            iss>>modelFile;
+            kj.model_filename = "file://" + cxy_config::filePrefix_+modelFile;
 
             // the second line
             while (1)
@@ -172,6 +185,7 @@ namespace cxy
             iss.str(line);
             //std::cout<<"iss: "<<line<<std::endl;
             iss>>kj.t[0]>>kj.t[1]>>kj.t[2]>>kj.r[0]>>kj.r[1]>>kj.r[2];
+
 
             joint_config_.push_back(kj);
         }
