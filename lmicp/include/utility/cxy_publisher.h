@@ -3,6 +3,7 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <string>
 
 #include "visualization_msgs/MarkerArray.h"
 
@@ -43,7 +44,8 @@ namespace cxy
             ros::NodeHandle             nh_;
             ros::Publisher data_point_pub_;
             ros::Publisher model_point_pub_;
-            ros::Publisher arrayMarker_pub_;
+        ros::Publisher arrayMarker_pub_;
+        std::vector<ros::Publisher> marker_pub_vec_;
 
     };
 

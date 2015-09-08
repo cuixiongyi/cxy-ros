@@ -461,12 +461,11 @@ namespace cxy
         visualization_msgs::MarkerArray const &cxy_icp_kinematic_chain<_Scalar>
                                 ::getModelMarkerArray()
         {
-            for (int ii = 0; ii < cxy_config::joint_number_; ++ii)
+            for (int ii = 0; ii < markerArray_.markers.size(); ++ii)
             {
                 visualization_msgs::Marker& markeri = markerArray_.markers[ii];
 
                 cxy_transform::Pose<_Scalar> const& posei = joints_[ii]->getPose();
-                /*
                 markeri.pose.position.x = posei.t()(0);
                 markeri.pose.position.y = posei.t()(1);
                 markeri.pose.position.z = posei.t()(2);
@@ -474,7 +473,6 @@ namespace cxy
                 markeri.pose.orientation.y = posei.q().y();
                 markeri.pose.orientation.z = posei.q().z();
                 markeri.pose.orientation.w = posei.q().w();
-*/
             }
 
             return markerArray_;
@@ -503,7 +501,13 @@ namespace cxy
                 markeri.color.r = 0.0;
                 markeri.color.g = 1.0;
                 markeri.color.b = 0.0;
-                markeri.mesh_resource = joints_[ii]->joint_info_.model_filename;
+                /// TODO this is a hack to feed rviz binary stl file
+                unsigned long tmp_idx = joints_[ii]->joint_info_.model_filename.find("ascii");
+                CXY_ASSERT(std::string::npos != tmp_idx);
+
+                std::string binary_model_filename = joints_[ii]->joint_info_.model_filename;
+                binary_model_filename.replace(tmp_idx, 5, "binary");
+                markeri.mesh_resource = binary_model_filename;
 
             }
         }

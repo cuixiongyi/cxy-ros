@@ -7,7 +7,7 @@ joint_number 15
 #5. model file name
 # the second line is the translation and roatation parameter
 #joint 0
-0  -1 60    Six_DoF        model/palm.STL
+0  -1 60    Six_DoF        model/palm_ascii.STL
 0 0 0 	0		0		0
 
 # 2nd finger

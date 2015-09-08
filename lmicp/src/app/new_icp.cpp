@@ -1,5 +1,6 @@
 #include <memory>
 #include "ros/ros.h"
+#include <tf/transform_broadcaster.h>
 
 //#include "common/cxy_config.h"
 #include "common/cxy_common.h"
@@ -23,6 +24,15 @@ int main(int argc, char  *argv[])
     //cxy::cxy_kinematic::cxy_icp_kinematic<float> kin_data(config_ptr.get());
     Eigen::Matrix< float, Eigen::Dynamic, 1> x_data(cxy_config::joint_DoFs);
     x_data.setZero();
+
+    // tf frame
+    tf::TransformBroadcaster br;
+    tf::Transform transform;
+    transform.setOrigin( tf::Vector3(0.0, 0.0, 0.0) );
+    tf::Quaternion q;
+    transform.setRotation(q);
+    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", cxy_config::rviz_frame_name_));
+
     /*
      * use synthesized data test tracking
      */
@@ -79,6 +89,7 @@ int main(int argc, char  *argv[])
 
             cxy_publisher::publishDataPoint(dataCloud);
             cxy_publisher::publishModelPoint(modelCloud);
+            cxy_publisher::publishMeshModel(tracker.getModelMarkerArray());
 
         }
     }
