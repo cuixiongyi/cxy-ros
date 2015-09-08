@@ -89,6 +89,8 @@ namespace cxy
         static unsigned int joint_number_ ;
         static std::vector<cxy_joint_info> joint_config_;
 
+        static unsigned int random_seed;
+
         static int joint_DoFs ;
         static std::vector<int> jointParaIdx_;
         // this is the number of jacobian type used

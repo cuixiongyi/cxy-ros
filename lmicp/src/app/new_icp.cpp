@@ -42,6 +42,7 @@ int main(int argc, char  *argv[])
     const float trans_inc = 1;
      float rot_inc = Deg2Rad(6.0);
     //rot_inc = 2.5;
+    srand(cxy_config::random_seed);
     while (1)
     {
         std::cin>>key;
@@ -65,6 +66,7 @@ int main(int argc, char  *argv[])
             cxy_publisher::publishMeshModel(tracker.getModelMarkerArray());
 
         }
+
         if ('r' == key)
         {
             //x_data(1) += trans_inc;

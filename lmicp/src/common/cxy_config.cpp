@@ -11,6 +11,8 @@ namespace cxy
     std::vector<cxy_joint_info> cxy_config::joint_config_;
     std::vector<int> cxy_config::jointParaIdx_;
 
+    unsigned int cxy_config::random_seed = 0.0;
+
     int cxy_config::joint_DoFs = {0};
     bool cxy_config::withJacobianEffectChild = {true};
     int cxy_config::withJacobianEffectChild_HierarchyMax = {5};
@@ -74,6 +76,11 @@ namespace cxy
 			std::string var_name;
 			iss >> var_name;
 
+
+            if ( "random_seed" == var_name)
+            {
+
+            }
 
             if ( "joint_number" == var_name)
 			{
