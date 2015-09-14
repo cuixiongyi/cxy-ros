@@ -22,7 +22,7 @@
 #include "geometry_msgs/PoseStamped.h"
 
 #include "ros/ros.h"
-#include "cxy_transform.h"
+#include "utility/cxy_transform.h"
 #include "optimization/cxy_cost_func_abstract.h"
 #include "auto_ptr.h"
 //#include <vnl/vnl_vector.h>

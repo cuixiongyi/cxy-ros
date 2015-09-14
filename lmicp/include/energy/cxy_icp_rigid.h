@@ -1,22 +1,22 @@
 #pragma once
 
-#include "cxy_icp.h"
-#include "cxy_transform.h"
-#include "cxy_icp_arti_func.h"
+#include "energy/cxy_icp.h"
+#include "utility/cxy_transform.h"
+#include "energy/cxy_icp_rigid_func.h"
 #include <unsupported/Eigen/NonLinearOptimization>
 #include "optimization/cxy_nonlinear_minimizer_LM.h"
 
 namespace cxy {
     namespace cxy_lmicp_lib {
         template<typename _Scalar, int _MinimizerType>
-        class cxy_icp_arti : public cxy_icp<_Scalar, _MinimizerType>
+        class cxy_icp_rigid : public cxy_icp<_Scalar, _MinimizerType>
         {
 
         public:
-            cxy_icp_arti() : cxy_icp<_Scalar, _MinimizerType>() {}
+            cxy_icp_rigid() : cxy_icp<_Scalar, _MinimizerType>() {}
             virtual int icp_prepare_cost_function()
             {
-                cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_arti_func<_Scalar>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
+                cxy_optimization::Cxy_Cost_Func_Abstract<_Scalar>* tmp = new cxy_icp_rigid_func<_Scalar>(this->modelCloud_, this->dataCloud_, this->kdtreeptr_);
                 this->func_ = tmp;
                 return 1;
             }

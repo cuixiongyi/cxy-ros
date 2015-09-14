@@ -1,7 +1,7 @@
 #pragma once
 #include "Eigen/Core"
 #include "cxy_nonlinear_minimizer.h"
-#include "cxy_debug.h"
+#include "common/cxy_debug.h"
 
 namespace cxy {
     namespace cxy_optimization {
@@ -84,7 +84,7 @@ namespace cxy {
                     result_Pose = x + result_Pose;
 
                     Scalar tmp (this->func_(result_Pose, this->rf));
-                    ROS_INFO_STREAM("result = "<<tmp);
+                    //ROS_INFO_STREAM("result = "<<tmp);
 
                     if (resdiual > tmp)
                     {
@@ -101,12 +101,12 @@ namespace cxy {
                     //CXY_ASSERT(result_Pose.rows() == this->nPara_);
                     //assert(x.rows() != this->nPara_);
                     //ROS_INFO_STREAM("x = "<<x);
-                    ROS_INFO_STREAM("resultFinal = "<<resdiual<<" pose_inc = "<<result_Pose(0)<<"  "<<result_Pose(1));
-                    ROS_INFO_STREAM("  ");
+                    //ROS_INFO_STREAM("resultFinal = "<<resdiual<<" pose_inc = "<<result_Pose(0)<<"  "<<result_Pose(1));
+                    //ROS_INFO_STREAM("  ");
                     x = x + result_Pose;
 
 
-                ROS_INFO_STREAM("lambda = "<<lambdaTmp<< "  Res =  "<< resdiual);
+                //ROS_INFO_STREAM("lambda = "<<lambdaTmp<< "  Res =  "<< resdiual);
                 ++iter_;
                 return resdiual;
             }
