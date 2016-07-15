@@ -46,6 +46,8 @@ find_package(catkin REQUIRED COMPONENTS roscpp
 # TARGET_LINK_LIBRARIES(assignment_learning_ex dlib)
 
 include_directories(include ${PCL_INCLUDE_DIRS}  ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS} ${Qt5Widgets_INCLUDES})
+
+
 #${OpenCV_INCLUDE_DIRS}
 
 #link_directories(${PCL_LIBRARY_DIRS})
@@ -104,13 +106,15 @@ target_link_libraries(transform_test ${catkin_LIBRARIES} cxy_tracking_lib)
 add_executable(new_icp src/app/new_icp.cpp)
 target_link_libraries(new_icp ${catkin_LIBRARIES} cxy_tracking_lib)
 
+catkin_add_gtest(lmicp_test test/lmicp_test.cpp)
+target_link_libraries(lmicp_test cxy_tracking_lib ${catkin_LIBRARIES})
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 # Qt5
-set (CMAKE_PREFIX_PATH "/opt/Qt/5.5/gcc_64")
+#set (CMAKE_PREFIX_PATH "/opt/Qt/5.5/gcc_64")
 # Find the QtWidgets library
-find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -119,25 +123,25 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #set(CMAKE_AUTOUIC ON)
 #add_definitions(${Qt5Widgets_DEFINITIONS})
 
-set (MyProjectLib_src ${PROJECT_SOURCE_DIR}/src/gui/mainwindow.cpp)
-set (MyProjectLib_hdr ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.h)
-set (MyProjectLib_ui  ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.ui)
-set (MyProjectBin_src ${PROJECT_SOURCE_DIR}/src/gui/main.cpp)
+#set (MyProjectLib_src ${PROJECT_SOURCE_DIR}/src/gui/mainwindow.cpp)
+#set (MyProjectLib_hdr ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.h)
+#set (MyProjectLib_ui  ${PROJECT_SOURCE_DIR}/include/gui/mainwindow.ui)
+#set (MyProjectBin_src ${PROJECT_SOURCE_DIR}/src/gui/main.cpp)
 
-qt5_wrap_cpp(MyProjectLib_hdr_moc ${MyProjectLib_hdr})
-qt5_wrap_ui (MyProjectLib_ui_moc  ${MyProjectLib_ui})
+#qt5_wrap_cpp(MyProjectLib_hdr_moc ${MyProjectLib_hdr})
+#qt5_wrap_ui (MyProjectLib_ui_moc  ${MyProjectLib_ui})
 
-include_directories (${PROJECT_SOURCE_DIR})
-include_directories (${PROJECT_BINARY_DIR})
+#include_directories (${PROJECT_SOURCE_DIR})
+#include_directories (${PROJECT_BINARY_DIR})
+#
+#add_library (ygui_lib SHARED
+#            ${MyProjectLib_src}
+#            ${MyProjectLib_hdr_moc}
+#            ${MyProjectLib_ui_moc}
+#)
+#target_link_libraries(ygui_lib Qt5::Widgets) #${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}
 
-add_library (ygui_lib SHARED 
-            ${MyProjectLib_src}
-            ${MyProjectLib_hdr_moc}
-            ${MyProjectLib_ui_moc}
-)
-target_link_libraries(ygui_lib Qt5::Widgets) #${catkin_LIBRARIES} ${PCL_LIBRARIES} ${Boost_LIBRARIES}  
 
-
-add_executable(ygui ${MyProjectBin_src} )
-target_link_libraries(ygui ygui_lib  )
-qt5_use_modules(ygui_lib Core Gui Widgets)
+#add_executable(ygui ${MyProjectBin_src} )
+#target_link_libraries(ygui ygui_lib  )
+#qt5_use_modules(ygui_lib Core Gui Widgets)
